@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { WpCredentials } from "@shared/schema";
 
 interface WordPressConnectionProps {
@@ -15,13 +16,13 @@ const WordPressConnection = ({
 }: WordPressConnectionProps) => {
 
   // Load saved credentials on mount
-  React.useEffect(() => {
+  useEffect(() => {
     const savedCreds = localStorage.getItem(WORDPRESS_CREDS_KEY);
     if (savedCreds) {
       const parsed = JSON.parse(savedCreds);
       onCredentialsChange(parsed);
     }
-  }, []);
+  }, [onCredentialsChange]);
   
   const handleInputChange = (field: keyof WpCredentials, value: string) => {
     const newCreds = {
