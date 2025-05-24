@@ -58,7 +58,7 @@ async function generateWithOpenAI(prompt: string): Promise<ImageGenerationResult
     });
     
     // Get base64 image data from the response
-    const base64Data = response.data[0].b64_json;
+    const base64Data = response.data?.[0]?.b64_json;
     
     if (!base64Data) {
       throw new Error('OpenAI API did not return image data');
