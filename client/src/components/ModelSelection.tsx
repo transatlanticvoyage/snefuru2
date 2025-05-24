@@ -39,6 +39,19 @@ const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [apiKeys, setApiKeys] = useState({
+    openai: "",
+    midjourney: "",
+    gemini: ""
+  });
+
+  const handleApiKeyChange = (modelId: string, value: string) => {
+    setApiKeys({
+      ...apiKeys,
+      [modelId]: value
+    });
+  };
+
   return (
     <section className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 2 - Select AI Model To Use</h2>
@@ -64,6 +77,66 @@ const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
             <span className="text-sm text-neutral-400 mt-2 text-center">{model.description}</span>
           </div>
         ))}
+      </div>
+
+      <div className="mt-6 bg-blue-50 p-4 rounded-md border border-blue-200">
+        <h3 className="font-medium text-blue-700 flex items-center mb-2">
+          <i className="mdi mdi-key-variant mr-2"></i>
+          AI Model API Keys
+        </h3>
+        <p className="text-sm text-blue-600 mb-4">
+          Enter your API key for the selected AI service. The key will be securely used for image generation.
+        </p>
+        
+        <div className="space-y-3">
+          {selectedModel === "openai" && (
+            <div>
+              <label htmlFor="openai_key" className="block text-sm font-medium text-neutral-500 mb-1">
+                OpenAI API Key
+              </label>
+              <input
+                id="openai_key"
+                type="password"
+                className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="Enter your OpenAI API key"
+                value={apiKeys.openai}
+                onChange={(e) => handleApiKeyChange("openai", e.target.value)}
+              />
+            </div>
+          )}
+          
+          {selectedModel === "midjourney" && (
+            <div>
+              <label htmlFor="midjourney_key" className="block text-sm font-medium text-neutral-500 mb-1">
+                MidJourney API Key
+              </label>
+              <input
+                id="midjourney_key"
+                type="password"
+                className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="Enter your MidJourney API key"
+                value={apiKeys.midjourney}
+                onChange={(e) => handleApiKeyChange("midjourney", e.target.value)}
+              />
+            </div>
+          )}
+          
+          {selectedModel === "gemini" && (
+            <div>
+              <label htmlFor="gemini_key" className="block text-sm font-medium text-neutral-500 mb-1">
+                Google Gemini API Key
+              </label>
+              <input
+                id="gemini_key"
+                type="password"
+                className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="Enter your Google Gemini API key"
+                value={apiKeys.gemini}
+                onChange={(e) => handleApiKeyChange("gemini", e.target.value)}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
