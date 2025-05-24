@@ -58,12 +58,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             storageService
           );
           
-          // Publish to WordPress
-          await publishToWordPress(
-            uploadedUrl,
-            row.file_name,
-            wpCredentials
-          );
+          // Publish to WordPress only if credentials are provided
+          if (wpCredentials.url && wpCredentials.username && wpCredentials.password) {
+            await publishToWordPress(
+              uploadedUrl,
+              row.file_name,
+              wpCredentials
+            );
+          } else {
+            console.log(`Skipping WordPress publishing for ${row.file_name} - no credentials provided`);
+          }
           
           // Save image metadata to database
           const savedImage = await storage.createImage({
