@@ -6,17 +6,30 @@ interface WordPressConnectionProps {
   onSave: () => void;
 }
 
+const WORDPRESS_CREDS_KEY = 'wordpress_credentials';
+
 const WordPressConnection = ({ 
   credentials, 
   onCredentialsChange, 
   onSave 
 }: WordPressConnectionProps) => {
+
+  // Load saved credentials on mount
+  React.useEffect(() => {
+    const savedCreds = localStorage.getItem(WORDPRESS_CREDS_KEY);
+    if (savedCreds) {
+      const parsed = JSON.parse(savedCreds);
+      onCredentialsChange(parsed);
+    }
+  }, []);
   
   const handleInputChange = (field: keyof WpCredentials, value: string) => {
-    onCredentialsChange({
+    const newCreds = {
       ...credentials,
       [field]: value
-    });
+    };
+    onCredentialsChange(newCreds);
+    localStorage.setItem(WORDPRESS_CREDS_KEY, JSON.stringify(newCreds));
   };
 
   return (
