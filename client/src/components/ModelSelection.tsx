@@ -35,17 +35,30 @@ const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
     }
   ];
 
-  // Initialize with the default value
+  // Initialize state for API keys with saved values or empty strings
+  const [apiKeys, setApiKeys] = useState(() => {
+    const savedKeys = localStorage.getItem('ai_api_keys');
+    if (savedKeys) {
+      try {
+        return JSON.parse(savedKeys);
+      } catch (error) {
+        console.error("Error parsing saved API keys:", error);
+      }
+    }
+    
+    // Default empty values
+    return {
+      openai: "",
+      midjourney: "",
+      gemini: ""
+    };
+  });
+
+  // Initialize with the default value and load saved data
   useEffect(() => {
     onSelect(selectedModel);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const [apiKeys, setApiKeys] = useState({
-    openai: "",
-    midjourney: "",
-    gemini: ""
-  });
 
   const handleApiKeyChange = (modelId: string, value: string) => {
     setApiKeys({
@@ -109,7 +122,9 @@ const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
                   className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
                   onClick={() => {
                     if (apiKeys.openai) {
-                      // Here you would save the API key to your system
+                      // Save the API key to localStorage
+                      localStorage.setItem('ai_api_keys', JSON.stringify(apiKeys));
+                      
                       toast({ 
                         title: "API Key Saved", 
                         description: "Your OpenAI API key has been saved successfully." 
