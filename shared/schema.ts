@@ -51,11 +51,11 @@ export type User = typeof users.$inferSelect;
 
 // Additional schema types for the application
 export const wpCredentialsSchema = z.object({
-  url: z.string().url(),
-  username: z.string().min(1),
-  password: z.string().min(1),
-  post_id: z.string().optional(),
-  mapping_key: z.string().optional(),
+  url: z.string().url().optional().or(z.literal('')),
+  username: z.string().min(1).optional().or(z.literal('')),
+  password: z.string().min(1).optional().or(z.literal('')),
+  post_id: z.string().optional().or(z.literal('')),
+  mapping_key: z.string().optional().or(z.literal('')),
 });
 
 export const imageGenerationRequestSchema = z.object({

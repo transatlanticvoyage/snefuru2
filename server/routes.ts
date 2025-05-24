@@ -20,6 +20,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = imageGenerationRequestSchema.parse(req.body);
       const { spreadsheetData, aiModel, storageService, wpCredentials } = validatedData;
       
+      // Determine if we should publish to WordPress based on credentials
+      const shouldPublishToWordPress = wpCredentials && 
+        wpCredentials.url && 
+        wpCredentials.url !== '' && 
+        wpCredentials.username && 
+        wpCredentials.username !== '' &&
+        wpCredentials.password && 
+        wpCredentials.password !== '';
+      
       // Validate spreadsheet data has required fields
       const validRows: SpreadsheetRow[] = [];
       for (const row of spreadsheetData) {
@@ -58,13 +67,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
             storageService
           );
           
-          // Publish to WordPress only if credentials are provided
-          if (wpCredentials.url && wpCredentials.username && wpCredentials.password) {
-            await publishToWordPress(
-              uploadedUrl,
-              row.file_name,
-              wpCredentials
-            );
+          // Publish to WordPress only if credentials are provided and valid
+          if (shouldPublishToWordPress) {
+            try {
+              await publishToWordPress(
+                uploadedUrl,
+                row.file_name,
+                wpCredentials
+              );
+              console.log(`Successfully published ${row.file_name} to WordPress`);
+            } catch (wpError) {
+              console.error(`Error publishing to WordPress:`, wpError);
+              // Continue with the process even if WordPress publishing fails
+            }
           } else {
             console.log(`Skipping WordPress publishing for ${row.file_name} - no credentials provided`);
           }
