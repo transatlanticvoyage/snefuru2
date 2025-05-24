@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface StorageSelectionProps {
   onSelect: (storage: string) => void;
 }
 
 const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
+  const { toast } = useToast();
   const [selectedStorage, setSelectedStorage] = useState<string>("google_drive"); // Default to Google Drive
 
   const handleStorageSelect = (storage: string) => {
@@ -107,28 +109,70 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
                 <label htmlFor="google_api_key" className="block text-sm font-medium text-neutral-500 mb-1">
                   Google Drive API Key
                 </label>
-                <input
-                  id="google_api_key"
-                  type="password"
-                  className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="Enter your Google Drive API key"
-                  value={storageCredentials.google_drive.api_key}
-                  onChange={(e) => handleCredentialChange("google_drive", "api_key", e.target.value)}
-                />
+                <div className="flex space-x-2">
+                  <input
+                    id="google_api_key"
+                    type="password"
+                    className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="Enter your Google Drive API key"
+                    value={storageCredentials.google_drive.api_key}
+                    onChange={(e) => handleCredentialChange("google_drive", "api_key", e.target.value)}
+                  />
+                  <button 
+                    className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                    onClick={() => {
+                      if (storageCredentials.google_drive.api_key) {
+                        toast({ 
+                          title: "API Key Saved", 
+                          description: "Your Google Drive API key has been saved successfully." 
+                        });
+                      } else {
+                        toast({ 
+                          title: "Error", 
+                          description: "Please enter an API key before saving.",
+                          variant: "destructive" 
+                        });
+                      }
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
               
               <div>
                 <label htmlFor="google_client_id" className="block text-sm font-medium text-neutral-500 mb-1">
                   Google Drive Client ID
                 </label>
-                <input
-                  id="google_client_id"
-                  type="password"
-                  className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="Enter your Google Drive Client ID"
-                  value={storageCredentials.google_drive.client_id}
-                  onChange={(e) => handleCredentialChange("google_drive", "client_id", e.target.value)}
-                />
+                <div className="flex space-x-2">
+                  <input
+                    id="google_client_id"
+                    type="password"
+                    className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="Enter your Google Drive Client ID"
+                    value={storageCredentials.google_drive.client_id}
+                    onChange={(e) => handleCredentialChange("google_drive", "client_id", e.target.value)}
+                  />
+                  <button 
+                    className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                    onClick={() => {
+                      if (storageCredentials.google_drive.client_id) {
+                        toast({ 
+                          title: "Client ID Saved", 
+                          description: "Your Google Drive Client ID has been saved successfully." 
+                        });
+                      } else {
+                        toast({ 
+                          title: "Error", 
+                          description: "Please enter a Client ID before saving.",
+                          variant: "destructive" 
+                        });
+                      }
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -138,14 +182,35 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
               <label htmlFor="dropbox_token" className="block text-sm font-medium text-neutral-500 mb-1">
                 Dropbox Access Token
               </label>
-              <input
-                id="dropbox_token"
-                type="password"
-                className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="Enter your Dropbox access token"
-                value={storageCredentials.dropbox.access_token}
-                onChange={(e) => handleCredentialChange("dropbox", "access_token", e.target.value)}
-              />
+              <div className="flex space-x-2">
+                <input
+                  id="dropbox_token"
+                  type="password"
+                  className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Enter your Dropbox access token"
+                  value={storageCredentials.dropbox.access_token}
+                  onChange={(e) => handleCredentialChange("dropbox", "access_token", e.target.value)}
+                />
+                <button 
+                  className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                  onClick={() => {
+                    if (storageCredentials.dropbox.access_token) {
+                      toast({ 
+                        title: "Access Token Saved", 
+                        description: "Your Dropbox access token has been saved successfully." 
+                      });
+                    } else {
+                      toast({ 
+                        title: "Error", 
+                        description: "Please enter an access token before saving.",
+                        variant: "destructive" 
+                      });
+                    }
+                  }}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           )}
           
@@ -155,42 +220,105 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
                 <label htmlFor="aws_access_key" className="block text-sm font-medium text-neutral-500 mb-1">
                   AWS Access Key
                 </label>
-                <input
-                  id="aws_access_key"
-                  type="password"
-                  className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="Enter your AWS Access Key"
-                  value={storageCredentials.amazon_s3.access_key}
-                  onChange={(e) => handleCredentialChange("amazon_s3", "access_key", e.target.value)}
-                />
+                <div className="flex space-x-2">
+                  <input
+                    id="aws_access_key"
+                    type="password"
+                    className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="Enter your AWS Access Key"
+                    value={storageCredentials.amazon_s3.access_key}
+                    onChange={(e) => handleCredentialChange("amazon_s3", "access_key", e.target.value)}
+                  />
+                  <button 
+                    className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                    onClick={() => {
+                      if (storageCredentials.amazon_s3.access_key) {
+                        toast({ 
+                          title: "Access Key Saved", 
+                          description: "Your AWS Access Key has been saved successfully." 
+                        });
+                      } else {
+                        toast({ 
+                          title: "Error", 
+                          description: "Please enter an access key before saving.",
+                          variant: "destructive" 
+                        });
+                      }
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
               
               <div>
                 <label htmlFor="aws_secret_key" className="block text-sm font-medium text-neutral-500 mb-1">
                   AWS Secret Key
                 </label>
-                <input
-                  id="aws_secret_key"
-                  type="password"
-                  className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="Enter your AWS Secret Key"
-                  value={storageCredentials.amazon_s3.secret_key}
-                  onChange={(e) => handleCredentialChange("amazon_s3", "secret_key", e.target.value)}
-                />
+                <div className="flex space-x-2">
+                  <input
+                    id="aws_secret_key"
+                    type="password"
+                    className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="Enter your AWS Secret Key"
+                    value={storageCredentials.amazon_s3.secret_key}
+                    onChange={(e) => handleCredentialChange("amazon_s3", "secret_key", e.target.value)}
+                  />
+                  <button 
+                    className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                    onClick={() => {
+                      if (storageCredentials.amazon_s3.secret_key) {
+                        toast({ 
+                          title: "Secret Key Saved", 
+                          description: "Your AWS Secret Key has been saved successfully." 
+                        });
+                      } else {
+                        toast({ 
+                          title: "Error", 
+                          description: "Please enter a secret key before saving.",
+                          variant: "destructive" 
+                        });
+                      }
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
               
               <div>
                 <label htmlFor="s3_bucket" className="block text-sm font-medium text-neutral-500 mb-1">
                   S3 Bucket Name
                 </label>
-                <input
-                  id="s3_bucket"
-                  type="text"
-                  className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="Enter your S3 bucket name"
-                  value={storageCredentials.amazon_s3.bucket}
-                  onChange={(e) => handleCredentialChange("amazon_s3", "bucket", e.target.value)}
-                />
+                <div className="flex space-x-2">
+                  <input
+                    id="s3_bucket"
+                    type="text"
+                    className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="Enter your S3 bucket name"
+                    value={storageCredentials.amazon_s3.bucket}
+                    onChange={(e) => handleCredentialChange("amazon_s3", "bucket", e.target.value)}
+                  />
+                  <button 
+                    className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                    onClick={() => {
+                      if (storageCredentials.amazon_s3.bucket) {
+                        toast({ 
+                          title: "Bucket Name Saved", 
+                          description: "Your S3 bucket name has been saved successfully." 
+                        });
+                      } else {
+                        toast({ 
+                          title: "Error", 
+                          description: "Please enter a bucket name before saving.",
+                          variant: "destructive" 
+                        });
+                      }
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
