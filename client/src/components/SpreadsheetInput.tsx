@@ -9,7 +9,7 @@ interface SpreadsheetInputProps {
 }
 
 const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
-  const [cells, setCells] = useState<string[][]>(Array(6).fill(Array(8).fill("")));
+  const [cells, setCells] = useState<string[][]>(Array(6).fill(Array(15).fill("")));
   const tableRef = useRef<HTMLTableElement>(null);
   const { toast } = useToast();
 
@@ -107,12 +107,19 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
               <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">F</th>
               <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">G</th>
               <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">H</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">I</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">J</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">K</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">L</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">M</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">N</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">O</th>
             </tr>
           </thead>
           <tbody>
             {Array(6).fill(0).map((_, rowIndex) => (
               <tr key={`row-${rowIndex}`}>
-                {Array(8).fill(0).map((_, colIndex) => (
+                {Array(15).fill(0).map((_, colIndex) => (
                   <td 
                     key={`cell-${rowIndex}-${colIndex}`}
                     className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors"

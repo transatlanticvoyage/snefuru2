@@ -1,0 +1,14 @@
+INSTRUCTIONS
+———————————————————————
+Underneath the Open api key ui element, please put additional elements for these:
+MidJourney
+Gemini
+
+Put api fields for these underneath the google drive area:
+dropbox
+Amazon s3
+———————————————————————
+for all of them, please put a save button to the right side of the field where user will paste their key
+make this button navy blue bg and white font bold that says "Save"
+———————————————————————
+please alter our table-like spreadsheet grid area to have more columns. currently it only has A-H. Please add A-O as is seen in the attached screenshot. 

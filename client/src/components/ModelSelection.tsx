@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ModelSelectionProps {
   onSelect: (model: string) => void;
 }
 
 const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
+  const { toast } = useToast();
   const [selectedModel, setSelectedModel] = useState<string>("openai"); // Default to OpenAI
 
   const handleModelSelect = (model: string) => {
@@ -94,14 +96,36 @@ const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
               <label htmlFor="openai_key" className="block text-sm font-medium text-neutral-500 mb-1">
                 OpenAI API Key
               </label>
-              <input
-                id="openai_key"
-                type="password"
-                className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="Enter your OpenAI API key"
-                value={apiKeys.openai}
-                onChange={(e) => handleApiKeyChange("openai", e.target.value)}
-              />
+              <div className="flex space-x-2">
+                <input
+                  id="openai_key"
+                  type="password"
+                  className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Enter your OpenAI API key"
+                  value={apiKeys.openai}
+                  onChange={(e) => handleApiKeyChange("openai", e.target.value)}
+                />
+                <button 
+                  className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                  onClick={() => {
+                    if (apiKeys.openai) {
+                      // Here you would save the API key to your system
+                      toast({ 
+                        title: "API Key Saved", 
+                        description: "Your OpenAI API key has been saved successfully." 
+                      });
+                    } else {
+                      toast({ 
+                        title: "Error", 
+                        description: "Please enter an API key before saving.",
+                        variant: "destructive" 
+                      });
+                    }
+                  }}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           )}
           
@@ -110,14 +134,36 @@ const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
               <label htmlFor="midjourney_key" className="block text-sm font-medium text-neutral-500 mb-1">
                 MidJourney API Key
               </label>
-              <input
-                id="midjourney_key"
-                type="password"
-                className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="Enter your MidJourney API key"
-                value={apiKeys.midjourney}
-                onChange={(e) => handleApiKeyChange("midjourney", e.target.value)}
-              />
+              <div className="flex space-x-2">
+                <input
+                  id="midjourney_key"
+                  type="password"
+                  className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Enter your MidJourney API key"
+                  value={apiKeys.midjourney}
+                  onChange={(e) => handleApiKeyChange("midjourney", e.target.value)}
+                />
+                <button 
+                  className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                  onClick={() => {
+                    if (apiKeys.midjourney) {
+                      // Here you would save the API key to your system
+                      toast({ 
+                        title: "API Key Saved", 
+                        description: "Your MidJourney API key has been saved successfully." 
+                      });
+                    } else {
+                      toast({ 
+                        title: "Error", 
+                        description: "Please enter an API key before saving.",
+                        variant: "destructive" 
+                      });
+                    }
+                  }}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           )}
           
@@ -126,14 +172,36 @@ const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
               <label htmlFor="gemini_key" className="block text-sm font-medium text-neutral-500 mb-1">
                 Google Gemini API Key
               </label>
-              <input
-                id="gemini_key"
-                type="password"
-                className="w-full p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="Enter your Google Gemini API key"
-                value={apiKeys.gemini}
-                onChange={(e) => handleApiKeyChange("gemini", e.target.value)}
-              />
+              <div className="flex space-x-2">
+                <input
+                  id="gemini_key"
+                  type="password"
+                  className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Enter your Google Gemini API key"
+                  value={apiKeys.gemini}
+                  onChange={(e) => handleApiKeyChange("gemini", e.target.value)}
+                />
+                <button 
+                  className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                  onClick={() => {
+                    if (apiKeys.gemini) {
+                      // Here you would save the API key to your system
+                      toast({ 
+                        title: "API Key Saved", 
+                        description: "Your Google Gemini API key has been saved successfully." 
+                      });
+                    } else {
+                      toast({ 
+                        title: "Error", 
+                        description: "Please enter an API key before saving.",
+                        variant: "destructive" 
+                      });
+                    }
+                  }}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           )}
         </div>

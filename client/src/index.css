@@ -25,6 +25,8 @@
   --radius: 0.5rem;
   --warning: 38 92% 50%;
   --warning-foreground: 48 96% 89%;
+  --navy: 210 64% 27%;
+  --navy-foreground: 0 0% 100%;
   }
   .dark {
       --background: 240 10% 3.9%;
