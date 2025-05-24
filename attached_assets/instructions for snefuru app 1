@@ -1,0 +1,106 @@
+———————————————————————
+APP NAME AND BASIC PURPOSE
+———————————————————————
+Create an app named Snefuru, an app used for image generation and management
+
+———————————————————————
+THIS ATTACHED IMAGE SHOWS THE USER INTERFACE WE WANT
+620-screenshot-of-ui-interface.png
+———————————————————————
+THESE ATTACHED SPREADSHEETS HOLD EXAMPLE INFO THAT A USER MAY PUT IN OUR INTERFACE
+example ui input values - image spreadsheet paste 1
+example ui input values - wp connection info paste 1
+
+
+
+———————————————————————
+BASIC FUNCTIONALITY OF THE APP
+———————————————————————
+User will visit the app and be presented with the interface that is attached to this prompt in an image file
+
+there will be a ui element which contains a spreadsheet like interface piece
+
+user can paste spreadsheet data into this place in our ui
+
+they will paste data similar to what is attached in one the attached files here
+
+then user will specify the ai model they want to use to generate images
+
+then user will specify which cloud hosting service they want to use to store the generated images
+
+then user will enter details for a wordpress site
+
+this snefuru app will do the following after user presses "generate images"
+
+look at the spreadsheet data pasted in at top of screen
+
+for each image, use the value from this field:
+actual_prompt_for_image_generating_ai_tool
+
+and use that value to prompt an ai tool (the selected ai tool for image generation)
+
+then snefuru must grab the image and save it on the selected cloud hosting service
+
+snefuru must save the image with the value from the spreadsheet field:
+file_name
+
+finally, snefuru will visit the specified wp site with its login details and upload the images to wordpress media library
+
+
+
+
+———————————————————————
+database information
+———————————————————————
+please create a db table with this name
+images
+
+please create the following db fields with these exact names in this db table:
+id
+created_at
+img_url1
+rel_img_batch_id
+
+
+
+here you can see some example values
+id
+1
+created_at
+2025-05-24T14:32:18
+img_url1
+https://drive.google.com/uc?export=view&id=1A2B3C4D5E6F7G8H9I0J
+rel_img_batch_id
+3
+
+
+
+———————————————————————
+please create a db table with this name
+image_batches
+———————————————————————
+
+please create the following db fields with these exact names in this db table:
+id
+created_at
+note1
+
+here you can see some example values
+id
+1
+created_at
+2025-05-24T14:32:18
+note1
+Here is a note
+
+
+———————————————————————
+note on db field
+rel_img_batch_id
+in db table
+images
+
+this field will hold the value of the field "id" from db table "image_batches" to show the relation to the "batch" of images a specific image is related to
+
+an individual "batch" of images will be created every time user submits one by pressing the "generate images" button
+
