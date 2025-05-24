@@ -100,21 +100,21 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
           <thead>
             <tr>
               <th className="border border-neutral-200 bg-neutral-100 p-2 text-center w-12">#</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>A</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>B</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>C</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>D</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>E</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>F</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>G</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>H</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>I</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>J</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>K</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>L</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>M</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>N</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "250px", minWidth: "150px" }}>O</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>A</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>B</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>C</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>D</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>E</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>F</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>G</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>H</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>I</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>J</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>K</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>L</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>M</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>N</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>O</th>
             </tr>
           </thead>
           <tbody>
@@ -129,11 +129,11 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
                     className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors"
                     data-editable="true"
                     style={{ 
-                      maxWidth: "250px",
-                      minWidth: "150px",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis"
+                      minWidth: "300px",
+                      width: "500px",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
+                      overflow: "visible"
                     }}
                   >
                     {cells[rowIndex]?.[colIndex] || ''}
