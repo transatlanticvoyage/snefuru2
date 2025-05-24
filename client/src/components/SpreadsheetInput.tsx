@@ -90,7 +90,7 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
   return (
     <section className="bg-white rounded-lg shadow-md p-6 max-w-full">
       <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 1 - Paste Your Excel Information</h2>
-      <div className="overflow-x-auto max-w-full">
+      <div className="overflow-auto max-w-full" style={{ maxHeight: "500px" }}>
         <table 
           id="spreadsheet" 
           ref={tableRef}
@@ -99,32 +99,39 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
         >
           <thead>
             <tr>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">A</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">B</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">C</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">D</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">E</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">F</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">G</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">H</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">I</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">J</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">K</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">L</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">M</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">N</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left">O</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-center w-12">#</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>A</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>B</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>C</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>D</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>E</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>F</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>G</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>H</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>I</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>J</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>K</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>L</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>M</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>N</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ maxWidth: "180px" }}>O</th>
             </tr>
           </thead>
           <tbody>
             {Array(6).fill(0).map((_, rowIndex) => (
               <tr key={`row-${rowIndex}`}>
+                <td className="border border-neutral-200 bg-neutral-50 p-2 text-center font-medium w-12">
+                  {rowIndex + 1}
+                </td>
                 {Array(15).fill(0).map((_, colIndex) => (
                   <td 
                     key={`cell-${rowIndex}-${colIndex}`}
-                    className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
+                    className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors"
                     data-editable="true"
-                    style={{ minWidth: "150px" }}
+                    style={{ 
+                      maxWidth: "180px",
+                      wordWrap: "break-word"
+                    }}
                   >
                     {cells[rowIndex]?.[colIndex] || ''}
                   </td>
