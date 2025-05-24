@@ -7,7 +7,7 @@ interface StorageSelectionProps {
 
 const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
   const { toast } = useToast();
-  const [selectedStorage, setSelectedStorage] = useState<string>("google_drive"); // Default to Google Drive
+  const [selectedStorage, setSelectedStorage] = useState<string>("dropbox"); // Default to Dropbox
 
   const handleStorageSelect = (storage: string) => {
     setSelectedStorage(storage);
@@ -35,9 +35,20 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
     }
   ];
 
-  // Initialize with the default value
+  // Initialize with the default value and load saved credentials
   useEffect(() => {
     onSelect(selectedStorage);
+    
+    // Load saved credentials from localStorage
+    const savedCreds = localStorage.getItem('storage_credentials');
+    if (savedCreds) {
+      try {
+        const parsedCreds = JSON.parse(savedCreds);
+        setStorageCredentials(parsedCreds);
+      } catch (error) {
+        console.error("Error parsing saved credentials:", error);
+      }
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -223,6 +234,10 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
                   className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
                   onClick={() => {
                     if (storageCredentials.dropbox.access_token) {
+                      // Save the access token to localStorage
+                      const storageData = JSON.stringify(storageCredentials);
+                      localStorage.setItem('storage_credentials', storageData);
+                      
                       toast({ 
                         title: "Access Token Saved", 
                         description: "Your Dropbox access token has been saved successfully." 
