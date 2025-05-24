@@ -110,18 +110,27 @@ export default function Home() {
 
   return (
     <div className="font-sans bg-neutral-50 text-neutral-500 min-h-screen">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Header */}
-        <header className="mb-8">
+      {/* Full-width header */}
+      <header className="w-full bg-white shadow-sm">
+        <div className="container mx-auto px-4 py-4">
           <h1 className="text-3xl font-semibold text-neutral-600 flex items-center">
             <span className="mr-2">Snefuru</span>
             <span className="text-base text-neutral-400 font-normal">AI Image Generation & Management</span>
           </h1>
-        </header>
+        </div>
+      </header>
 
+      {/* Spreadsheet section - 100% width */}
+      <div className="w-full py-6 bg-neutral-50">
+        <div className="w-full px-4">
+          <SpreadsheetInput onDataUpdate={setSpreadsheetData} />
+        </div>
+      </div>
+      
+      {/* Other content - standard width */}
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Main Content */}
         <main className="space-y-8">
-          <SpreadsheetInput onDataUpdate={setSpreadsheetData} />
           <ModelSelection onSelect={setSelectedAiModel} />
           <StorageSelection onSelect={setSelectedStorage} />
           <WordPressConnection 

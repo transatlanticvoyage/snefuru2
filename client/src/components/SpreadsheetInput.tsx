@@ -88,13 +88,13 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
   }, []);
 
   return (
-    <section className="bg-white rounded-lg shadow-md p-6">
+    <section className="bg-white rounded-lg shadow-md p-6 max-w-full">
       <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 1 - Paste Your Excel Information</h2>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-w-full">
         <table 
           id="spreadsheet" 
           ref={tableRef}
-          className="w-full border-collapse" 
+          className="w-full border-collapse table-fixed" 
           onPaste={handlePaste}
         >
           <thead>
@@ -122,8 +122,9 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
                 {Array(15).fill(0).map((_, colIndex) => (
                   <td 
                     key={`cell-${rowIndex}-${colIndex}`}
-                    className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors"
+                    className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors whitespace-nowrap overflow-hidden text-ellipsis"
                     data-editable="true"
+                    style={{ minWidth: "150px" }}
                   >
                     {cells[rowIndex]?.[colIndex] || ''}
                   </td>
