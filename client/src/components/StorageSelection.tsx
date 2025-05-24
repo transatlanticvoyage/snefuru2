@@ -65,6 +65,17 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
           </div>
         ))}
       </div>
+      
+      <div className="mt-4 bg-blue-50 p-4 rounded-md border border-blue-200">
+        <h3 className="font-medium text-blue-700 flex items-center mb-2">
+          <i className="mdi mdi-information-outline mr-2"></i>
+          Cloud Storage Authentication
+        </h3>
+        <p className="text-sm text-blue-600">
+          For demonstration purposes, cloud storage authentication is simulated. In a production environment, 
+          you would need to provide API keys or authentication credentials for your selected cloud storage service.
+        </p>
+      </div>
     </section>
   );
 };

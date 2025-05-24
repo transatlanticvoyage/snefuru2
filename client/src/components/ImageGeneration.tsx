@@ -72,7 +72,7 @@ const ImageGeneration = ({ onGenerate, isGenerating }: ImageGenerationProps) => 
         )}
         
         <button 
-          className="w-full bg-warning-500 hover:bg-warning-600 text-white py-3 px-4 rounded-md transition-colors duration-200 text-lg font-medium flex items-center justify-center"
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-md transition-colors duration-200 text-lg font-medium flex items-center justify-center"
           onClick={onGenerate}
           disabled={isGenerating}
         >

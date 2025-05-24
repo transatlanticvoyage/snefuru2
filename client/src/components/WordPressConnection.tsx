@@ -21,7 +21,7 @@ const WordPressConnection = ({
 
   return (
     <section className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 4 - WordPress Connection Details</h2>
+      <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 4 - WordPress Connection Details (Optional)</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div>
@@ -98,7 +98,7 @@ const WordPressConnection = ({
           
           <div className="pt-4">
             <button 
-              className="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center font-medium"
               onClick={onSave}
             >
               <i className="mdi mdi-content-save mr-2"></i>
