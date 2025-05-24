@@ -44,17 +44,45 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
   const [storageCredentials, setStorageCredentials] = useState({
     google_drive: {
       api_key: "",
-      client_id: ""
+      client_id: "",
+      selectedFolder: { id: "", name: "" }
     },
     dropbox: {
-      access_token: ""
+      access_token: "",
+      selectedFolder: { id: "", name: "", path: "" }
     },
     amazon_s3: {
       access_key: "",
       secret_key: "",
-      bucket: ""
+      bucket: "",
+      selectedFolder: { name: "", path: "/" }
     }
   });
+
+  const [showFolderDialog, setShowFolderDialog] = useState(false);
+  const [folderList, setFolderList] = useState<Array<{ id: string; name: string; path?: string }>>([]);
+
+  const fetchFolders = async (service: string) => {
+    try {
+      const response = await fetch(`/api/storage/${service}/folders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credentials: storageCredentials[service as keyof typeof storageCredentials] })
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch folders');
+      
+      const folders = await response.json();
+      setFolderList(folders);
+      setShowFolderDialog(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch folders. Please check your credentials.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const handleCredentialChange = (service: string, field: string, value: string) => {
     setStorageCredentials(prev => ({
@@ -320,10 +348,70 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
                   </button>
                 </div>
               </div>
+              
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-neutral-500 mb-1">
+                  Selected Folder
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    className="flex-1 p-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="No folder selected"
+                    value={storageCredentials[selectedStorage as keyof typeof storageCredentials].selectedFolder?.name || ""}
+                    readOnly
+                  />
+                  <button
+                    className="bg-navy hover:bg-navy/90 text-white font-bold py-2 px-4 rounded transition-colors"
+                    onClick={() => fetchFolders(selectedStorage)}
+                  >
+                    Browse
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
+
+      {showFolderDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Select Folder</h3>
+            <div className="space-y-2">
+              {folderList.map((folder) => (
+                <div
+                  key={folder.id || folder.path}
+                  className="p-2 hover:bg-gray-100 rounded cursor-pointer flex items-center"
+                  onClick={() => {
+                    setStorageCredentials(prev => ({
+                      ...prev,
+                      [selectedStorage]: {
+                        ...prev[selectedStorage as keyof typeof prev],
+                        selectedFolder: folder
+                      }
+                    }));
+                    setShowFolderDialog(false);
+                    toast({
+                      title: "Folder Selected",
+                      description: `Selected folder: ${folder.name}`
+                    });
+                  }}
+                >
+                  <i className="mdi mdi-folder text-primary-500 mr-2"></i>
+                  {folder.name}
+                </div>
+              ))}
+            </div>
+            <button
+              className="mt-4 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
+              onClick={() => setShowFolderDialog(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

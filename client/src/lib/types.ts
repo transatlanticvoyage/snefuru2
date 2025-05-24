@@ -6,7 +6,11 @@ export interface SpreadsheetCell {
 
 export interface CloudStorageCredentials {
   type: 'google_drive' | 'dropbox' | 'amazon_s3';
-  // Any additional fields needed for authentication
+  selectedFolder?: {
+    id: string;
+    name: string;
+    path?: string;
+  };
 }
 
 export interface GeneratedImage {
