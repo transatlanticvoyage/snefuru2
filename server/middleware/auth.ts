@@ -11,36 +11,44 @@ export interface AuthRequest extends Request {
 // Middleware to protect routes that require authentication
 export function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-    // Get the authorization header
+    // Try Bearer token authentication first
     const authHeader = req.headers.authorization;
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Authentication required' 
-      });
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      // Extract the token
+      const token = authHeader.split(' ')[1];
+      
+      // Verify the token
+      const payload = verifySessionToken(token);
+      
+      if (payload) {
+        // Add user info to request
+        req.user = {
+          id: payload.userId
+        };
+        return next();
+      }
     }
     
-    // Extract the token
-    const token = authHeader.split(' ')[1];
-    
-    // Verify the token
-    const payload = verifySessionToken(token);
-    
-    if (!payload) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Invalid or expired token' 
-      });
+    // Try cookie-based authentication
+    const sessionToken = req.cookies?.sessionToken;
+    if (sessionToken) {
+      const payload = verifySessionToken(sessionToken);
+      
+      if (payload) {
+        // Add user info to request
+        req.user = {
+          id: payload.userId
+        };
+        return next();
+      }
     }
     
-    // Add user info to request
-    req.user = {
-      id: payload.userId
-    };
-    
-    // Continue to the protected route
-    next();
+    // No valid authentication found
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Authentication required' 
+    });
   } catch (error) {
     console.error('Auth middleware error:', error);
     return res.status(401).json({ 
