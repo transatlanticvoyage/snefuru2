@@ -35,9 +35,17 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
     }
   ];
 
-  // Initialize with the default value and load saved credentials
+  // Initialize with the saved value or default and load saved credentials
   useEffect(() => {
-    onSelect(selectedStorage);
+    // Load previously selected storage option
+    const savedStorage = localStorage.getItem('selected_storage');
+    if (savedStorage) {
+      setSelectedStorage(savedStorage);
+      onSelect(savedStorage);
+    } else {
+      // Use default (Dropbox) if nothing is saved
+      onSelect(selectedStorage);
+    }
     
     // Load saved credentials from localStorage
     const savedCreds = localStorage.getItem('storage_credentials');
@@ -51,6 +59,11 @@ const StorageSelection = ({ onSelect }: StorageSelectionProps) => {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
+  // Save the selected storage option when it changes
+  useEffect(() => {
+    localStorage.setItem('selected_storage', selectedStorage);
+  }, [selectedStorage]);
 
   const [storageCredentials, setStorageCredentials] = useState({
     google_drive: {
