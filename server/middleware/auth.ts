@@ -30,8 +30,8 @@ export function requireAuth(req: AuthRequest, res: Response, next: NextFunction)
       }
     }
     
-    // Try cookie-based authentication
-    const sessionToken = req.cookies?.sessionToken;
+    // Try cookie-based authentication - check multiple possible cookie names
+    const sessionToken = req.cookies?.sessionToken || req.cookies?.token || req.cookies?.authToken;
     if (sessionToken) {
       const payload = verifySessionToken(sessionToken);
       
@@ -43,6 +43,10 @@ export function requireAuth(req: AuthRequest, res: Response, next: NextFunction)
         return next();
       }
     }
+    
+    // Debug: Log available cookies to understand the issue
+    console.log('Available cookies:', Object.keys(req.cookies || {}));
+    console.log('Request headers:', req.headers.cookie);
     
     // No valid authentication found
     return res.status(401).json({ 
