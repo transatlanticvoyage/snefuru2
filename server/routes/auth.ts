@@ -78,6 +78,14 @@ router.post('/login', async (req: Request, res: Response) => {
       });
     }
     
+    // Set token as cookie for authentication
+    res.cookie('authToken', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    
     // Return success response with token
     return res.status(200).json({
       success: true,
