@@ -19,6 +19,7 @@ import Screen3 from "@/pages/reddit_scraper/screen3";
 import Screen4 from "@/pages/reddit_scraper/screen4";
 import AffiliatePrograms from "@/pages/reddit_scraper/affiliate_programs1";
 import ImageHandlerScreen1 from "@/pages/image_handler/screen1";
+import PromptTube from "@/pages/image_handler/prompt_tube1";
 import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 
 // Protected route component that redirects to login if not authenticated
@@ -82,6 +83,9 @@ function Router() {
       </Route>
       <Route path="/image_handler/screen1">
         {isAuthenticated ? <ImageHandlerScreen1 /> : <SimpleLogin />}
+      </Route>
+      <Route path="/image_handler/prompt_tube1">
+        {isAuthenticated ? <PromptTube /> : <SimpleLogin />}
       </Route>
       <Route path="/rank_tracker/screen1">
         {isAuthenticated ? <RankTrackerScreen1 /> : <SimpleLogin />}
