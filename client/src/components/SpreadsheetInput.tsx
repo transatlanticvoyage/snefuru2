@@ -44,22 +44,23 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
       localStorage.setItem('spreadsheet_cells', JSON.stringify(cells));
       
       // Process the data again to make sure parent component has latest
-      try {
-        const extractedData = extractStructuredData(cells);
-        onDataUpdate(extractedData);
-        
+      const extractedData = extractStructuredData(cells);
+      onDataUpdate(extractedData);
+      
+      if (extractedData.length > 0) {
         toast({
           title: "Table content saved",
           description: `Successfully saved ${extractedData.length} rows. Your data will persist even if you close the browser.`,
         });
-      } catch (error) {
+      } else {
+        // Still save the data but provide a more helpful message
         toast({
-          title: "Warning",
-          description: "Data saved, but it may not contain the required columns. Please check your data.",
-          variant: "destructive",
+          title: "Table content saved",
+          description: "Your spreadsheet data has been saved, but no valid image generation rows were found. Make sure your table has headers with 'prompt' and 'file_name' columns.",
         });
       }
     } catch (error) {
+      console.error("Error saving data:", error);
       toast({
         title: "Error saving data",
         description: "Failed to save table content. Local storage may be full or disabled.",
@@ -101,36 +102,50 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
 
   // Extract structured data from the cells
   const extractStructuredData = (cellData: string[][]) => {
+    // Skip if no data
+    if (!cellData || cellData.length === 0 || (cellData.length === 1 && cellData[0].every(cell => !cell))) {
+      return [];
+    }
+
     // Find header row indices
     const headers = cellData[0] || [];
+    
+    // Support various header formats - check for anything containing "prompt" or "file"
     const promptColumnIndex = headers.findIndex(
-      (header) => header.toLowerCase().includes("prompt") || header.toLowerCase() === "actual_prompt_for_image_generating_ai_tool"
+      (header) => header && 
+      (header.toLowerCase().includes("prompt") || 
+       header.toLowerCase() === "actual_prompt_for_image_generating_ai_tool")
     );
+    
     const filenameColumnIndex = headers.findIndex(
-      (header) => header.toLowerCase().includes("file") || header.toLowerCase() === "file_name"
+      (header) => header && 
+      (header.toLowerCase().includes("file") || 
+       header.toLowerCase() === "file_name")
     );
 
     if (promptColumnIndex === -1 || filenameColumnIndex === -1) {
-      throw new Error("Missing required columns: 'actual_prompt_for_image_generating_ai_tool' and 'file_name'");
+      return []; // Return empty array instead of throwing error
     }
 
     // Extract data rows
     const dataRows = cellData.slice(1);
     const structuredData = dataRows
-      .filter(row => row[promptColumnIndex] && row[filenameColumnIndex])
+      .filter(row => row && row.length > 0 && row[promptColumnIndex] && row[filenameColumnIndex])
       .map(row => ({
-        actual_prompt_for_image_generating_ai_tool: row[promptColumnIndex],
-        file_name: row[filenameColumnIndex],
+        actual_prompt_for_image_generating_ai_tool: row[promptColumnIndex] || "",
+        file_name: row[filenameColumnIndex] || "",
       }));
 
-    // Validate with zod schema
-    const validatedData = structuredData.map(row => {
+    // Validate with zod schema, but skip invalid rows instead of throwing error
+    const validatedData = [];
+    for (const row of structuredData) {
       try {
-        return spreadsheetRowSchema.parse(row);
+        validatedData.push(spreadsheetRowSchema.parse(row));
       } catch (error) {
-        throw new Error(`Invalid row data: ${JSON.stringify(row)}`);
+        console.warn("Skipping invalid row:", row, error);
+        // Continue processing other rows
       }
-    });
+    }
 
     return validatedData;
   };
