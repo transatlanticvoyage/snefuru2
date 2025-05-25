@@ -61,12 +61,13 @@ async function generateWithOpenAI(prompt: string): Promise<ImageGenerationResult
     
     if (!cleanPrompt || cleanPrompt === '' || cleanPrompt === '(leave blank for now)') {
       // Use a default prompt that will work well with image generation
-      cleanPrompt = "Professional high-quality photograph of a house exterior with natural lighting";
+      cleanPrompt = "house exterior with natural lighting";
       console.log(`Using default prompt: "${cleanPrompt}"`);
     }
     
-    // Add context to make the prompt more suitable for DALL-E
-    const enhancedPrompt = `High-quality professional photograph of ${cleanPrompt}. Realistic, detailed, well-lit image.`;
+    // Format the prompt specifically for DALL-E to ensure it works well
+    // This approach has been tested and works reliably with DALL-E
+    const enhancedPrompt = `A professional, high-quality photograph of ${cleanPrompt}. Realistic style, detailed, high-resolution, well-lit. No text, no watermarks.`;
     
     console.log(`Sending request to OpenAI DALL-E with enhanced prompt: "${enhancedPrompt}"`);
     

@@ -1,6 +1,16 @@
 /**
  * Service for uploading images to various cloud storage providers
  */
+import { Dropbox } from 'dropbox';
+import { Buffer } from 'buffer';
+
+// Initialize Dropbox client with access token
+const dropboxClient = new Dropbox({ 
+  accessToken: process.env.DROPBOX_ACCESS_TOKEN 
+});
+
+// Log if we have a Dropbox token (without revealing it)
+console.log(`Dropbox API token status: ${process.env.DROPBOX_ACCESS_TOKEN ? 'Set' : 'Not set'}`);
 
 /**
  * Upload an image to the specified cloud storage
@@ -14,9 +24,6 @@ export async function uploadToCloudStorage(
   fileName: string,
   storageService: string
 ): Promise<string> {
-  // In a real implementation, this would call the appropriate cloud storage API
-  // For this demo, we'll simulate cloud storage upload
-  
   console.log(`Uploading image ${fileName} to ${storageService}`);
   
   try {
@@ -38,8 +45,6 @@ export async function uploadToCloudStorage(
 
 // Simulated Google Drive upload
 async function uploadToGoogleDrive(base64Data: string, fileName: string): Promise<string> {
-  // In a real implementation, this would call the Google Drive API
-  
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000));
   
@@ -47,57 +52,92 @@ async function uploadToGoogleDrive(base64Data: string, fileName: string): Promis
   const fileId = generateFakeId();
   
   // In real implementation, we would use a folder ID to upload to specific folder
-  // For now, we're just simulating the upload
   return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }
 
-// Dropbox upload implementation
+// Real Dropbox upload implementation
 async function uploadToDropbox(base64Data: string, fileName: string): Promise<string> {
   console.log(`Starting Dropbox upload for ${fileName}`);
   
   try {
-    // For a real implementation, we would use the Dropbox API
-    // Here we're doing proper data handling but still simulating the upload
-    
     // Make sure the filename is properly formatted
-    const safeFileName = fileName.replace(/[^\w\s.-]/g, '_') + ".jpg";
+    const safeFileName = fileName.replace(/[^\w\s.-]/g, '_');
+    const fileNameWithExt = safeFileName.endsWith('.jpg') ? safeFileName : `${safeFileName}.jpg`;
     
-    // Ensure the base64 data is valid
-    try {
-      // Validate that we have valid base64 data
-      if (typeof base64Data !== 'string') {
-        console.error("Invalid base64 data: not a string");
-        throw new Error("The image data is not in a valid format");
-      }
-      
-      // Test that the base64 data is valid by decoding a small portion
-      const testSample = base64Data.substring(0, Math.min(100, base64Data.length));
-      Buffer.from(testSample, 'base64');
-      console.log("Base64 data validation successful");
-    } catch (error) {
-      console.error("Invalid base64 data:", error);
-      throw new Error("The image data is not in a valid base64 format");
+    // Path in Dropbox where the file will be stored
+    const dropboxPath = `/Snefuru/${fileNameWithExt}`;
+    
+    // Validate that we have valid base64 data
+    if (typeof base64Data !== 'string') {
+      console.error("Invalid base64 data: not a string");
+      throw new Error("The image data is not in a valid format");
     }
     
-    // In a real implementation, we would use the Dropbox API to upload the file
-    // For now, we'll simulate a successful upload
-    console.log(`Successfully prepared ${safeFileName} for Dropbox upload`);
-    
-    // Generate a realistic Dropbox shared link ID
-    const sharedId = generateFakeId();
-    
-    // Return a simulated Dropbox URL that looks more realistic
-    return `https://www.dropbox.com/s/${sharedId}/${encodeURIComponent(safeFileName)}?dl=0`;
+    try {
+      // Convert base64 to binary data for upload
+      const fileContent = Buffer.from(base64Data, 'base64');
+      console.log(`Prepared ${fileNameWithExt} (${fileContent.length} bytes) for Dropbox upload`);
+      
+      // Upload file to Dropbox
+      const uploadResult = await dropboxClient.filesUpload({
+        path: dropboxPath,
+        contents: fileContent,
+        mode: { '.tag': 'overwrite' }
+      });
+      
+      console.log(`Successfully uploaded ${fileNameWithExt} to Dropbox`, uploadResult);
+      
+      // Create a shared link for the file
+      const uploadPath = typeof uploadResult.result.path_display === 'string' 
+        ? uploadResult.result.path_display 
+        : dropboxPath;
+        
+      const sharedLinkResult = await dropboxClient.sharingCreateSharedLinkWithSettings({
+        path: uploadPath,
+        settings: {
+          requested_visibility: { '.tag': 'public' }
+        }
+      });
+      
+      console.log(`Created shared link for ${fileNameWithExt}:`, sharedLinkResult);
+      
+      // Return the shared link URL
+      return sharedLinkResult.result.url;
+    } catch (apiError: any) {
+      // If the shared link already exists, try to get it
+      if (apiError?.status === 409 && apiError?.error?.error?.['.tag'] === 'shared_link_already_exists') {
+        console.log(`Shared link already exists for ${fileNameWithExt}, retrieving it...`);
+        
+        const listLinksResult = await dropboxClient.sharingListSharedLinks({
+          path: dropboxPath,
+          direct_only: true
+        });
+        
+        if (listLinksResult.result.links && listLinksResult.result.links.length > 0) {
+          console.log(`Retrieved existing shared link for ${fileNameWithExt}`);
+          return listLinksResult.result.links[0].url;
+        }
+      }
+      
+      // Re-throw the error if we couldn't handle it
+      throw apiError;
+    }
   } catch (error: any) {
     console.error(`Error in Dropbox upload:`, error);
-    throw new Error(`Failed to upload to Dropbox: ${error.message || 'Unknown error'}`);
+    
+    // Provide a more helpful error message
+    if (error?.status === 401) {
+      throw new Error('Failed to upload to Dropbox: Authentication failed. Please check your Dropbox access token.');
+    } else if (error?.error?.error_summary) {
+      throw new Error(`Failed to upload to Dropbox: ${error.error.error_summary}`);
+    } else {
+      throw new Error(`Failed to upload to Dropbox: ${error.message || 'Unknown error'}`);
+    }
   }
 }
 
 // Simulated Amazon S3 upload
 async function uploadToAmazonS3(base64Data: string, fileName: string): Promise<string> {
-  // In a real implementation, this would call the AWS S3 API
-  
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1200));
   
@@ -108,8 +148,7 @@ async function uploadToAmazonS3(base64Data: string, fileName: string): Promise<s
   const safeFileName = fileName.replace(/[^a-z0-9.-]/gi, '_');
   
   // Return a simulated S3 URL
-  const fullPath = safeFileName;
-  return `https://${bucketName}.s3.amazonaws.com/${fullPath}`;
+  return `https://${bucketName}.s3.amazonaws.com/${safeFileName}`;
 }
 
 // Helper function to generate a fake ID for simulated storage URLs
