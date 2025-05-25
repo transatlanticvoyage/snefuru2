@@ -25,11 +25,18 @@ export const reddit_urls1 = pgTable("reddit_urls1", {
   note1: text("note1"),
 });
 
-// Users table (kept from original schema)
+// Users table - enhanced for full user account system
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  first_name: text("first_name"),
+  last_name: text("last_name"),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  last_login: timestamp("last_login"),
+  profile_image: text("profile_image"),
+  is_active: integer("is_active").default(1),
 });
 
 // Create insert schemas
@@ -48,9 +55,11 @@ export const insertRedditUrlSchema = createInsertSchema(reddit_urls1).omit({
   created_at: true,
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  created_at: true,
+  last_login: true,
+  is_active: true,
 });
 
 // Export types
@@ -80,9 +89,64 @@ export const imageGenerationRequestSchema = z.object({
   wpCredentials: wpCredentialsSchema,
 });
 
+// User auth schemas
+export const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  remember_me: z.boolean().optional(),
+});
+
+export const registerSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirm_password: z.string().min(6, "Password must be at least 6 characters"),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  terms_accepted: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions"
+  }),
+}).refine(data => data.password === data.confirm_password, {
+  message: "Passwords do not match",
+  path: ["confirm_password"]
+});
+
+export const userSettingsSchema = z.object({
+  email: z.string().email("Please enter a valid email address").optional(),
+  username: z.string().min(3, "Username must be at least 3 characters").optional(),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  profile_image: z.string().optional(),
+  current_password: z.string().optional(),
+  new_password: z.string().min(6, "Password must be at least 6 characters").optional(),
+  confirm_new_password: z.string().optional(),
+}).refine(data => {
+  // If any password field is filled, they all must be filled
+  const passwordFields = [data.current_password, data.new_password, data.confirm_new_password];
+  const somePasswordFields = passwordFields.some(Boolean);
+  const allPasswordFields = passwordFields.every(Boolean);
+  return !somePasswordFields || allPasswordFields;
+}, {
+  message: "All password fields are required to change password",
+  path: ["current_password"]
+}).refine(data => {
+  // If new passwords are provided, they must match
+  if (data.new_password && data.confirm_new_password) {
+    return data.new_password === data.confirm_new_password;
+  }
+  return true;
+}, {
+  message: "New passwords do not match",
+  path: ["confirm_new_password"]
+});
+
 export const spreadsheetRowSchema = z.object({
   actual_prompt_for_image_generating_ai_tool: z.string(),
   file_name: z.string(),
 });
 
+// Export auth types
+export type Login = z.infer<typeof loginSchema>;
+export type Register = z.infer<typeof registerSchema>;
+export type UserSettings = z.infer<typeof userSettingsSchema>;
 export type SpreadsheetRow = z.infer<typeof spreadsheetRowSchema>;
