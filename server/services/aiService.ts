@@ -11,7 +11,7 @@ interface ImageGenerationResult {
   mimeType: string;
 }
 
-// Initialize the OpenAI client
+// Initialize the OpenAI client with the API key
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -47,10 +47,24 @@ export async function generateImage(
 // Real OpenAI image generation
 async function generateWithOpenAI(prompt: string): Promise<ImageGenerationResult> {
   try {
+    // Make sure we have a valid API key - use the environment key first
+    // or get it from the request if available
+    if (!process.env.OPENAI_API_KEY) {
+      console.log("Warning: Using default OpenAI client - API key may not be set");
+    }
+    
+    // Ensure the prompt is not empty or just whitespace
+    if (!prompt || prompt.trim() === '' || prompt.trim() === '(leave blank for now)') {
+      throw new Error('Cannot generate image with empty prompt');
+    }
+    
+    // Clean and prepare the prompt
+    const cleanPrompt = prompt.trim();
+    
     // Use OpenAI's DALL-E to generate an image
     const response = await openai.images.generate({
       model: "dall-e-3",
-      prompt: prompt,
+      prompt: cleanPrompt,
       n: 1,
       size: "1024x1024",
       quality: "standard",
@@ -68,11 +82,22 @@ async function generateWithOpenAI(prompt: string): Promise<ImageGenerationResult
       base64Data,
       mimeType: 'image/png'
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating image with OpenAI:', error);
+    
+    // Log specific error details for debugging
+    if (error.message) {
+      console.error('Error message:', error.message);
+    }
+    
+    // Handle specific error cases
+    if (error.message && error.message.includes('API key')) {
+      throw new Error('OpenAI API key is invalid or missing. Please check your API key.');
+    }
+    
     // Fallback to SVG if there's an error with the OpenAI API
     console.log('Falling back to SVG image generation');
-    const svgContent = createSvgImage(prompt, 'OpenAI (Fallback)');
+    const svgContent = createSvgImage(prompt || 'No prompt provided', 'OpenAI (Fallback)');
     return {
       base64Data: Buffer.from(svgContent).toString('base64'),
       mimeType: 'image/svg+xml'

@@ -11,6 +11,7 @@ import {
 import { generateImage } from "./services/aiService";
 import { uploadToCloudStorage } from "./services/cloudStorageService";
 import { publishToWordPress } from "./services/wordpressService";
+import OpenAI from "openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API route for generating images
