@@ -65,12 +65,15 @@ async function generateWithOpenAI(prompt: string): Promise<ImageGenerationResult
       console.log(`Using default prompt: "${cleanPrompt}"`);
     }
     
-    console.log(`Sending request to OpenAI DALL-E with prompt: "${cleanPrompt}"`);
+    // Add context to make the prompt more suitable for DALL-E
+    const enhancedPrompt = `High-quality professional photograph of ${cleanPrompt}. Realistic, detailed, well-lit image.`;
+    
+    console.log(`Sending request to OpenAI DALL-E with enhanced prompt: "${enhancedPrompt}"`);
     
     // Use OpenAI's DALL-E to generate an image
     const response = await openai.images.generate({
       model: "dall-e-3",
-      prompt: cleanPrompt,
+      prompt: enhancedPrompt,
       n: 1,
       size: "1024x1024",
       quality: "standard",

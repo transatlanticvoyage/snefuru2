@@ -60,13 +60,20 @@ async function uploadToDropbox(base64Data: string, fileName: string): Promise<st
     // Here we're doing proper data handling but still simulating the upload
     
     // Make sure the filename is properly formatted
-    const safeFileName = fileName.replace(/[^\w\s.-]/g, '_');
+    const safeFileName = fileName.replace(/[^\w\s.-]/g, '_') + ".jpg";
     
-    // Convert base64 to binary data (in a real implementation)
-    // This step ensures the base64 data is valid
+    // Ensure the base64 data is valid
     try {
+      // Validate that we have valid base64 data
+      if (typeof base64Data !== 'string') {
+        console.error("Invalid base64 data: not a string");
+        throw new Error("The image data is not in a valid format");
+      }
+      
       // Test that the base64 data is valid by decoding a small portion
-      Buffer.from(base64Data.substring(0, 100), 'base64');
+      const testSample = base64Data.substring(0, Math.min(100, base64Data.length));
+      Buffer.from(testSample, 'base64');
+      console.log("Base64 data validation successful");
     } catch (error) {
       console.error("Invalid base64 data:", error);
       throw new Error("The image data is not in a valid base64 format");
