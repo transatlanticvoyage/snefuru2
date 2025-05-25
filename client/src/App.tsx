@@ -10,6 +10,8 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import SimpleLogin from "@/pages/SimpleLogin";
 import SimpleRegister from "@/pages/SimpleRegister";
+import Profile from "@/pages/Profile";
+import Settings from "@/pages/Settings";
 import Screen1 from "@/pages/reddit_scraper/screen1";
 import Screen2 from "@/pages/reddit_scraper/screen2";
 import Screen3 from "@/pages/reddit_scraper/screen3";
@@ -47,6 +49,14 @@ function Router() {
       
       {/* Main routes */}
       <Route path="/" component={Home} />
+      
+      {/* User account routes */}
+      <Route path="/profile">
+        {isAuthenticated ? <Profile /> : <SimpleLogin />}
+      </Route>
+      <Route path="/settings">
+        {isAuthenticated ? <Settings /> : <SimpleLogin />}
+      </Route>
       
       {/* Protected routes */}
       <Route path="/reddit_scraper/screen1">
