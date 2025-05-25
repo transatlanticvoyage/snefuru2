@@ -9,9 +9,64 @@ interface SpreadsheetInputProps {
 }
 
 const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
-  const [cells, setCells] = useState<string[][]>(Array(6).fill(Array(15).fill("")));
+  const [cells, setCells] = useState<string[][]>(() => {
+    // Try to load saved cells from localStorage
+    try {
+      const savedCells = localStorage.getItem('spreadsheet_cells');
+      if (savedCells) {
+        return JSON.parse(savedCells);
+      }
+    } catch (error) {
+      console.error("Error loading saved cells:", error);
+    }
+    // Default empty cells if nothing is saved
+    return Array(6).fill(Array(15).fill(""));
+  });
   const tableRef = useRef<HTMLTableElement>(null);
   const { toast } = useToast();
+
+  // Load saved data on component mount
+  useEffect(() => {
+    try {
+      // If we have saved cells, process them to update the parent component
+      if (cells.length > 0 && cells[0].length > 0) {
+        const extractedData = extractStructuredData(cells);
+        onDataUpdate(extractedData);
+      }
+    } catch (error) {
+      console.error("Error processing saved cells:", error);
+    }
+  }, []);
+
+  // Save table data to localStorage
+  const saveTableData = () => {
+    try {
+      localStorage.setItem('spreadsheet_cells', JSON.stringify(cells));
+      
+      // Process the data again to make sure parent component has latest
+      try {
+        const extractedData = extractStructuredData(cells);
+        onDataUpdate(extractedData);
+        
+        toast({
+          title: "Table content saved",
+          description: `Successfully saved ${extractedData.length} rows. Your data will persist even if you close the browser.`,
+        });
+      } catch (error) {
+        toast({
+          title: "Warning",
+          description: "Data saved, but it may not contain the required columns. Please check your data.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error saving data",
+        description: "Failed to save table content. Local storage may be full or disabled.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Function to handle spreadsheet data pasting
   const handlePaste = (e: React.ClipboardEvent<HTMLTableElement>) => {
@@ -28,9 +83,12 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
       const extractedData = extractStructuredData(parsedData);
       onDataUpdate(extractedData);
       
+      // Automatically save to localStorage when pasting
+      localStorage.setItem('spreadsheet_cells', JSON.stringify(parsedData));
+      
       toast({
         title: "Data pasted successfully",
-        description: `Found ${extractedData.length} image entries with valid data`,
+        description: `Found ${extractedData.length} image entries with valid data. Data has been automatically saved.`,
       });
     } catch (error) {
       toast({
@@ -77,13 +135,38 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
     return validatedData;
   };
 
+  // Handle cell content change after editing
+  const handleCellChange = (rowIndex: number, colIndex: number, value: string) => {
+    const newCells = [...cells];
+    
+    // Make sure the row exists
+    if (!newCells[rowIndex]) {
+      newCells[rowIndex] = [];
+    }
+    
+    // Update the cell value
+    newCells[rowIndex][colIndex] = value;
+    setCells(newCells);
+  };
+  
   // Make cells editable
   useEffect(() => {
     if (!tableRef.current) return;
     
-    const cells = tableRef.current.querySelectorAll('td[data-editable="true"]');
-    cells.forEach((cell) => {
+    const cellElements = tableRef.current.querySelectorAll('td[data-editable="true"]');
+    cellElements.forEach((cell) => {
       cell.setAttribute('contenteditable', 'true');
+      
+      // Add blur event to capture changes when user finishes editing
+      cell.addEventListener('blur', (e) => {
+        const target = e.target as HTMLTableCellElement;
+        const rowIndex = parseInt(target.getAttribute('data-row-index') || '-1');
+        const colIndex = parseInt(target.getAttribute('data-col-index') || '-1');
+        
+        if (rowIndex >= 0 && colIndex >= 0) {
+          handleCellChange(rowIndex, colIndex, target.textContent || '');
+        }
+      });
     });
   }, []);
 
@@ -119,7 +202,7 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
           </thead>
           <tbody>
             {Array(6).fill(0).map((_, rowIndex) => (
-              <tr key={`row-${rowIndex}`}>
+              <tr key={`row-${rowIndex}`} data-row-index={rowIndex}>
                 <td className="border border-neutral-200 bg-neutral-50 p-2 text-center font-medium w-12">
                   {rowIndex + 1}
                 </td>
@@ -128,6 +211,8 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
                     key={`cell-${rowIndex}-${colIndex}`}
                     className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors"
                     data-editable="true"
+                    data-row-index={rowIndex}
+                    data-col-index={colIndex}
                     style={{ 
                       minWidth: "300px",
                       width: "500px",
@@ -144,8 +229,19 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
           </tbody>
         </table>
       </div>
-      <div className="mt-3 text-sm text-neutral-400">
-        <p>Paste your Excel data directly into the table above. Make sure it includes the <span className="font-medium">actual_prompt_for_image_generating_ai_tool</span> and <span className="font-medium">file_name</span> columns.</p>
+      <div className="mt-4 flex flex-col space-y-4">
+        {/* Save Table Content Button */}
+        <button
+          className="bg-navy hover:bg-navy/90 text-white font-bold py-3 px-4 rounded transition-colors"
+          onClick={saveTableData}
+        >
+          Save Table Content
+        </button>
+        
+        <div className="text-sm text-neutral-400">
+          <p>Paste your Excel data directly into the table above. Make sure it includes the <span className="font-medium">actual_prompt_for_image_generating_ai_tool</span> and <span className="font-medium">file_name</span> columns.</p>
+          <p className="mt-2">Click "Save Table Content" to ensure your data persists if you close your browser or shut down your computer.</p>
+        </div>
       </div>
     </section>
   );

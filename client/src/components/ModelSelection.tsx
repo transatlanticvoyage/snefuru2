@@ -54,11 +54,24 @@ const ModelSelection = ({ onSelect }: ModelSelectionProps) => {
     };
   });
 
-  // Initialize with the default value and load saved data
+  // Load the previously selected model and initialize with saved data
   useEffect(() => {
-    onSelect(selectedModel);
+    // Try to load the previously selected model
+    const savedModel = localStorage.getItem('selected_ai_model');
+    if (savedModel) {
+      setSelectedModel(savedModel);
+      onSelect(savedModel);
+    } else {
+      // Default to OpenAI if nothing saved
+      onSelect(selectedModel);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
+  // Save the selected model when it changes
+  useEffect(() => {
+    localStorage.setItem('selected_ai_model', selectedModel);
+  }, [selectedModel]);
 
   const handleApiKeyChange = (modelId: string, value: string) => {
     setApiKeys({
