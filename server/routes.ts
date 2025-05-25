@@ -12,8 +12,15 @@ import { generateImage } from "./services/aiService";
 import { uploadToCloudStorage } from "./services/cloudStorageService";
 import { publishToWordPress } from "./services/wordpressService";
 import OpenAI from "openai";
+import authRoutes from "./routes/auth";
+import { optionalAuth, type AuthRequest } from "./middleware/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Register authentication routes
+  app.use('/api/auth', authRoutes);
+  
+  // Apply optional authentication to all routes
+  app.use(optionalAuth);
   // Test route for reddit_urls1 table
   app.post("/api/test-reddit-url", async (req, res) => {
     try {
