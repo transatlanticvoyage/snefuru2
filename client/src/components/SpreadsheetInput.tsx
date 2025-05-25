@@ -198,9 +198,9 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
           <thead>
             <tr>
               <th className="border border-neutral-200 bg-neutral-100 p-2 text-center w-12">#</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>A</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>B</th>
-              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>C</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>A</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>B</th>
+              <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>C</th>
               <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>D</th>
               <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>E</th>
               <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>F</th>
@@ -229,8 +229,8 @@ const SpreadsheetInput = ({ onDataUpdate }: SpreadsheetInputProps) => {
                     data-row-index={rowIndex}
                     data-col-index={colIndex}
                     style={{ 
-                      minWidth: "300px",
-                      width: "500px",
+                      minWidth: colIndex < 3 ? "150px" : "300px",
+                      width: colIndex < 3 ? "150px" : "500px",
                       whiteSpace: "normal",
                       wordBreak: "break-word",
                       overflow: "visible"
