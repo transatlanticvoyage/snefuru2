@@ -238,7 +238,7 @@ async function uploadToWordPressMedia(
 // Attach image to a WordPress post
 async function attachImageToPost(
   siteUrl: string,
-  authData: { cookie?: string; nonce?: string; basicAuth: string },
+  authData: { cookie?: string; nonce?: string; basicAuth: string; authMethod: 'application_password' | 'basic_auth' },
   postId: number,
   mediaId: number,
   mappingKey?: string
@@ -253,13 +253,17 @@ async function attachImageToPost(
       'Accept': 'application/json',
     };
     
-    if (authData.nonce) {
+    // Application Passwords work better without nonce
+    if (authData.authMethod === 'basic_auth' && authData.nonce) {
       headers['X-WP-Nonce'] = authData.nonce;
     }
     
     if (authData.cookie) {
       headers['Cookie'] = authData.cookie;
     }
+    
+    // Log authentication method being used
+    console.log(`Using ${authData.authMethod} authentication method for attaching image to post`);
     
     // If mapping key is provided, set it as a custom field
     // Otherwise, just set the featured image
@@ -292,7 +296,7 @@ async function attachImageToPost(
       throw new Error(`Failed to attach image to post: ${updateResponse.status}`);
     }
     
-    const updateData = await updateResponse.json();
+    const updateData = await updateResponse.json() as any;
     console.log(`Successfully attached media ID ${mediaId} to post ID ${postId}`);
   } catch (error) {
     console.error('Error attaching image to post:', error);
