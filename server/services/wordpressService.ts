@@ -27,14 +27,18 @@ export async function publishToWordPress(
   
   try {
     // Validate credentials
-    if (!credentials.url || !credentials.username || !credentials.password) {
-      throw new Error('Missing WordPress credentials');
+    if (!credentials.url || !credentials.username) {
+      throw new Error('Missing WordPress site URL or username');
+    }
+    
+    if (!credentials.application_password && !credentials.password) {
+      throw new Error('Missing WordPress password (either application password or regular password required)');
     }
 
     // Clean up the site URL to ensure it's properly formatted
     const siteUrl = formatSiteUrl(credentials.url);
     
-    // 1. First authenticate with WordPress and get the nonce for REST API
+    // 1. First authenticate with WordPress
     const authData = await authenticateWithWordPress(credentials);
     
     // 2. Upload the image to the WordPress media library
@@ -84,15 +88,29 @@ async function authenticateWithWordPress(credentials: WpCredentials): Promise<{
   cookie?: string;
   nonce?: string;
   basicAuth: string;
+  authMethod: 'application_password' | 'basic_auth';
 }> {
-  const siteUrl = formatSiteUrl(credentials.url);
+  const siteUrl = formatSiteUrl(credentials.url || '');
   console.log(`Authenticating with WordPress site: ${siteUrl}`);
   
   try {
-    // Create basic auth header
-    const basicAuth = Buffer.from(`${credentials.username}:${credentials.password}`).toString('base64');
+    // Determine which authentication method to use
+    let basicAuth: string;
+    let authMethod: 'application_password' | 'basic_auth';
     
-    // Try to get the WP nonce
+    // Prefer Application Password if available
+    if (credentials.application_password && credentials.application_password.trim() !== '') {
+      console.log('Using Application Password authentication method');
+      basicAuth = Buffer.from(`${credentials.username}:${credentials.application_password}`).toString('base64');
+      authMethod = 'application_password';
+    } else {
+      console.log('Using Basic Authentication method');
+      // Fall back to regular password
+      basicAuth = Buffer.from(`${credentials.username}:${credentials.password}`).toString('base64');
+      authMethod = 'basic_auth';
+    }
+    
+    // Try to get the WP nonce (helpful but not required for Application Passwords)
     const nonceResponse = await fetch(`${siteUrl}/wp-json`, {
       method: 'GET',
       headers: {
@@ -103,28 +121,38 @@ async function authenticateWithWordPress(credentials: WpCredentials): Promise<{
     });
 
     if (!nonceResponse.ok) {
-      console.log(`Failed to get nonce, status: ${nonceResponse.status}. Will try with basic auth only.`);
-      return { basicAuth };
+      console.log(`Failed to get nonce, status: ${nonceResponse.status}. Will try with authentication only.`);
+      return { basicAuth, authMethod };
     }
     
     // Try to extract nonce from response
-    const responseData = await nonceResponse.json();
+    const responseData = await nonceResponse.json() as Record<string, any>;
     const nonce = responseData?._links?.['https://api.w.org/']?.['wp:rest-nonce']?.[0]?.href;
     
-    return { basicAuth, nonce };
+    return { basicAuth, nonce, authMethod };
   } catch (error) {
     console.error('Error authenticating with WordPress:', error);
-    // Return basic auth which should work in most cases
-    return { 
-      basicAuth: Buffer.from(`${credentials.username}:${credentials.password}`).toString('base64') 
-    };
+    
+    // Determine fallback auth method
+    let fallbackAuth: string;
+    let authMethod: 'application_password' | 'basic_auth';
+    
+    if (credentials.application_password && credentials.application_password.trim() !== '') {
+      fallbackAuth = Buffer.from(`${credentials.username}:${credentials.application_password}`).toString('base64');
+      authMethod = 'application_password';
+    } else {
+      fallbackAuth = Buffer.from(`${credentials.username}:${credentials.password || ''}`).toString('base64');
+      authMethod = 'basic_auth';
+    }
+    
+    return { basicAuth: fallbackAuth, authMethod };
   }
 }
 
 // Upload image to WordPress media library
 async function uploadToWordPressMedia(
   siteUrl: string,
-  authData: { cookie?: string; nonce?: string; basicAuth: string },
+  authData: { cookie?: string; nonce?: string; basicAuth: string; authMethod: 'application_password' | 'basic_auth' },
   imageUrl: string,
   fileName: string
 ): Promise<number | undefined> {
@@ -167,13 +195,17 @@ async function uploadToWordPressMedia(
       'Accept': 'application/json',
     };
     
-    if (authData.nonce) {
+    // Application Passwords work better without nonce
+    if (authData.authMethod === 'basic_auth' && authData.nonce) {
       headers['X-WP-Nonce'] = authData.nonce;
     }
     
     if (authData.cookie) {
       headers['Cookie'] = authData.cookie;
     }
+    
+    // Log authentication method being used
+    console.log(`Using ${authData.authMethod} authentication method for WordPress upload`);
     
     // Upload the image to WordPress media library
     const uploadResponse = await fetch(`${siteUrl}/wp-json/wp/v2/media`, {
@@ -189,10 +221,14 @@ async function uploadToWordPressMedia(
       throw new Error(`Failed to upload image to WordPress: ${uploadResponse.status}`);
     }
     
-    const mediaData = await uploadResponse.json();
-    console.log(`WordPress media upload successful. Media ID: ${mediaData.id}`);
-    
-    return mediaData.id;
+    const mediaData = await uploadResponse.json() as any;
+    if (mediaData && mediaData.id) {
+      console.log(`WordPress media upload successful. Media ID: ${mediaData.id}`);
+      return mediaData.id;
+    } else {
+      console.error('WordPress returned success but no media ID was found in the response');
+      return undefined;
+    }
   } catch (error) {
     console.error('Error uploading to WordPress media library:', error);
     throw error;

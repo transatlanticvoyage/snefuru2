@@ -54,6 +54,7 @@ export const wpCredentialsSchema = z.object({
   url: z.string().url().optional().or(z.literal('')),
   username: z.string().min(1).optional().or(z.literal('')),
   password: z.string().min(1).optional().or(z.literal('')),
+  application_password: z.string().optional().or(z.literal('')),
   post_id: z.string().optional().or(z.literal('')),
   mapping_key: z.string().optional().or(z.literal('')),
 });
