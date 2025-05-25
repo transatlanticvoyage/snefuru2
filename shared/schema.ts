@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean, date, time, jsonb, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -23,6 +23,59 @@ export const reddit_urls1 = pgTable("reddit_urls1", {
   created_at: timestamp("created_at").defaultNow().notNull(),
   url1: text("url1").notNull(),
   note1: text("note1"),
+});
+
+// Calendar integration tables
+export const calendar_connections = pgTable("calendar_connections", {
+  id: serial("id").primaryKey(),
+  user_id: integer("user_id").notNull(),
+  calendar_source: varchar("calendar_source", { length: 50 }).notNull(), // 'google', 'outlook', 'apple', 'busycal'
+  access_token: text("access_token"),
+  refresh_token: text("refresh_token"),
+  token_expires_at: timestamp("token_expires_at"),
+  calendar_id: varchar("calendar_id", { length: 255 }),
+  calendar_name: varchar("calendar_name", { length: 255 }),
+  is_active: boolean("is_active").default(true),
+  last_sync: timestamp("last_sync"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+export const calendar_events = pgTable("calendar_events", {
+  id: serial("id").primaryKey(),
+  user_id: integer("user_id").notNull(),
+  connection_id: integer("connection_id").notNull(),
+  external_event_id: varchar("external_event_id", { length: 255 }).notNull(),
+  title: varchar("title", { length: 500 }).notNull(),
+  description: text("description"),
+  start_date: date("start_date").notNull(),
+  start_time: time("start_time"),
+  end_date: date("end_date").notNull(),
+  end_time: time("end_time"),
+  location: text("location"),
+  attendees: jsonb("attendees").default([]), // Array of email addresses
+  organizer: varchar("organizer", { length: 255 }),
+  calendar_source: varchar("calendar_source", { length: 50 }).notNull(),
+  event_type: varchar("event_type", { length: 50 }).default('other'), // 'meeting', 'appointment', 'reminder', 'task', 'other'
+  status: varchar("status", { length: 50 }).default('confirmed'), // 'confirmed', 'tentative', 'cancelled'
+  priority: varchar("priority", { length: 20 }).default('medium'), // 'high', 'medium', 'low'
+  is_all_day: boolean("is_all_day").default(false),
+  is_recurring: boolean("is_recurring").default(false),
+  recurrence_pattern: text("recurrence_pattern"),
+  reminder_minutes: integer("reminder_minutes").default(15),
+  timezone: varchar("timezone", { length: 100 }).default('UTC'),
+  color: varchar("color", { length: 20 }).default('#4285f4'),
+  is_starred: boolean("is_starred").default(false),
+  is_flagged: boolean("is_flagged").default(false),
+  is_important: boolean("is_important").default(false),
+  notes: text("notes"),
+  meeting_url: text("meeting_url"),
+  attachments: jsonb("attachments").default([]), // Array of attachment URLs/names
+  external_created_at: timestamp("external_created_at"),
+  external_updated_at: timestamp("external_updated_at"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+  last_synced: timestamp("last_synced").defaultNow(),
 });
 
 // Users table - enhanced for full user account system
@@ -63,15 +116,32 @@ export const insertUserSchema = createInsertSchema(users).omit({
   is_active: true,
 });
 
+export const insertCalendarConnectionSchema = createInsertSchema(calendar_connections).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
+export const insertCalendarEventSchema = createInsertSchema(calendar_events).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+  last_synced: true,
+});
+
 // Export types
 export type InsertImage = z.infer<typeof insertImageSchema>;
 export type InsertImageBatch = z.infer<typeof insertImageBatchSchema>;
 export type InsertRedditUrl = z.infer<typeof insertRedditUrlSchema>;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertCalendarConnection = z.infer<typeof insertCalendarConnectionSchema>;
+export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
 
 export type Image = typeof images.$inferSelect;
 export type ImageBatch = typeof image_batches.$inferSelect;
 export type User = typeof users.$inferSelect;
+export type CalendarConnection = typeof calendar_connections.$inferSelect;
+export type CalendarEvent = typeof calendar_events.$inferSelect;
 
 // Additional schema types for the application
 export type WpCredentials = {
