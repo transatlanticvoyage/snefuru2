@@ -13,29 +13,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { 
-  Search, 
-  Star, 
-  Flag, 
-  Edit3, 
-  Trash2, 
-  Calendar as CalendarIcon,
-  Clock,
-  MapPin,
-  Users,
-  ArrowUpDown,
-  Filter
-} from 'lucide-react';
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Star, Flag, ChevronLeft, ChevronRight, Search, Filter, Calendar, Clock, MapPin, Users, ExternalLink, Sparkles } from 'lucide-react';
 
-// Define interface for calendar event data
 interface CalendarEvent {
   id: string;
   title: string;
@@ -67,242 +54,71 @@ interface CalendarEvent {
   attachments: string[];
 }
 
-// Dummy calendar data
-const dummyCalendarData: CalendarEvent[] = [
-  {
-    id: 'cal_001',
-    title: 'Project Planning Meeting',
-    description: 'Quarterly planning session for Q2 2025',
-    start_date: '2025-05-26',
-    start_time: '09:00',
-    end_date: '2025-05-26',
-    end_time: '10:30',
-    location: 'Conference Room A',
-    attendees: ['john@company.com', 'sarah@company.com', 'mike@company.com'],
-    organizer: 'project.manager@company.com',
-    calendar_source: 'google',
-    event_type: 'meeting',
-    status: 'confirmed',
-    priority: 'high',
-    is_all_day: false,
-    is_recurring: false,
-    reminder_minutes: 15,
-    created_at: '2025-05-20T14:30:00Z',
-    updated_at: '2025-05-22T09:15:00Z',
-    timezone: 'America/New_York',
-    color: '#4285f4',
-    is_starred: true,
-    is_flagged: false,
-    is_important: true,
-    notes: 'Bring laptop and quarterly reports',
-    meeting_url: 'https://meet.google.com/abc-defg-hij',
-    attachments: ['Q2_Planning_Agenda.pdf']
-  },
-  {
-    id: 'cal_002',
-    title: 'Client Call - Acme Corp',
-    description: 'Monthly check-in with Acme Corporation',
-    start_date: '2025-05-26',
-    start_time: '14:00',
-    end_date: '2025-05-26',
-    end_time: '15:00',
-    location: 'Virtual',
-    attendees: ['client@acme.com', 'account.manager@company.com'],
-    organizer: 'sales@company.com',
-    calendar_source: 'outlook',
-    event_type: 'meeting',
-    status: 'confirmed',
-    priority: 'medium',
-    is_all_day: false,
-    is_recurring: true,
-    recurrence_pattern: 'Monthly on the 26th',
-    reminder_minutes: 30,
-    created_at: '2025-05-15T10:00:00Z',
-    updated_at: '2025-05-24T16:20:00Z',
-    timezone: 'America/New_York',
-    color: '#34a853',
-    is_starred: false,
-    is_flagged: true,
-    is_important: false,
-    notes: 'Review monthly metrics and discuss next steps',
-    meeting_url: 'https://teams.microsoft.com/xyz123',
-    attachments: ['Monthly_Report_April.xlsx']
-  },
-  {
-    id: 'cal_003',
-    title: 'Doctor Appointment',
-    description: 'Annual checkup with Dr. Smith',
-    start_date: '2025-05-27',
-    start_time: '11:00',
-    end_date: '2025-05-27',
-    end_time: '12:00',
-    location: 'Medical Center, 123 Health St',
-    attendees: [],
-    organizer: 'personal@email.com',
-    calendar_source: 'apple',
-    event_type: 'appointment',
-    status: 'confirmed',
-    priority: 'medium',
-    is_all_day: false,
-    is_recurring: false,
-    reminder_minutes: 60,
-    created_at: '2025-04-15T09:00:00Z',
-    updated_at: '2025-04-15T09:00:00Z',
-    timezone: 'America/New_York',
-    color: '#ea4335',
-    is_starred: false,
-    is_flagged: false,
-    is_important: true,
-    notes: 'Bring insurance card and medication list',
-    attachments: []
-  },
-  {
-    id: 'cal_004',
-    title: 'Team Standup',
-    description: 'Daily development team standup',
-    start_date: '2025-05-26',
-    start_time: '09:30',
-    end_date: '2025-05-26',
-    end_time: '10:00',
-    location: 'Dev Room',
-    attendees: ['dev1@company.com', 'dev2@company.com', 'dev3@company.com'],
-    organizer: 'scrum.master@company.com',
-    calendar_source: 'google',
-    event_type: 'meeting',
-    status: 'confirmed',
-    priority: 'low',
-    is_all_day: false,
-    is_recurring: true,
-    recurrence_pattern: 'Daily (weekdays)',
-    reminder_minutes: 5,
-    created_at: '2025-01-01T08:00:00Z',
-    updated_at: '2025-01-01T08:00:00Z',
-    timezone: 'America/New_York',
-    color: '#fbbc04',
-    is_starred: false,
-    is_flagged: false,
-    is_important: false,
-    notes: 'Share updates on current tasks',
-    meeting_url: 'https://zoom.us/j/123456789',
-    attachments: []
-  },
-  {
-    id: 'cal_005',
-    title: 'Marketing Campaign Review',
-    description: 'Review Q2 marketing campaign performance',
-    start_date: '2025-05-28',
-    start_time: '15:30',
-    end_date: '2025-05-28',
-    end_time: '17:00',
-    location: 'Marketing Office',
-    attendees: ['marketing@company.com', 'creative@company.com', 'analytics@company.com'],
-    organizer: 'marketing.director@company.com',
-    calendar_source: 'busycal',
-    event_type: 'meeting',
-    status: 'tentative',
-    priority: 'medium',
-    is_all_day: false,
-    is_recurring: false,
-    reminder_minutes: 30,
-    created_at: '2025-05-20T11:00:00Z',
-    updated_at: '2025-05-25T14:30:00Z',
-    timezone: 'America/New_York',
-    color: '#9c27b0',
-    is_starred: true,
-    is_flagged: true,
-    is_important: true,
-    notes: 'Prepare campaign analytics and ROI data',
-    attachments: ['Campaign_Analytics_Q2.pdf', 'ROI_Report.xlsx']
-  },
-  {
-    id: 'cal_006',
-    title: 'Lunch with Sarah',
-    description: 'Catch up lunch meeting',
-    start_date: '2025-05-29',
-    start_time: '12:30',
-    end_date: '2025-05-29',
-    end_time: '13:30',
-    location: 'Cafe Downtown, 456 Main St',
-    attendees: ['sarah.friend@email.com'],
-    organizer: 'personal@email.com',
-    calendar_source: 'google',
-    event_type: 'other',
-    status: 'confirmed',
-    priority: 'low',
-    is_all_day: false,
-    is_recurring: false,
-    reminder_minutes: 30,
-    created_at: '2025-05-23T16:00:00Z',
-    updated_at: '2025-05-23T16:00:00Z',
-    timezone: 'America/New_York',
-    color: '#4285f4',
-    is_starred: false,
-    is_flagged: false,
-    is_important: false,
-    notes: 'Discuss weekend plans',
-    attachments: []
-  },
-  {
-    id: 'cal_007',
-    title: 'Board Meeting',
-    description: 'Monthly board of directors meeting',
-    start_date: '2025-05-30',
-    start_time: '10:00',
-    end_date: '2025-05-30',
-    end_time: '12:00',
-    location: 'Boardroom, 15th Floor',
-    attendees: ['board1@company.com', 'board2@company.com', 'ceo@company.com'],
-    organizer: 'executive.assistant@company.com',
-    calendar_source: 'outlook',
-    event_type: 'meeting',
-    status: 'confirmed',
-    priority: 'high',
-    is_all_day: false,
-    is_recurring: true,
-    recurrence_pattern: 'Monthly on the last Friday',
-    reminder_minutes: 60,
-    created_at: '2025-01-15T10:00:00Z',
-    updated_at: '2025-05-25T09:00:00Z',
-    timezone: 'America/New_York',
-    color: '#ea4335',
-    is_starred: true,
-    is_flagged: true,
-    is_important: true,
-    notes: 'Board package to be sent 48 hours prior',
-    attachments: ['Board_Package_May.pdf', 'Financial_Report_Q1.pdf']
-  },
-  {
-    id: 'cal_008',
-    title: 'Gym Workout',
-    description: 'Evening workout session',
-    start_date: '2025-05-26',
-    start_time: '18:00',
-    end_date: '2025-05-26',
-    end_time: '19:30',
-    location: 'FitLife Gym, 789 Fitness Ave',
-    attendees: [],
-    organizer: 'personal@email.com',
-    calendar_source: 'apple',
-    event_type: 'other',
-    status: 'confirmed',
-    priority: 'medium',
-    is_all_day: false,
-    is_recurring: true,
-    recurrence_pattern: 'Monday, Wednesday, Friday',
-    reminder_minutes: 30,
-    created_at: '2025-01-01T12:00:00Z',
-    updated_at: '2025-01-01T12:00:00Z',
-    timezone: 'America/New_York',
-    color: '#34a853',
-    is_starred: false,
-    is_flagged: false,
-    is_important: false,
-    notes: 'Leg day - bring protein shake',
-    attachments: []
-  }
-];
-
 const CalendarPage: React.FC = () => {
+  const queryClient = useQueryClient();
+  
+  // Fetch real calendar events from database
+  const { data: calendarEvents = [], isLoading, error } = useQuery({
+    queryKey: ['/api/calendar/events'],
+    retry: false,
+  });
+
+  // Fetch calendar connections
+  const { data: connections = [] } = useQuery({
+    queryKey: ['/api/calendar/connections'],
+    retry: false,
+  });
+
+  // Sync calendar mutation
+  const syncMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/calendar/sync', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to sync calendar');
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: data.message || "Calendar synced successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/calendar/connections'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to sync calendar",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update event mutation (for star, flag, important)
+  const updateEventMutation = useMutation({
+    mutationFn: async ({ eventId, updates }: { eventId: number; updates: any }) => {
+      const response = await fetch(`/api/calendar/events/${eventId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update event');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
+    },
+  });
+
   // State management
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -313,55 +129,46 @@ const CalendarPage: React.FC = () => {
   const [sortField, setSortField] = useState<string>('start_date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
-  const [calendarData, setCalendarData] = useState(dummyCalendarData);
   const rowsPerPage = 10;
 
-  // Filter and sort data
-  const filteredAndSortedData = calendarData
-    .filter(event => {
-      const matchesSearch = 
-        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.organizer.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesSource = sourceFilter === 'all' || event.calendar_source === sourceFilter;
-      const matchesType = typeFilter === 'all' || event.event_type === typeFilter;
-      const matchesPriority = priorityFilter === 'all' || event.priority === priorityFilter;
-      const matchesStatus = statusFilter === 'all' || event.status === statusFilter;
-      
-      return matchesSearch && matchesSource && matchesType && matchesPriority && matchesStatus;
-    })
-    .sort((a, b) => {
-      let aValue = a[sortField as keyof CalendarEvent];
-      let bValue = b[sortField as keyof CalendarEvent];
-      
-      if (typeof aValue === 'string') aValue = aValue.toLowerCase();
-      if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-      
-      if (sortDirection === 'asc') {
-        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-      } else {
-        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-      }
-    });
+  // Use real calendar data from API
+  const calendarData = calendarEvents || [];
+
+  // Filter and search functionality
+  const filteredData = calendarData.filter((event: any) => {
+    const matchesSearch = event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         event.location?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesSource = sourceFilter === 'all' || event.calendar_source === sourceFilter;
+    const matchesType = typeFilter === 'all' || event.event_type === typeFilter;
+    const matchesPriority = priorityFilter === 'all' || event.priority === priorityFilter;
+    const matchesStatus = statusFilter === 'all' || event.status === statusFilter;
+    
+    return matchesSearch && matchesSource && matchesType && matchesPriority && matchesStatus;
+  });
+
+  // Sort functionality
+  const sortedData = [...filteredData].sort((a: any, b: any) => {
+    let aValue = a[sortField];
+    let bValue = b[sortField];
+    
+    if (sortField === 'start_date' || sortField === 'end_date') {
+      aValue = new Date(aValue + ' ' + (sortField === 'start_date' ? a.start_time : a.end_time));
+      bValue = new Date(bValue + ' ' + (sortField === 'start_date' ? b.start_time : b.end_time));
+    }
+    
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   // Pagination
-  const totalPages = Math.ceil(filteredAndSortedData.length / rowsPerPage);
-  const indexOfLastRow = currentPage * rowsPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = filteredAndSortedData.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.ceil(sortedData.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const paginatedData = sortedData.slice(startIndex, startIndex + rowsPerPage);
 
-  // Handlers
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
+  // Handle sorting
   const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -371,90 +178,186 @@ const CalendarPage: React.FC = () => {
     }
   };
 
-  const toggleEventSelection = (eventId: string) => {
-    if (selectedEvents.includes(eventId)) {
-      setSelectedEvents(selectedEvents.filter(id => id !== eventId));
-    } else {
-      setSelectedEvents([...selectedEvents, eventId]);
+  // Handle event actions
+  const toggleStar = (eventId: string) => {
+    const event = calendarData.find((e: any) => e.id === eventId);
+    if (event) {
+      updateEventMutation.mutate({
+        eventId: parseInt(eventId),
+        updates: { is_starred: !event.is_starred }
+      });
     }
   };
 
-  const toggleStar = (eventId: string) => {
-    setCalendarData(prev => prev.map(event => 
-      event.id === eventId ? { ...event, is_starred: !event.is_starred } : event
-    ));
-  };
-
   const toggleFlag = (eventId: string) => {
-    setCalendarData(prev => prev.map(event => 
-      event.id === eventId ? { ...event, is_flagged: !event.is_flagged } : event
-    ));
+    const event = calendarData.find((e: any) => e.id === eventId);
+    if (event) {
+      updateEventMutation.mutate({
+        eventId: parseInt(eventId),
+        updates: { is_flagged: !event.is_flagged }
+      });
+    }
   };
 
   const toggleImportant = (eventId: string) => {
-    setCalendarData(prev => prev.map(event => 
-      event.id === eventId ? { ...event, is_important: !event.is_important } : event
-    ));
+    const event = calendarData.find((e: any) => e.id === eventId);
+    if (event) {
+      updateEventMutation.mutate({
+        eventId: parseInt(eventId),
+        updates: { is_important: !event.is_important }
+      });
+    }
   };
 
+  // Handle Google Calendar connection
+  const connectGoogleCalendar = () => {
+    window.location.href = '/api/calendar/auth/google';
+  };
+
+  // Format date and time
   const formatDateTime = (date: string, time: string) => {
-    return `${date} ${time}`;
+    const dateObj = new Date(`${date}T${time}`);
+    return dateObj.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const formatDuration = (startDate: string, startTime: string, endDate: string, endTime: string) => {
+    const start = new Date(`${startDate}T${startTime}`);
+    const end = new Date(`${endDate}T${endTime}`);
+    const durationMs = end.getTime() - start.getTime();
+    const hours = Math.floor(durationMs / (1000 * 60 * 60));
+    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+  };
+
+  const getSourceBadgeColor = (source: string) => {
+    switch (source) {
+      case 'google': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      case 'outlook': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
+      case 'apple': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+      default: return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+    }
+  };
+
+  const getTypeBadgeColor = (type: string) => {
+    switch (type) {
+      case 'meeting': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+      case 'appointment': return 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300';
+      case 'reminder': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'task': return 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300';
+      default: return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300';
+    }
+  };
+
+  const getPriorityBadgeColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'low': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+    }
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'tentative': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'cancelled': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+    }
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <Header pageTitle="Calendar Manager" />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Header pageTitle="Calendar Management" />
       
-      <div className="container mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          {/* Header section */}
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-            <h1 className="text-2xl font-bold text-gray-800 flex items-center">
-              <CalendarIcon className="mr-2" size={24} />
-              Calendar Events
-            </h1>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <CalendarIcon className="mr-2" size={16} />
-                Sync Calendars
-              </Button>
-              <Button variant="outline">
-                <Edit3 className="mr-2" size={16} />
-                New Event
-              </Button>
+      <div className="container mx-auto px-4 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Calendar Management</h1>
+              <p className="text-gray-600 dark:text-gray-400">Sync and manage your calendar events from multiple sources</p>
+            </div>
+            <div className="flex gap-3">
+              {connections.length === 0 ? (
+                <Button 
+                  onClick={connectGoogleCalendar}
+                  className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
+                >
+                  <Calendar className="h-4 w-4" />
+                  Connect Google Calendar
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => syncMutation.mutate()}
+                  disabled={syncMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                >
+                  <Calendar className="h-4 w-4" />
+                  {syncMutation.isPending ? 'Syncing...' : 'Sync Calendars'}
+                </Button>
+              )}
             </div>
           </div>
           
-          {/* Search and filters */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
-            <div className="relative lg:col-span-2">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-              <Input
-                type="text"
-                placeholder="Search events, descriptions, locations..."
-                className="pl-10 pr-4 py-2 w-full"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
+          {/* Connection Status */}
+          {connections.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-6">
+              <h3 className="text-lg font-semibold mb-3">Connected Calendars</h3>
+              <div className="flex flex-wrap gap-2">
+                {connections.map((connection: any) => (
+                  <Badge key={connection.id} className="bg-green-100 text-green-800">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    {connection.calendar_name || 'Google Calendar'}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Filters and Search */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
+            <div className="lg:col-span-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search events..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
             </div>
             
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Calendar Source" />
+                <SelectValue placeholder="Source" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Sources</SelectItem>
-                <SelectItem value="google">Google Calendar</SelectItem>
+                <SelectItem value="google">Google</SelectItem>
                 <SelectItem value="outlook">Outlook</SelectItem>
-                <SelectItem value="apple">Apple Calendar</SelectItem>
-                <SelectItem value="busycal">BusyCal</SelectItem>
+                <SelectItem value="apple">Apple</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Event Type" />
+                <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
@@ -465,7 +368,7 @@ const CalendarPage: React.FC = () => {
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select value={priorityFilter} onValueChange={setPriorityFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Priority" />
@@ -477,316 +380,234 @@ const CalendarPage: React.FC = () => {
                 <SelectItem value="low">Low</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="confirmed">Confirmed</SelectItem>
                 <SelectItem value="tentative">Tentative</SelectItem>
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
-          {/* Bulk actions */}
-          {selectedEvents.length > 0 && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-blue-800">
-                  {selectedEvents.length} event{selectedEvents.length !== 1 ? 's' : ''} selected
-                </span>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline">
-                    <Star className="mr-1" size={14} />
-                    Star
-                  </Button>
-                  <Button size="sm" variant="outline">
-                    <Flag className="mr-1" size={14} />
-                    Flag
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-green-600">
-                    Mark Important
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-red-600">
-                    <Trash2 className="mr-1" size={14} />
-                    Delete
-                  </Button>
-                </div>
-              </div>
+        </div>
+
+        {/* Events Table */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+          {isLoading ? (
+            <div className="p-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600 dark:text-gray-400">Loading calendar events...</p>
             </div>
-          )}
-          
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left">
-                    <Checkbox 
-                      checked={selectedEvents.length === currentRows.length && currentRows.length > 0}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedEvents(currentRows.map(event => event.id));
-                        } else {
-                          setSelectedEvents([]);
-                        }
-                      }}
-                    />
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  <th 
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('title')}
-                  >
-                    <div className="flex items-center">
-                      Title <ArrowUpDown className="ml-1" size={14} />
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('start_date')}
-                  >
-                    <div className="flex items-center">
-                      Start Date/Time <ArrowUpDown className="ml-1" size={14} />
-                    </div>
-                  </th>
-                  <th 
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('end_date')}
-                  >
-                    <div className="flex items-center">
-                      End Date/Time <ArrowUpDown className="ml-1" size={14} />
-                    </div>
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizer</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attendees</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentRows.length > 0 ? (
-                  currentRows.map((event) => (
-                    <tr key={event.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3">
+          ) : error ? (
+            <div className="p-8 text-center">
+              <p className="text-red-600 dark:text-red-400">Error loading calendar events. Please try again.</p>
+            </div>
+          ) : calendarData.length === 0 ? (
+            <div className="p-8 text-center">
+              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No calendar events found</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                {connections.length === 0 
+                  ? "Connect your Google Calendar to see your events here"
+                  : "No events found. Try syncing your calendar or adjusting your filters."
+                }
+              </p>
+            </div>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox 
+                        checked={selectedEvents.length === paginatedData.length && paginatedData.length > 0}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedEvents(paginatedData.map((event: any) => event.id));
+                          } else {
+                            setSelectedEvents([]);
+                          }
+                        }}
+                      />
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                      onClick={() => handleSort('title')}
+                    >
+                      Event Title
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                      onClick={() => handleSort('start_date')}
+                    >
+                      Date & Time
+                    </TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Source</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Priority</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedData.map((event: any) => (
+                    <TableRow key={event.id}>
+                      <TableCell>
                         <Checkbox 
                           checked={selectedEvents.includes(event.id)}
-                          onCheckedChange={() => toggleEventSelection(event.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedEvents([...selectedEvents, event.id]);
+                            } else {
+                              setSelectedEvents(selectedEvents.filter(id => id !== event.id));
+                            }
+                          }}
                         />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex space-x-1">
-                          <button
-                            onClick={() => toggleStar(event.id)}
-                            className={`p-1 rounded ${event.is_starred ? 'text-yellow-500' : 'text-gray-400'} hover:bg-gray-100`}
-                          >
-                            <Star size={16} fill={event.is_starred ? 'currentColor' : 'none'} />
-                          </button>
-                          <button
-                            onClick={() => toggleFlag(event.id)}
-                            className={`p-1 rounded ${event.is_flagged ? 'text-red-500' : 'text-gray-400'} hover:bg-gray-100`}
-                          >
-                            <Flag size={16} fill={event.is_flagged ? 'currentColor' : 'none'} />
-                          </button>
-                          <button
-                            onClick={() => toggleImportant(event.id)}
-                            className={`p-1 rounded ${event.is_important ? 'text-green-500' : 'text-gray-400'} hover:bg-gray-100`}
-                          >
-                            <div className={`w-4 h-4 rounded-full ${event.is_important ? 'bg-green-500' : 'bg-gray-300'}`} />
-                          </button>
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="font-medium text-gray-900 dark:text-white">
+                            {event.title || 'Untitled Event'}
+                          </div>
+                          {event.description && (
+                            <div className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">
+                              {event.description}
+                            </div>
+                          )}
+                          {event.attendees && event.attendees.length > 0 && (
+                            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                              <Users className="h-3 w-3" />
+                              {event.attendees.length} attendee{event.attendees.length !== 1 ? 's' : ''}
+                            </div>
+                          )}
                         </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm font-medium text-gray-900">{event.title}</div>
-                        <div className="text-sm text-gray-500 truncate max-w-xs">{event.description}</div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <Clock className="mr-1" size={14} />
-                          {formatDateTime(event.start_date, event.start_time)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="text-sm font-medium">
+                            {formatDateTime(event.start_date, event.start_time)}
+                          </div>
+                          {event.is_all_day && (
+                            <Badge variant="outline" className="text-xs">All Day</Badge>
+                          )}
                         </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <Clock className="mr-1" size={14} />
-                          {formatDateTime(event.end_date, event.end_time)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1 text-sm">
+                          <Clock className="h-3 w-3 text-gray-400" />
+                          {formatDuration(event.start_date, event.start_time, event.end_date, event.end_time)}
                         </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <MapPin className="mr-1" size={14} />
-                          <span className="truncate max-w-xs">{event.location}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500 truncate max-w-xs">{event.organizer}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          event.calendar_source === 'google' ? 'bg-blue-100 text-blue-800' :
-                          event.calendar_source === 'outlook' ? 'bg-indigo-100 text-indigo-800' :
-                          event.calendar_source === 'apple' ? 'bg-gray-100 text-gray-800' :
-                          event.calendar_source === 'busycal' ? 'bg-purple-100 text-purple-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
+                      </TableCell>
+                      <TableCell>
+                        {event.location && (
+                          <div className="flex items-center gap-1 text-sm">
+                            <MapPin className="h-3 w-3 text-gray-400" />
+                            <span className="truncate max-w-32">{event.location}</span>
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getSourceBadgeColor(event.calendar_source)}>
                           {event.calendar_source}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          event.event_type === 'meeting' ? 'bg-blue-100 text-blue-800' :
-                          event.event_type === 'appointment' ? 'bg-green-100 text-green-800' :
-                          event.event_type === 'reminder' ? 'bg-yellow-100 text-yellow-800' :
-                          event.event_type === 'task' ? 'bg-purple-100 text-purple-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getTypeBadgeColor(event.event_type)}>
                           {event.event_type}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          event.priority === 'high' ? 'bg-red-100 text-red-800' :
-                          event.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getPriorityBadgeColor(event.priority)}>
                           {event.priority}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          event.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                          event.status === 'tentative' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusBadgeColor(event.status)}>
                           {event.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <Users className="mr-1" size={14} />
-                          {event.attendees.length}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleStar(event.id)}
+                            className={`h-8 w-8 p-0 ${event.is_starred ? 'text-yellow-500' : 'text-gray-400'}`}
+                          >
+                            <Star className="h-4 w-4" fill={event.is_starred ? 'currentColor' : 'none'} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleFlag(event.id)}
+                            className={`h-8 w-8 p-0 ${event.is_flagged ? 'text-red-500' : 'text-gray-400'}`}
+                          >
+                            <Flag className="h-4 w-4" fill={event.is_flagged ? 'currentColor' : 'none'} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleImportant(event.id)}
+                            className={`h-8 w-8 p-0 ${event.is_important ? 'text-orange-500' : 'text-gray-400'}`}
+                          >
+                            <Sparkles className="h-4 w-4" fill={event.is_important ? 'currentColor' : 'none'} />
+                          </Button>
+                          {event.meeting_url && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(event.meeting_url, '_blank')}
+                              className="h-8 w-8 p-0 text-blue-500"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={12} className="px-4 py-8 text-center text-gray-500">
-                      No calendar events found matching your criteria.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-            <div className="flex-1 flex justify-between sm:hidden">
-              <Button 
-                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                variant="outline"
-              >
-                Previous
-              </Button>
-              <Button 
-                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                variant="outline"
-              >
-                Next
-              </Button>
-            </div>
-            
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{indexOfFirstRow + 1}</span> to{' '}
-                  <span className="font-medium">
-                    {Math.min(indexOfLastRow, filteredAndSortedData.length)}
-                  </span>{' '}
-                  of <span className="font-medium">{filteredAndSortedData.length}</span> results
-                </p>
-              </div>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                  
-                  {/* First page */}
-                  {currentPage > 2 && (
-                    <PaginationItem>
-                      <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
-                    </PaginationItem>
-                  )}
-                  
-                  {/* Ellipsis if not showing first page */}
-                  {currentPage > 3 && (
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  )}
-                  
-                  {/* Previous page if not on first page */}
-                  {currentPage > 1 && (
-                    <PaginationItem>
-                      <PaginationLink onClick={() => handlePageChange(currentPage - 1)}>
-                        {currentPage - 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )}
-                  
-                  {/* Current page */}
-                  <PaginationItem>
-                    <PaginationLink isActive onClick={() => handlePageChange(currentPage)}>
-                      {currentPage}
-                    </PaginationLink>
-                  </PaginationItem>
-                  
-                  {/* Next page if not on last page */}
-                  {currentPage < totalPages && (
-                    <PaginationItem>
-                      <PaginationLink onClick={() => handlePageChange(currentPage + 1)}>
-                        {currentPage + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )}
-                  
-                  {/* Ellipsis if not showing last page */}
-                  {currentPage < totalPages - 2 && (
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                  )}
-                  
-                  {/* Last page */}
-                  {currentPage < totalPages - 1 && (
-                    <PaginationItem>
-                      <PaginationLink onClick={() => handlePageChange(totalPages)}>
-                        {totalPages}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )}
-                  
-                  <PaginationItem>
-                    <PaginationNext 
-                      onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                    Showing {startIndex + 1} to {Math.min(startIndex + rowsPerPage, sortedData.length)} of {sortedData.length} events
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
