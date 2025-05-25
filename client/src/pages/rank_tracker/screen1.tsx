@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import MainNavigationMenu from '@/components/NavigationMenu';
 import UserLoginStatus from '@/components/UserLoginStatus';
+import { Logo } from '@/components/ui/logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -183,6 +184,7 @@ export default function RankTrackerScreen1() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-semibold text-neutral-600 flex items-center">
+              <HeaderLogo />
               <span className="mr-2">Snefuru</span>
               <span className="text-base text-neutral-400 font-normal">Rank Tracker</span>
             </h1>
