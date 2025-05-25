@@ -1,10 +1,12 @@
 import { 
   images, 
   image_batches, 
+  reddit_urls1,
   type Image, 
   type ImageBatch, 
   type InsertImage, 
   type InsertImageBatch,
+  type InsertRedditUrl,
   users, 
   type User, 
   type InsertUser 
@@ -29,6 +31,11 @@ export interface IStorage {
   createImageBatch(batch: InsertImageBatch): Promise<ImageBatch>;
   getImageBatch(id: number): Promise<ImageBatch | undefined>;
   getAllImageBatches(): Promise<ImageBatch[]>;
+
+  // Reddit URL methods
+  createRedditUrl(url: InsertRedditUrl): Promise<any>;
+  getRedditUrl(id: number): Promise<any | undefined>;
+  getAllRedditUrls(): Promise<any[]>;
 }
 
 // Database implementation of storage
@@ -92,6 +99,24 @@ export class DatabaseStorage implements IStorage {
   
   async getAllImageBatches(): Promise<ImageBatch[]> {
     return await db.select().from(image_batches);
+  }
+
+  // Reddit URL methods
+  async createRedditUrl(insertUrl: InsertRedditUrl): Promise<any> {
+    const [url] = await db
+      .insert(reddit_urls1)
+      .values(insertUrl)
+      .returning();
+    return url;
+  }
+
+  async getRedditUrl(id: number): Promise<any | undefined> {
+    const [url] = await db.select().from(reddit_urls1).where(eq(reddit_urls1.id, id));
+    return url || undefined;
+  }
+
+  async getAllRedditUrls(): Promise<any[]> {
+    return await db.select().from(reddit_urls1);
   }
 }
 

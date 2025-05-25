@@ -14,6 +14,20 @@ import { publishToWordPress } from "./services/wordpressService";
 import OpenAI from "openai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Test route for reddit_urls1 table
+  app.post("/api/test-reddit-url", async (req, res) => {
+    try {
+      const testUrl = await storage.createRedditUrl({
+        url1: "https://reddit.com/test",
+        note1: "Test URL"
+      });
+      return res.status(200).json({ message: "Test successful", data: testUrl });
+    } catch (error) {
+      console.error("Error testing reddit_urls1 table:", error);
+      return res.status(500).json({ message: "Error testing table", error: String(error) });
+    }
+  });
+
   // API route for generating images
   app.post("/api/generate", async (req, res) => {
     try {
