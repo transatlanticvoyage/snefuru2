@@ -2,16 +2,22 @@ import {
   images, 
   image_batches, 
   reddit_urls1,
+  calendar_connections,
+  calendar_events,
   type Image, 
   type ImageBatch, 
   type InsertImage, 
   type InsertImageBatch,
   type InsertRedditUrl,
+  type CalendarConnection,
+  type CalendarEvent,
+  type InsertCalendarConnection,
+  type InsertCalendarEvent,
   users, 
   type User, 
   type InsertUser 
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { db } from "./db";
 
 // Define storage interface
