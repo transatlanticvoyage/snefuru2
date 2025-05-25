@@ -1,100 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import React from "react";
 import ProgressIndicator, { ProgressStage } from "./ProgressIndicator";
 
 interface ImageGenerationProps {
   onGenerate: () => void;
   isGenerating: boolean;
+  progress?: number;
+  statusStage?: ProgressStage;
+  errorMessage?: string | null;
 }
 
-const ImageGeneration = ({ onGenerate, isGenerating }: ImageGenerationProps) => {
-  const [progress, setProgress] = useState(0);
-  const [statusStage, setStatusStage] = useState<ProgressStage>('idle');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const progressIntervalRef = useRef<number | null>(null);
-  
-  // Handle errors from generation process
-  useEffect(() => {
-    if (!isGenerating && progress > 0) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const errorParam = urlParams.get('error');
-      if (errorParam) {
-        setErrorMessage(decodeURIComponent(errorParam));
-        // Remove the parameter after reading it
-        urlParams.delete('error');
-        const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
-        window.history.replaceState({}, '', newUrl);
-      }
-    }
-  }, [isGenerating, progress]);
-
-  useEffect(() => {
-    if (isGenerating) {
-      // Reset error state when starting a new generation
-      setErrorMessage(null);
-      
-      // Start simulated progress bar with distinct phases
-      let currentProgress = 0;
-      setStatusStage('connecting');
-      
-      progressIntervalRef.current = window.setInterval(() => {
-        // Update progress and status message based on current progress
-        if (currentProgress < 15) {
-          // Connecting to OpenAI phase
-          setStatusStage('connecting');
-          currentProgress += 2;
-        } 
-        else if (currentProgress < 50) {
-          // Generating images phase
-          setStatusStage('generating');
-          currentProgress += 3;
-        }
-        else if (currentProgress < 75) {
-          // Saving to Dropbox phase
-          setStatusStage('saving');
-          currentProgress += 2;
-        }
-        else if (currentProgress < 90) {
-          // Publishing to WordPress phase
-          setStatusStage('publishing');
-          currentProgress += 1;
-        }
-        
-        setProgress(Math.min(90, currentProgress));
-      }, 200);
-    } else {
-      // When isGenerating becomes false, either generation is complete or errored
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-      }
-      
-      // If we were previously generating, set to 100% complete
-      if (progress > 0) {
-        // If we had an error, don't show completed
-        if (!errorMessage) {
-          setProgress(100);
-          setStatusStage('completed');
-        } else {
-          setStatusStage('failed');
-        }
-        
-        // Reset progress after a delay to allow the user to see the completed progress
-        const resetTimeout = setTimeout(() => {
-          setProgress(0);
-          setStatusStage('idle');
-        }, 3000);
-        
-        return () => clearTimeout(resetTimeout);
-      }
-    }
-    
-    // Cleanup interval on unmount
-    return () => {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
-    };
-  }, [isGenerating, progress, errorMessage]);
+const ImageGeneration = ({ 
+  onGenerate, 
+  isGenerating,
+  progress = 0,
+  statusStage = 'idle',
+  errorMessage = null
+}: ImageGenerationProps) => {
 
   return (
     <section className="bg-white rounded-lg shadow-md p-6">

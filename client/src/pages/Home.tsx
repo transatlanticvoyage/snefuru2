@@ -32,13 +32,69 @@ export default function Home() {
 
   const { mutate: generateImages, isPending, error: generationError } = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/generate", {
-        spreadsheetData,
-        aiModel: selectedAiModel,
-        storageService: selectedStorage,
-        wpCredentials,
-      });
-      return response.json();
+      // Reset and start progress indicator
+      setGenerationProgress(0);
+      setProgressStage('connecting');
+      setProgressError(null);
+      
+      // Start a progress simulation for visual feedback
+      let currentProgress = 0;
+      const progressInterval = setInterval(() => {
+        if (currentProgress < 15) {
+          // Connecting to OpenAI phase
+          setProgressStage('connecting');
+          currentProgress += 2;
+        } 
+        else if (currentProgress < 50) {
+          // Generating images phase
+          setProgressStage('generating');
+          currentProgress += 3;
+        }
+        else if (currentProgress < 75) {
+          // Saving to cloud storage phase
+          setProgressStage('saving');
+          currentProgress += 2;
+        }
+        else if (currentProgress < 90) {
+          // Publishing to WordPress phase
+          setProgressStage('publishing');
+          currentProgress += 1;
+        }
+        
+        setGenerationProgress(Math.min(90, currentProgress));
+      }, 200);
+      
+      try {
+        const response = await apiRequest("POST", "/api/generate", {
+          spreadsheetData,
+          aiModel: selectedAiModel,
+          storageService: selectedStorage,
+          wpCredentials,
+        });
+        
+        // Success - clear interval and set to 100%
+        clearInterval(progressInterval);
+        setGenerationProgress(100);
+        setProgressStage('completed');
+        
+        // Reset progress after delay
+        setTimeout(() => {
+          setGenerationProgress(0);
+          setProgressStage('idle');
+        }, 3000);
+        
+        return response.json();
+      } catch (error) {
+        // Error - clear interval and show error
+        clearInterval(progressInterval);
+        setProgressStage('failed');
+        if (error instanceof Error) {
+          setProgressError(error.message);
+        } else {
+          setProgressError('Unknown error occurred');
+        }
+        throw error;
+      }
     },
     onSuccess: (data) => {
       toast({
@@ -53,6 +109,10 @@ export default function Home() {
         description: error.message || "Failed to generate images. Please check your API keys and try again.",
         variant: "destructive",
       });
+      
+      // Make sure progress indicator shows error state
+      setProgressStage('failed');
+      setProgressError(error.message || "Generation failed");
     },
   });
 
@@ -167,7 +227,10 @@ export default function Home() {
           />
           <ImageGeneration 
             onGenerate={handleGenerateImages} 
-            isGenerating={isPending} 
+            isGenerating={isPending}
+            progress={generationProgress}
+            statusStage={progressStage}
+            errorMessage={progressError}
           />
         </main>
 
