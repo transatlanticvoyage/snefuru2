@@ -6,6 +6,7 @@ import WordPressConnection from "@/components/WordPressConnection";
 import ImageGeneration from "@/components/ImageGeneration";
 import ProgressIndicator, { ProgressStage } from "@/components/ProgressIndicator";
 import UserLoginStatus from "@/components/UserLoginStatus";
+import MainNavigationMenu from "@/components/NavigationMenu";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
@@ -185,6 +186,9 @@ export default function Home() {
             </h1>
             
             <div className="flex items-center space-x-4">
+              {/* Navigation Menu */}
+              <MainNavigationMenu />
+              
               {/* User Login Status */}
               <UserLoginStatus />
               
