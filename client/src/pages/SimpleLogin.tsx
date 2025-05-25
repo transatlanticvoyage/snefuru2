@@ -9,16 +9,27 @@ export default function SimpleLoginPage() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!username || !password) {
+    if (!email || !password) {
       toast({
         title: 'Missing Information',
-        description: 'Please provide both username and password',
+        description: 'Please provide both email and password',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        title: 'Invalid Email',
+        description: 'Please enter a valid email address',
         variant: 'destructive'
       });
       return;
@@ -30,17 +41,20 @@ export default function SimpleLoginPage() {
       // In a real app, we would validate credentials against a database
       // For this simplified version, we'll just create a session
       
+      // Extract username from email for display purposes
+      const username = email.split('@')[0];
+      
       // Create a user object
       const user = {
         id: Date.now(),
         username,
-        email: `${username}@example.com`,
+        email,
         created_at: new Date().toISOString(),
         last_login: new Date().toISOString()
       };
       
       // Generate a simple token
-      const token = btoa(`${username}:${Date.now()}`);
+      const token = btoa(`${email}:${Date.now()}`);
       
       // Store user and token in localStorage
       localStorage.setItem('user', JSON.stringify(user));
@@ -59,7 +73,7 @@ export default function SimpleLoginPage() {
       console.error('Login error:', error);
       toast({
         title: 'Login Failed',
-        description: error instanceof Error ? error.message : 'Invalid username or password',
+        description: error instanceof Error ? error.message : 'Invalid email or password',
         variant: 'destructive',
       });
     } finally {
@@ -73,20 +87,21 @@ export default function SimpleLoginPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
           <CardDescription className="text-center">
-            Enter your username and password to access your account
+            Enter your email and password to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <label htmlFor="username" className="text-sm font-medium">
-                Username
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
               </label>
               <Input
-                id="username"
-                placeholder="johndoe"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
                 required
               />
