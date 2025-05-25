@@ -1,23 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import ProgressIndicator, { ProgressStage } from "./ProgressIndicator";
 
 interface ImageGenerationProps {
   onGenerate: () => void;
   isGenerating: boolean;
 }
 
-// Status stages for more detailed progress messages
-type StatusStage = 
-  | 'connecting'   // 0-15%
-  | 'generating'   // 15-50%
-  | 'saving'       // 50-75% 
-  | 'publishing'   // 75-90%
-  | 'completed'    // 100%
-  | 'failed'       // error state
-  | 'idle';        // not running
-
 const ImageGeneration = ({ onGenerate, isGenerating }: ImageGenerationProps) => {
   const [progress, setProgress] = useState(0);
-  const [statusStage, setStatusStage] = useState<StatusStage>('idle');
+  const [statusStage, setStatusStage] = useState<ProgressStage>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
   
@@ -110,26 +101,11 @@ const ImageGeneration = ({ onGenerate, isGenerating }: ImageGenerationProps) => 
       <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 5 - Generate Images</h2>
       <div className="space-y-4">
         {(isGenerating || progress > 0) && (
-          <div>
-            <div className="w-full bg-neutral-100 rounded-full h-6 overflow-hidden">
-              <div 
-                className="bg-primary-500 h-full transition-all duration-300 rounded-full" 
-                style={{ width: `${progress}%` }} 
-                role="progressbar" 
-                aria-valuenow={progress} 
-                aria-valuemin={0} 
-                aria-valuemax={100}
-              ></div>
-            </div>
-            <p className="text-sm mt-1 font-medium" style={{ color: statusStage === 'failed' ? '#e11d48' : '#6b7280' }}>
-              {statusStage === 'connecting' && 'Attempting to connect to OpenAI...'}
-              {statusStage === 'generating' && 'Generating images with OpenAI...'}
-              {statusStage === 'saving' && 'Saving images to Dropbox...'}
-              {statusStage === 'publishing' && 'Publishing images to WordPress...'}
-              {statusStage === 'completed' && 'Task completed successfully.'}
-              {statusStage === 'failed' && `Task failed${errorMessage ? `: ${errorMessage}` : '.'}`}
-            </p>
-          </div>
+          <ProgressIndicator 
+            progress={progress} 
+            statusStage={statusStage as ProgressStage} 
+            errorMessage={errorMessage} 
+          />
         )}
         
         <button 
