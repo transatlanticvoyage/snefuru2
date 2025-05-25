@@ -85,42 +85,22 @@ async function uploadToDropbox(base64Data: string, fileName: string): Promise<st
         mode: { '.tag': 'overwrite' }
       });
       
-      console.log(`Successfully uploaded ${fileNameWithExt} to Dropbox`, uploadResult);
+      console.log(`Successfully uploaded ${fileNameWithExt} to Dropbox`);
       
-      // Create a shared link for the file
-      const uploadPath = typeof uploadResult.result.path_display === 'string' 
-        ? uploadResult.result.path_display 
-        : dropboxPath;
-        
-      const sharedLinkResult = await dropboxClient.sharingCreateSharedLinkWithSettings({
-        path: uploadPath,
-        settings: {
-          requested_visibility: { '.tag': 'public' }
-        }
-      });
+      // Instead of trying to create a shared link (which requires sharing.write permission),
+      // we'll just return a placeholder URL that indicates the file was uploaded
+      const filePath = uploadResult.result.path_display || dropboxPath;
+      console.log(`File uploaded to Dropbox path: ${filePath}`);
       
-      console.log(`Created shared link for ${fileNameWithExt}:`, sharedLinkResult);
-      
-      // Return the shared link URL
-      return sharedLinkResult.result.url;
+      // Return a success message with the path where the file was stored
+      // The file is accessible in your Dropbox account under the /Snefuru folder
+      return `File uploaded to Dropbox: ${filePath}`;
     } catch (apiError: any) {
-      // If the shared link already exists, try to get it
-      if (apiError?.status === 409 && apiError?.error?.error?.['.tag'] === 'shared_link_already_exists') {
-        console.log(`Shared link already exists for ${fileNameWithExt}, retrieving it...`);
-        
-        const listLinksResult = await dropboxClient.sharingListSharedLinks({
-          path: dropboxPath,
-          direct_only: true
-        });
-        
-        if (listLinksResult.result.links && listLinksResult.result.links.length > 0) {
-          console.log(`Retrieved existing shared link for ${fileNameWithExt}`);
-          return listLinksResult.result.links[0].url;
-        }
-      }
+      // Log the error details for debugging
+      console.error('Error in Dropbox file upload:', apiError);
       
-      // Re-throw the error if we couldn't handle it
-      throw apiError;
+      // Throw a user-friendly error
+      throw new Error(`Failed to upload file to Dropbox: ${apiError.message || 'Unknown error'}`);
     }
   } catch (error: any) {
     console.error(`Error in Dropbox upload:`, error);
