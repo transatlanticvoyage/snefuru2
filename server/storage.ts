@@ -47,6 +47,22 @@ export interface IStorage {
   createRedditUrl(url: InsertRedditUrl): Promise<any>;
   getRedditUrl(id: number): Promise<any | undefined>;
   getAllRedditUrls(): Promise<any[]>;
+
+  // Calendar connection methods
+  createCalendarConnection(connection: InsertCalendarConnection): Promise<CalendarConnection>;
+  getCalendarConnection(id: number): Promise<CalendarConnection | undefined>;
+  getCalendarConnectionsByUserId(userId: number): Promise<CalendarConnection[]>;
+  updateCalendarConnection(id: number, data: Partial<InsertCalendarConnection>): Promise<CalendarConnection>;
+  deleteCalendarConnection(id: number): Promise<void>;
+
+  // Calendar event methods
+  createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
+  getCalendarEvent(id: number): Promise<CalendarEvent | undefined>;
+  getCalendarEventsByUserId(userId: number): Promise<CalendarEvent[]>;
+  updateCalendarEvent(id: number, data: Partial<InsertCalendarEvent>): Promise<CalendarEvent>;
+  deleteCalendarEvent(id: number): Promise<void>;
+  deleteEventsByConnectionId(connectionId: number): Promise<void>;
+  upsertCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
 }
 
 // Database implementation of storage
@@ -167,6 +183,88 @@ export class DatabaseStorage implements IStorage {
 
   async getAllRedditUrls(): Promise<any[]> {
     return await db.select().from(reddit_urls1);
+  }
+
+  // Calendar connection methods
+  async createCalendarConnection(connection: InsertCalendarConnection): Promise<CalendarConnection> {
+    const [result] = await db.insert(calendar_connections).values(connection).returning();
+    return result;
+  }
+
+  async getCalendarConnection(id: number): Promise<CalendarConnection | undefined> {
+    const [connection] = await db.select().from(calendar_connections).where(eq(calendar_connections.id, id));
+    return connection;
+  }
+
+  async getCalendarConnectionsByUserId(userId: number): Promise<CalendarConnection[]> {
+    return await db.select().from(calendar_connections).where(eq(calendar_connections.user_id, userId));
+  }
+
+  async updateCalendarConnection(id: number, data: Partial<InsertCalendarConnection>): Promise<CalendarConnection> {
+    const [result] = await db.update(calendar_connections)
+      .set({ ...data, updated_at: new Date() })
+      .where(eq(calendar_connections.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteCalendarConnection(id: number): Promise<void> {
+    await db.delete(calendar_connections).where(eq(calendar_connections.id, id));
+  }
+
+  // Calendar event methods
+  async createCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
+    const [result] = await db.insert(calendar_events).values(event).returning();
+    return result;
+  }
+
+  async getCalendarEvent(id: number): Promise<CalendarEvent | undefined> {
+    const [event] = await db.select().from(calendar_events).where(eq(calendar_events.id, id));
+    return event;
+  }
+
+  async getCalendarEventsByUserId(userId: number): Promise<CalendarEvent[]> {
+    return await db.select().from(calendar_events)
+      .where(eq(calendar_events.user_id, userId))
+      .orderBy(desc(calendar_events.start_date));
+  }
+
+  async updateCalendarEvent(id: number, data: Partial<InsertCalendarEvent>): Promise<CalendarEvent> {
+    const [result] = await db.update(calendar_events)
+      .set({ ...data, updated_at: new Date() })
+      .where(eq(calendar_events.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteCalendarEvent(id: number): Promise<void> {
+    await db.delete(calendar_events).where(eq(calendar_events.id, id));
+  }
+
+  async deleteEventsByConnectionId(connectionId: number): Promise<void> {
+    await db.delete(calendar_events).where(eq(calendar_events.connection_id, connectionId));
+  }
+
+  async upsertCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent> {
+    // Try to find existing event by external_event_id and connection_id
+    const [existing] = await db.select().from(calendar_events)
+      .where(and(
+        eq(calendar_events.external_event_id, event.external_event_id),
+        eq(calendar_events.connection_id, event.connection_id)
+      ));
+
+    if (existing) {
+      // Update existing event
+      const [updated] = await db.update(calendar_events)
+        .set({ ...event, updated_at: new Date(), last_synced: new Date() })
+        .where(eq(calendar_events.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      // Create new event
+      const [created] = await db.insert(calendar_events).values(event).returning();
+      return created;
+    }
   }
 }
 
