@@ -51,7 +51,7 @@ export default function MainNavigationMenu() {
               }
             }}
           >
-            Screen1
+            Image Handler - Screen 1
           </a>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
@@ -65,7 +65,7 @@ export default function MainNavigationMenu() {
               }
             }}
           >
-            Screen2
+            Reddit Scraper - Screen 1
           </a>
         </DropdownMenuItem>
       </DropdownMenuContent>
