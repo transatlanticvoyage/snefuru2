@@ -37,18 +37,35 @@ export default function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: Login) => {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+      try {
+        // Use absolute URL to ensure we're hitting the API endpoint
+        const apiUrl = window.location.origin + '/api/auth/login';
+        console.log('Sending login request to:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Non-JSON response received:', await response.text());
+          throw new Error('Server returned non-JSON response. Please try again later.');
+        }
+        
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(responseData.message || 'Login failed');
+        }
+        
+        return responseData;
+      } catch (error) {
+        console.error('Login request error:', error);
+        throw error;
       }
-      
-      return response.json();
     },
     onSuccess: (data) => {
       // Save token to localStorage

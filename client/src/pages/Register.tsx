@@ -52,18 +52,35 @@ export default function RegisterPage() {
       // Remove confirm_password and terms_accepted as they're not needed by the API
       const { confirm_password, terms_accepted, ...registerData } = data;
       
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registerData),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Registration failed');
+      try {
+        // Use absolute URL to ensure we're hitting the API endpoint
+        const apiUrl = window.location.origin + '/api/auth/register';
+        console.log('Sending registration request to:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(registerData),
+        });
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Non-JSON response received:', await response.text());
+          throw new Error('Server returned non-JSON response. Please try again later.');
+        }
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Registration failed');
+        }
+        
+        return data;
+      } catch (error) {
+        console.error('Registration request error:', error);
+        throw error;
       }
-      
-      return response.json();
     },
     onSuccess: () => {
       toast({
