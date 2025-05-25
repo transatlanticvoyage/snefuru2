@@ -184,7 +184,7 @@ export default function RankTrackerScreen1() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-semibold text-neutral-600 flex items-center">
-              <HeaderLogo />
+              <Logo />
               <span className="mr-2">Snefuru</span>
               <span className="text-base text-neutral-400 font-normal">Rank Tracker</span>
             </h1>
