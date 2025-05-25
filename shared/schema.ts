@@ -37,6 +37,7 @@ export const users = pgTable("users", {
   last_login: timestamp("last_login"),
   profile_image: text("profile_image"),
   is_active: integer("is_active").default(1),
+  user_role: text("user_role").default("user"),
 });
 
 // Create insert schemas

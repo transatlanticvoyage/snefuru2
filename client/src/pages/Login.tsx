@@ -23,7 +23,7 @@ type Login = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<Login>({
@@ -37,11 +37,18 @@ export default function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: Login) => {
-      return apiRequest('/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
+      
+      return response.json();
     },
     onSuccess: (data) => {
       // Save token to localStorage
