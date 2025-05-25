@@ -16,21 +16,26 @@ import { db } from "./db";
 
 // Define storage interface
 export interface IStorage {
-  // User methods (kept from original)
+  // User methods - enhanced for full user account system
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, userData: Partial<InsertUser>): Promise<User>;
+  updateLastLogin(id: number): Promise<void>;
   
   // Image methods
   createImage(image: InsertImage): Promise<Image>;
   getImage(id: number): Promise<Image | undefined>;
   getAllImages(): Promise<Image[]>;
   getImagesByBatchId(batchId: number): Promise<Image[]>;
+  getImagesByUserId(userId: number): Promise<Image[]>;
   
   // Image batch methods
   createImageBatch(batch: InsertImageBatch): Promise<ImageBatch>;
   getImageBatch(id: number): Promise<ImageBatch | undefined>;
   getAllImageBatches(): Promise<ImageBatch[]>;
+  getImageBatchesByUserId(userId: number): Promise<ImageBatch[]>;
 
   // Reddit URL methods
   createRedditUrl(url: InsertRedditUrl): Promise<any>;
@@ -50,12 +55,51 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
       .values(insertUser)
       .returning();
     return user;
+  }
+  
+  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        ...userData,
+        // Add timestamp for updates
+      })
+      .where(eq(users.id, id))
+      .returning();
+    
+    return updatedUser;
+  }
+  
+  async updateLastLogin(id: number): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        last_login: new Date()
+      })
+      .where(eq(users.id, id));
+  }
+  
+  async getImagesByUserId(userId: number): Promise<Image[]> {
+    // For now, we'll just return all images since we don't have a user_id column
+    // This will be updated when we add user_id to the images table
+    return await this.getAllImages();
+  }
+  
+  async getImageBatchesByUserId(userId: number): Promise<ImageBatch[]> {
+    // For now, we'll just return all batches since we don't have a user_id column
+    // This will be updated when we add user_id to the image_batches table
+    return await this.getAllImageBatches();
   }
   
   // Image methods
