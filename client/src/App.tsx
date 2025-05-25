@@ -8,6 +8,8 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import SimpleLogin from "@/pages/SimpleLogin";
+import SimpleRegister from "@/pages/SimpleRegister";
 import Screen1 from "@/pages/reddit_scraper/screen1";
 import Screen2 from "@/pages/reddit_scraper/screen2";
 import Screen3 from "@/pages/reddit_scraper/screen3";
@@ -38,8 +40,10 @@ function Router() {
   return (
     <Switch>
       {/* Public routes */}
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
+      <Route path="/login" component={SimpleLogin} />
+      <Route path="/register" component={SimpleRegister} />
+      <Route path="/simple-login" component={SimpleLogin} />
+      <Route path="/simple-register" component={SimpleRegister} />
       
       {/* Main routes */}
       <Route path="/" component={Home} />
