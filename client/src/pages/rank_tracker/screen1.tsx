@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import MainNavigationMenu from '@/components/NavigationMenu';
-import UserLoginStatus from '@/components/UserLoginStatus';
-import { Logo } from '@/components/ui/logo';
+import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -179,26 +177,8 @@ export default function RankTrackerScreen1() {
   
   return (
     <div className="font-sans bg-neutral-50 text-neutral-500 min-h-screen">
-      {/* Full-width header - same as homepage but without Generate Images button */}
-      <header className="w-full bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-semibold text-neutral-600 flex items-center">
-              <Logo />
-              <span className="mr-2">Snefuru</span>
-              <span className="text-base text-neutral-400 font-normal">Rank Tracker</span>
-            </h1>
-            
-            <div className="flex items-center space-x-4">
-              {/* Navigation Menu */}
-              <MainNavigationMenu />
-              
-              {/* User Login Status */}
-              <UserLoginStatus />
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Consistent Header Component */}
+      <Header pageTitle="Rank Tracker" />
 
       {/* Page content - rank tracker interface */}
       <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -320,7 +300,7 @@ export default function RankTrackerScreen1() {
                     </tr>
                     
                     {/* Expanded keyword view */}
-                    {row.expandedView && row.keywordData && (
+                    {row.expandedView && 'keywordData' in row && row.keywordData && (
                       <tr>
                         <td colSpan={7} className="p-0">
                           <div className="bg-gray-50 p-4">
