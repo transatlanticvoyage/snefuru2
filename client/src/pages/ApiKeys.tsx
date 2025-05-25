@@ -6,15 +6,27 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertCircle, Check, Info } from 'lucide-react';
+import { AlertCircle, Check, Info, Edit, Save, Lock } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import Header from '@/components/Header';
 
 interface ApiKeysState {
   openai: string;
   dropbox: string;
   midjourney: string;
   gemini: string;
+  googledrive: {
+    clientId: string;
+    clientSecret: string;
+    refreshToken: string;
+  };
+  amazons3: {
+    accessKeyId: string;
+    secretAccessKey: string;
+    region: string;
+    bucketName: string;
+  };
   dataforseo: {
     login: string;
     password: string;
@@ -45,14 +57,35 @@ export default function ApiKeysPage() {
   const [midjourneyApiKey, setMidjourneyApiKey] = useState('');
   const [geminiApiKey, setGeminiApiKey] = useState('');
   
+  // Edit mode state for each field
+  const [openaiEditMode, setOpenaiEditMode] = useState(false);
+  const [dropboxEditMode, setDropboxEditMode] = useState(false);
+  const [midjourneyEditMode, setMidjourneyEditMode] = useState(false);
+  const [geminiEditMode, setGeminiEditMode] = useState(false);
+  
+  // Google Drive credentials
+  const [googleDriveClientId, setGoogleDriveClientId] = useState('');
+  const [googleDriveClientSecret, setGoogleDriveClientSecret] = useState('');
+  const [googleDriveRefreshToken, setGoogleDriveRefreshToken] = useState('');
+  const [googleDriveEditMode, setGoogleDriveEditMode] = useState(false);
+  
+  // Amazon S3 credentials
+  const [amazonS3AccessKeyId, setAmazonS3AccessKeyId] = useState('');
+  const [amazonS3SecretAccessKey, setAmazonS3SecretAccessKey] = useState('');
+  const [amazonS3Region, setAmazonS3Region] = useState('');
+  const [amazonS3BucketName, setAmazonS3BucketName] = useState('');
+  const [amazonS3EditMode, setAmazonS3EditMode] = useState(false);
+  
   // DataForSEO credentials
   const [dataforseoLogin, setDataforseoLogin] = useState('');
   const [dataforseoPassword, setDataforseoPassword] = useState('');
+  const [dataforseoEditMode, setDataforseoEditMode] = useState(false);
   
   // WordPress credentials
   const [wordpressUrl, setWordpressUrl] = useState('');
   const [wordpressUsername, setWordpressUsername] = useState('');
   const [wordpressPassword, setWordpressPassword] = useState('');
+  const [wordpressEditMode, setWordpressEditMode] = useState(false);
   
   // Load user data from localStorage
   useEffect(() => {
@@ -68,19 +101,49 @@ export default function ApiKeysPage() {
       
       // Load API keys if they exist
       if (userData.api_keys) {
+        // Load API keys
         setOpenaiApiKey(userData.api_keys.openai || '');
         setDropboxApiKey(userData.api_keys.dropbox || '');
         setMidjourneyApiKey(userData.api_keys.midjourney || '');
         setGeminiApiKey(userData.api_keys.gemini || '');
         
+        // Set edit mode to false for fields that have values
+        setOpenaiEditMode(!userData.api_keys.openai);
+        setDropboxEditMode(!userData.api_keys.dropbox);
+        setMidjourneyEditMode(!userData.api_keys.midjourney);
+        setGeminiEditMode(!userData.api_keys.gemini);
+        
+        // Load Google Drive credentials
+        if (userData.api_keys.googledrive) {
+          setGoogleDriveClientId(userData.api_keys.googledrive.clientId || '');
+          setGoogleDriveClientSecret(userData.api_keys.googledrive.clientSecret || '');
+          setGoogleDriveRefreshToken(userData.api_keys.googledrive.refreshToken || '');
+          setGoogleDriveEditMode(!(userData.api_keys.googledrive.clientId || userData.api_keys.googledrive.clientSecret));
+        }
+        
+        // Load Amazon S3 credentials
+        if (userData.api_keys.amazons3) {
+          setAmazonS3AccessKeyId(userData.api_keys.amazons3.accessKeyId || '');
+          setAmazonS3SecretAccessKey(userData.api_keys.amazons3.secretAccessKey || '');
+          setAmazonS3Region(userData.api_keys.amazons3.region || '');
+          setAmazonS3BucketName(userData.api_keys.amazons3.bucketName || '');
+          setAmazonS3EditMode(!(userData.api_keys.amazons3.accessKeyId || userData.api_keys.amazons3.secretAccessKey));
+        }
+        
         // Load DataForSEO credentials
-        setDataforseoLogin(userData.api_keys.dataforseo?.login || '');
-        setDataforseoPassword(userData.api_keys.dataforseo?.password || '');
+        if (userData.api_keys.dataforseo) {
+          setDataforseoLogin(userData.api_keys.dataforseo.login || '');
+          setDataforseoPassword(userData.api_keys.dataforseo.password || '');
+          setDataforseoEditMode(!(userData.api_keys.dataforseo.login || userData.api_keys.dataforseo.password));
+        }
         
         // Load WordPress credentials
-        setWordpressUrl(userData.api_keys.wordpress?.url || '');
-        setWordpressUsername(userData.api_keys.wordpress?.username || '');
-        setWordpressPassword(userData.api_keys.wordpress?.password || '');
+        if (userData.api_keys.wordpress) {
+          setWordpressUrl(userData.api_keys.wordpress.url || '');
+          setWordpressUsername(userData.api_keys.wordpress.username || '');
+          setWordpressPassword(userData.api_keys.wordpress.password || '');
+          setWordpressEditMode(!(userData.api_keys.wordpress.url || userData.api_keys.wordpress.username));
+        }
       }
     } catch (error) {
       console.error('Failed to parse user data:', error);
@@ -100,6 +163,17 @@ export default function ApiKeysPage() {
         dropbox: dropboxApiKey,
         midjourney: midjourneyApiKey,
         gemini: geminiApiKey,
+        googledrive: {
+          clientId: googleDriveClientId,
+          clientSecret: googleDriveClientSecret,
+          refreshToken: googleDriveRefreshToken,
+        },
+        amazons3: {
+          accessKeyId: amazonS3AccessKeyId,
+          secretAccessKey: amazonS3SecretAccessKey,
+          region: amazonS3Region,
+          bucketName: amazonS3BucketName,
+        },
         dataforseo: {
           login: dataforseoLogin,
           password: dataforseoPassword,
@@ -140,6 +214,90 @@ export default function ApiKeysPage() {
     }
   };
   
+  // Individual field save handlers
+  const handleSaveOpenAI = () => {
+    if (!user) return;
+    
+    try {
+      const updatedApiKeys = {
+        ...user.api_keys,
+        openai: openaiApiKey,
+      };
+      
+      // Update user data
+      const updatedUser = {
+        ...user,
+        api_keys: updatedApiKeys
+      };
+      
+      // Save to localStorage
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      // Show success message
+      toast({
+        title: 'OpenAI API Key Saved',
+        description: 'Your OpenAI API key has been saved successfully.',
+      });
+      
+      // Update state
+      setUser(updatedUser);
+      setOpenaiEditMode(false);
+    } catch (error) {
+      console.error('Error saving OpenAI API key:', error);
+      toast({
+        title: 'Save Failed',
+        description: 'Failed to save your OpenAI API key. Please try again.',
+        variant: 'destructive'
+      });
+    }
+  };
+  
+  // Helper function to create a handler for saving individual keys
+  const createSaveHandler = (
+    key: string,
+    value: string | object,
+    setEditMode: (value: boolean) => void,
+    keyName: string
+  ) => {
+    return () => {
+      if (!user || !user.api_keys) return;
+      
+      try {
+        // Create updated API keys object
+        const updatedApiKeys = {
+          ...user.api_keys,
+          [key]: value
+        };
+        
+        // Update user data
+        const updatedUser = {
+          ...user,
+          api_keys: updatedApiKeys
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        // Show success message
+        toast({
+          title: `${keyName} Saved`,
+          description: `Your ${keyName} has been saved successfully.`,
+        });
+        
+        // Update state
+        setUser(updatedUser);
+        setEditMode(false);
+      } catch (error) {
+        console.error(`Error saving ${keyName}:`, error);
+        toast({
+          title: 'Save Failed',
+          description: `Failed to save your ${keyName}. Please try again.`,
+          variant: 'destructive'
+        });
+      }
+    };
+  };
+
   if (!user) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-neutral-50">
@@ -149,8 +307,10 @@ export default function ApiKeysPage() {
   }
   
   return (
-    <div className="min-h-screen bg-neutral-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="min-h-screen bg-neutral-50">
+      <Header pageTitle="API Keys" />
+      
+      <div className="container mx-auto px-4 max-w-4xl py-8">
         <div className="flex items-center mb-8">
           <Button
             variant="ghost"
@@ -189,16 +349,57 @@ export default function ApiKeysPage() {
               <CardContent className="space-y-6">
                 {/* OpenAI API Key */}
                 <div className="space-y-2">
-                  <Label htmlFor="openai-api-key" className="text-base font-semibold">
-                    OpenAI API Key
-                  </Label>
-                  <Input
-                    id="openai-api-key"
-                    type="password"
-                    placeholder="sk-..."
-                    value={openaiApiKey}
-                    onChange={(e) => setOpenaiApiKey(e.target.value)}
-                  />
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="openai-api-key" className="text-base font-semibold">
+                      OpenAI API Key
+                    </Label>
+                    <div className="flex space-x-2">
+                      {!openaiEditMode && openaiApiKey && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => setOpenaiEditMode(true)}
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {openaiEditMode && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={handleSaveOpenAI}
+                        >
+                          <Save className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {openaiEditMode ? (
+                    <Input
+                      id="openai-api-key"
+                      type="password"
+                      placeholder="sk-..."
+                      value={openaiApiKey}
+                      onChange={(e) => setOpenaiApiKey(e.target.value)}
+                    />
+                  ) : (
+                    <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                      {openaiApiKey ? (
+                        <div className="flex items-center text-muted-foreground">
+                          <Lock className="h-3.5 w-3.5 mr-2" />
+                          {openaiApiKey.substring(0, 3)}...{openaiApiKey.substring(openaiApiKey.length - 4)}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">No API key set</span>
+                      )}
+                    </div>
+                  )}
+                  
                   <p className="text-sm text-muted-foreground">
                     Used for generating images with DALL-E models.
                     <a 
@@ -305,6 +506,140 @@ export default function ApiKeysPage() {
                 </CardContent>
               </Card>
               
+              {/* Google Drive API Keys */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Google Drive API</CardTitle>
+                  <CardDescription>
+                    Add your Google Drive API credentials to enable cloud storage.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="google-drive-client-id" className="text-base font-semibold">
+                        Client ID
+                      </Label>
+                      {!googleDriveEditMode && googleDriveClientId && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => setGoogleDriveEditMode(true)}
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {googleDriveEditMode && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={createSaveHandler(
+                            'googledrive', 
+                            {
+                              clientId: googleDriveClientId,
+                              clientSecret: googleDriveClientSecret,
+                              refreshToken: googleDriveRefreshToken
+                            },
+                            setGoogleDriveEditMode,
+                            'Google Drive API'
+                          )}
+                        >
+                          <Save className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      )}
+                    </div>
+                    
+                    {googleDriveEditMode ? (
+                      <Input
+                        id="google-drive-client-id"
+                        placeholder="Client ID..."
+                        value={googleDriveClientId}
+                        onChange={(e) => setGoogleDriveClientId(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {googleDriveClientId ? (
+                          <div className="flex items-center text-muted-foreground">
+                            <Lock className="h-3.5 w-3.5 mr-2" />
+                            {googleDriveClientId.substring(0, 3)}...{googleDriveClientId.substring(googleDriveClientId.length - 4)}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No Client ID set</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="google-drive-client-secret" className="text-base font-semibold">
+                      Client Secret
+                    </Label>
+                    {googleDriveEditMode ? (
+                      <Input
+                        id="google-drive-client-secret"
+                        type="password"
+                        placeholder="Client Secret..."
+                        value={googleDriveClientSecret}
+                        onChange={(e) => setGoogleDriveClientSecret(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {googleDriveClientSecret ? (
+                          <div className="flex items-center text-muted-foreground">
+                            <Lock className="h-3.5 w-3.5 mr-2" />
+                            {googleDriveClientSecret.substring(0, 3)}...{googleDriveClientSecret.substring(googleDriveClientSecret.length - 4)}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No Client Secret set</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="google-drive-refresh-token" className="text-base font-semibold">
+                      Refresh Token
+                    </Label>
+                    {googleDriveEditMode ? (
+                      <Input
+                        id="google-drive-refresh-token"
+                        type="password"
+                        placeholder="Refresh Token..."
+                        value={googleDriveRefreshToken}
+                        onChange={(e) => setGoogleDriveRefreshToken(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {googleDriveRefreshToken ? (
+                          <div className="flex items-center text-muted-foreground">
+                            <Lock className="h-3.5 w-3.5 mr-2" />
+                            {googleDriveRefreshToken.substring(0, 3)}...{googleDriveRefreshToken.substring(googleDriveRefreshToken.length - 4)}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No Refresh Token set</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">
+                    Used for storing generated images in your Google Drive account.
+                    <a 
+                      href="https://console.cloud.google.com/apis/credentials" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary ml-1 hover:underline"
+                    >
+                      Get your Google Drive API credentials
+                    </a>
+                  </p>
+                </CardContent>
+              </Card>
+              
               {/* Dropbox API Key */}
               <Card>
                 <CardHeader>
@@ -315,16 +650,57 @@ export default function ApiKeysPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="dropbox-api-key" className="text-base font-semibold">
-                      Dropbox Access Token
-                    </Label>
-                    <Input
-                      id="dropbox-api-key"
-                      type="password"
-                      placeholder="sl...."
-                      value={dropboxApiKey}
-                      onChange={(e) => setDropboxApiKey(e.target.value)}
-                    />
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="dropbox-api-key" className="text-base font-semibold">
+                        Dropbox Access Token
+                      </Label>
+                      <div className="flex space-x-2">
+                        {!dropboxEditMode && dropboxApiKey && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 px-2 text-xs"
+                            onClick={() => setDropboxEditMode(true)}
+                          >
+                            <Edit className="h-3.5 w-3.5 mr-1" />
+                            Edit
+                          </Button>
+                        )}
+                        {dropboxEditMode && (
+                          <Button 
+                            variant="default" 
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={createSaveHandler('dropbox', dropboxApiKey, setDropboxEditMode, 'Dropbox API Key')}
+                          >
+                            <Save className="h-3.5 w-3.5 mr-1" />
+                            Save
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {dropboxEditMode ? (
+                      <Input
+                        id="dropbox-api-key"
+                        type="password"
+                        placeholder="sl...."
+                        value={dropboxApiKey}
+                        onChange={(e) => setDropboxApiKey(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {dropboxApiKey ? (
+                          <div className="flex items-center text-muted-foreground">
+                            <Lock className="h-3.5 w-3.5 mr-2" />
+                            {dropboxApiKey.substring(0, 3)}...{dropboxApiKey.substring(dropboxApiKey.length - 4)}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No API key set</span>
+                        )}
+                      </div>
+                    )}
+                    
                     <p className="text-sm text-muted-foreground">
                       Used for storing generated images in your Dropbox account.
                     </p>
