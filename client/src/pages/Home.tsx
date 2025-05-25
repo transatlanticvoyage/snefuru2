@@ -112,11 +112,21 @@ export default function Home() {
     <div className="font-sans bg-neutral-50 text-neutral-500 min-h-screen">
       {/* Full-width header */}
       <header className="w-full bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-3xl font-semibold text-neutral-600 flex items-center">
             <span className="mr-2">Snefuru</span>
             <span className="text-base text-neutral-400 font-normal">AI Image Generation & Management</span>
           </h1>
+          
+          {/* Quick Generate Button */}
+          <button 
+            className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md transition-colors duration-200 font-medium flex items-center"
+            onClick={handleGenerateImages}
+            disabled={isPending}
+          >
+            <i className="mdi mdi-image-multiple mr-2"></i>
+            {isPending ? 'Generating...' : 'Generate Images'}
+          </button>
         </div>
       </header>
 
