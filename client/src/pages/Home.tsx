@@ -23,7 +23,7 @@ export default function Home() {
   const [wpInfoSaved, setWpInfoSaved] = useState(false);
   const { toast } = useToast();
 
-  const { mutate: generateImages, isPending } = useMutation({
+  const { mutate: generateImages, isPending, error: generationError } = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/generate", {
         spreadsheetData,
@@ -36,14 +36,14 @@ export default function Home() {
     onSuccess: (data) => {
       toast({
         title: "Success!",
-        description: `Generated ${data.count} images and published to WordPress.`,
+        description: `Generated ${data.count} images and published to ${data.publishedToWordPress ? 'WordPress' : 'Dropbox'}.`,
         variant: "default",
       });
     },
     onError: (error) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to generate images",
+        title: "Generation Failed",
+        description: error.message || "Failed to generate images. Please check your API keys and try again.",
         variant: "destructive",
       });
     },

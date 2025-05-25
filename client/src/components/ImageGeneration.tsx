@@ -5,23 +5,70 @@ interface ImageGenerationProps {
   isGenerating: boolean;
 }
 
+// Status stages for more detailed progress messages
+type StatusStage = 
+  | 'connecting'   // 0-15%
+  | 'generating'   // 15-50%
+  | 'saving'       // 50-75% 
+  | 'publishing'   // 75-90%
+  | 'completed'    // 100%
+  | 'failed'       // error state
+  | 'idle';        // not running
+
 const ImageGeneration = ({ onGenerate, isGenerating }: ImageGenerationProps) => {
   const [progress, setProgress] = useState(0);
+  const [statusStage, setStatusStage] = useState<StatusStage>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const progressIntervalRef = useRef<number | null>(null);
+  
+  // Handle errors from generation process
+  useEffect(() => {
+    if (!isGenerating && progress > 0) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const errorParam = urlParams.get('error');
+      if (errorParam) {
+        setErrorMessage(decodeURIComponent(errorParam));
+        // Remove the parameter after reading it
+        urlParams.delete('error');
+        const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, [isGenerating, progress]);
 
   useEffect(() => {
     if (isGenerating) {
-      // Start simulated progress bar when generation starts
+      // Reset error state when starting a new generation
+      setErrorMessage(null);
+      
+      // Start simulated progress bar with distinct phases
       let currentProgress = 0;
+      setStatusStage('connecting');
       
       progressIntervalRef.current = window.setInterval(() => {
-        // Increment progress more slowly as it gets closer to 90%
-        // We don't go to 100% until we actually complete the task
-        const increment = currentProgress < 50 ? 5 : 
-                          currentProgress < 80 ? 2 : 1;
+        // Update progress and status message based on current progress
+        if (currentProgress < 15) {
+          // Connecting to OpenAI phase
+          setStatusStage('connecting');
+          currentProgress += 2;
+        } 
+        else if (currentProgress < 50) {
+          // Generating images phase
+          setStatusStage('generating');
+          currentProgress += 3;
+        }
+        else if (currentProgress < 75) {
+          // Saving to Dropbox phase
+          setStatusStage('saving');
+          currentProgress += 2;
+        }
+        else if (currentProgress < 90) {
+          // Publishing to WordPress phase
+          setStatusStage('publishing');
+          currentProgress += 1;
+        }
         
-        currentProgress = Math.min(90, currentProgress + increment);
-        setProgress(currentProgress);
+        setProgress(Math.min(90, currentProgress));
       }, 200);
     } else {
       // When isGenerating becomes false, either generation is complete or errored
@@ -32,12 +79,19 @@ const ImageGeneration = ({ onGenerate, isGenerating }: ImageGenerationProps) => 
       
       // If we were previously generating, set to 100% complete
       if (progress > 0) {
-        setProgress(100);
+        // If we had an error, don't show completed
+        if (!errorMessage) {
+          setProgress(100);
+          setStatusStage('completed');
+        } else {
+          setStatusStage('failed');
+        }
         
         // Reset progress after a delay to allow the user to see the completed progress
         const resetTimeout = setTimeout(() => {
           setProgress(0);
-        }, 1500);
+          setStatusStage('idle');
+        }, 3000);
         
         return () => clearTimeout(resetTimeout);
       }
@@ -49,7 +103,7 @@ const ImageGeneration = ({ onGenerate, isGenerating }: ImageGenerationProps) => 
         clearInterval(progressIntervalRef.current);
       }
     };
-  }, [isGenerating, progress]);
+  }, [isGenerating, progress, errorMessage]);
 
   return (
     <section className="bg-white rounded-lg shadow-md p-6">
@@ -67,7 +121,14 @@ const ImageGeneration = ({ onGenerate, isGenerating }: ImageGenerationProps) => 
                 aria-valuemax={100}
               ></div>
             </div>
-            <p className="text-sm text-neutral-400 mt-1">Processing images and publishing to WordPress...</p>
+            <p className="text-sm mt-1 font-medium" style={{ color: statusStage === 'failed' ? '#e11d48' : '#6b7280' }}>
+              {statusStage === 'connecting' && 'Attempting to connect to OpenAI...'}
+              {statusStage === 'generating' && 'Generating images with OpenAI...'}
+              {statusStage === 'saving' && 'Saving images to Dropbox...'}
+              {statusStage === 'publishing' && 'Publishing images to WordPress...'}
+              {statusStage === 'completed' && 'Task completed successfully.'}
+              {statusStage === 'failed' && `Task failed${errorMessage ? `: ${errorMessage}` : '.'}`}
+            </p>
           </div>
         )}
         
