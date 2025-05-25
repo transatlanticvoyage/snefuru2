@@ -50,19 +50,19 @@ function Router() {
       
       {/* Protected routes */}
       <Route path="/reddit_scraper/screen1">
-        {isAuthenticated ? <Screen1 /> : <Login />}
+        {isAuthenticated ? <Screen1 /> : <SimpleLogin />}
       </Route>
       <Route path="/reddit_scraper/screen2">
-        {isAuthenticated ? <Screen2 /> : <Login />}
+        {isAuthenticated ? <Screen2 /> : <SimpleLogin />}
       </Route>
       <Route path="/reddit_scraper/screen3">
-        {isAuthenticated ? <Screen3 /> : <Login />}
+        {isAuthenticated ? <Screen3 /> : <SimpleLogin />}
       </Route>
       <Route path="/reddit_scraper/screen4">
-        {isAuthenticated ? <Screen4 /> : <Login />}
+        {isAuthenticated ? <Screen4 /> : <SimpleLogin />}
       </Route>
       <Route path="/image_handler/screen1">
-        {isAuthenticated ? <ImageHandlerScreen1 /> : <Login />}
+        {isAuthenticated ? <ImageHandlerScreen1 /> : <SimpleLogin />}
       </Route>
       
       {/* Fallback route */}
