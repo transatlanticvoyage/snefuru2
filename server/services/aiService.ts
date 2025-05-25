@@ -15,6 +15,9 @@ interface ImageGenerationResult {
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Log the API key status (without revealing the key)
+console.log(`OpenAI API Key status: ${process.env.OPENAI_API_KEY ? 'Set' : 'Not set'}`);
+
 /**
  * Generate an image using the specified AI model
  * @param prompt The text prompt to generate the image from
@@ -47,19 +50,22 @@ export async function generateImage(
 // Real OpenAI image generation
 async function generateWithOpenAI(prompt: string): Promise<ImageGenerationResult> {
   try {
-    // Make sure we have a valid API key - use the environment key first
-    // or get it from the request if available
+    // Make sure we have a valid API key
     if (!process.env.OPENAI_API_KEY) {
-      console.log("Warning: Using default OpenAI client - API key may not be set");
+      console.log("Warning: OpenAI API key is not set - image generation will likely fail");
+      throw new Error('OpenAI API key is not properly configured');
     }
     
-    // Ensure the prompt is not empty or just whitespace
-    if (!prompt || prompt.trim() === '' || prompt.trim() === '(leave blank for now)') {
-      throw new Error('Cannot generate image with empty prompt');
+    // Provide a default prompt if empty or contains placeholder text
+    let cleanPrompt = prompt.trim();
+    
+    if (!cleanPrompt || cleanPrompt === '' || cleanPrompt === '(leave blank for now)') {
+      // Use a default prompt that will work well with image generation
+      cleanPrompt = "Professional high-quality photograph of a house exterior with natural lighting";
+      console.log(`Using default prompt: "${cleanPrompt}"`);
     }
     
-    // Clean and prepare the prompt
-    const cleanPrompt = prompt.trim();
+    console.log(`Sending request to OpenAI DALL-E with prompt: "${cleanPrompt}"`);
     
     // Use OpenAI's DALL-E to generate an image
     const response = await openai.images.generate({
@@ -70,6 +76,8 @@ async function generateWithOpenAI(prompt: string): Promise<ImageGenerationResult
       quality: "standard",
       response_format: "b64_json"
     });
+    
+    console.log("OpenAI image generation successful");
     
     // Get base64 image data from the response
     const base64Data = response.data?.[0]?.b64_json;

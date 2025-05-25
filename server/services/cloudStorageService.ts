@@ -45,10 +45,10 @@ async function uploadToGoogleDrive(base64Data: string, fileName: string): Promis
   
   // Generate a fake Google Drive file ID
   const fileId = generateFakeId();
-  const folderId = base64Data.selectedFolder?.id;
   
-  // In real implementation, we would use the folderId to upload to specific folder
-  return `https://drive.google.com/uc?export=view&id=${fileId}${folderId ? `&folder=${folderId}` : ''}`;
+  // In real implementation, we would use a folder ID to upload to specific folder
+  // For now, we're just simulating the upload
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
 }
 
 // Dropbox upload implementation
@@ -81,9 +81,9 @@ async function uploadToDropbox(base64Data: string, fileName: string): Promise<st
     
     // Return a simulated Dropbox URL that looks more realistic
     return `https://www.dropbox.com/s/${sharedId}/${encodeURIComponent(safeFileName)}?dl=0`;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error in Dropbox upload:`, error);
-    throw new Error(`Failed to upload to Dropbox: ${error.message}`);
+    throw new Error(`Failed to upload to Dropbox: ${error.message || 'Unknown error'}`);
   }
 }
 
@@ -101,8 +101,7 @@ async function uploadToAmazonS3(base64Data: string, fileName: string): Promise<s
   const safeFileName = fileName.replace(/[^a-z0-9.-]/gi, '_');
   
   // Return a simulated S3 URL
-  const folderPath = base64Data.selectedFolder?.path?.replace(/^\//, '') || '';
-  const fullPath = folderPath ? `${folderPath}/${safeFileName}` : safeFileName;
+  const fullPath = safeFileName;
   return `https://${bucketName}.s3.amazonaws.com/${fullPath}`;
 }
 
