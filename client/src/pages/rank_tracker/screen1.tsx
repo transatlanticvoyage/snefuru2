@@ -5,17 +5,35 @@ import UserLoginStatus from '@/components/UserLoginStatus';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   ArrowUp, 
   ArrowDown, 
   Link as LinkIcon, 
   X, 
   ChevronRight,
+  ChevronDown,
+  Star,
 } from 'lucide-react';
 
 // Dummy data based on the screenshot
 const dummyData = [
-  { url: 'aucklandconcreteservice.co.nz', change: 0, high: 7, low: 7, keywords: 1, movement: 'neutral' },
+  { 
+    url: 'aucklandconcreteservice.co.nz', 
+    change: 0, 
+    high: 8, 
+    low: 5, 
+    keywords: 5, 
+    movement: 'neutral',
+    expandedView: false,
+    keywordData: [
+      { keyword: 'auckland concrete', rank: 4, change: 0, volume: 210, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:13:16 PM' },
+      { keyword: 'auckland concrete service', rank: 1, change: 0, volume: 0, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:13:18 PM' },
+      { keyword: 'auckland concrete services', rank: 1, change: 0, volume: 30, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:13:21 PM' },
+      { keyword: 'concrete auckland', rank: 8, change: 0, volume: 0, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:13:24 PM' },
+      { keyword: 'concrete contractors auckland', rank: 7, change: 0, volume: 50, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:44:58 PM' },
+    ]
+  },
   { url: 'aucklandplumbersgroup.co.nz', change: 0, high: 1, low: 1, keywords: 1, movement: 'neutral' },
   { url: 'augustaconcreteco.com', change: 0, high: 1, low: 1, keywords: 1, movement: 'neutral' },
   { url: 'augustamoldcontrol.com', change: 0, high: 2, low: 2, keywords: 1, movement: 'neutral' },
@@ -36,6 +54,28 @@ export default function RankTrackerScreen1() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState('url');
   const [timeFilter, setTimeFilter] = useState('last');
+  const [tableData, setTableData] = useState(dummyData);
+  const [keywordFilter, setKeywordFilter] = useState('');
+  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
+  
+  // Toggle expanded view for a row
+  const toggleExpandedView = (index: number) => {
+    const newData = [...tableData];
+    newData[index] = {
+      ...newData[index],
+      expandedView: !newData[index].expandedView
+    };
+    setTableData(newData);
+  };
+
+  // Handle checkbox selection for keywords
+  const toggleKeywordSelection = (keyword: string) => {
+    if (selectedKeywords.includes(keyword)) {
+      setSelectedKeywords(selectedKeywords.filter(k => k !== keyword));
+    } else {
+      setSelectedKeywords([...selectedKeywords, keyword]);
+    }
+  };
   
   return (
     <div className="font-sans bg-neutral-50 text-neutral-500 min-h-screen">
@@ -122,50 +162,136 @@ export default function RankTrackerScreen1() {
                 </tr>
               </thead>
               <tbody>
-                {dummyData.map((row, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="py-3 px-4 border-b border-gray-200">
-                      <span className="text-blue-600 hover:underline cursor-pointer">{row.url}</span>
-                    </td>
-                    <td className="text-center py-3 px-4 border-b border-gray-200">
-                      {row.change > 0 ? (
-                        <span className="text-green-500 flex items-center justify-center">
-                          <ArrowUp size={16} className="mr-1" /> {row.change}
-                        </span>
-                      ) : row.change < 0 ? (
-                        <span className="text-red-500 flex items-center justify-center">
-                          <ArrowDown size={16} className="mr-1" /> {Math.abs(row.change)}
-                        </span>
-                      ) : (
-                        row.change
-                      )}
-                    </td>
-                    <td className="text-center py-3 px-4 border-b border-gray-200">{row.high}</td>
-                    <td className="text-center py-3 px-4 border-b border-gray-200">{row.low}</td>
-                    <td className="text-center py-3 px-4 border-b border-gray-200">{row.keywords}</td>
-                    <td className="py-3 px-4 border-b border-gray-200">
-                      {row.movement === 'up' ? (
-                        <div className="h-2 rounded bg-green-500 w-3/4"></div>
-                      ) : row.movement === 'down' ? (
-                        <div className="h-2 rounded bg-red-500 w-3/4"></div>
-                      ) : (
-                        <div className="h-2 rounded bg-gray-200 w-3/4"></div>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 border-b border-gray-200">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button className="text-blue-500 hover:text-blue-700">
-                          <LinkIcon size={16} />
-                        </button>
-                        <button className="text-red-500 hover:text-red-700">
-                          <X size={16} />
-                        </button>
-                        <button className="text-gray-500 hover:text-gray-700">
-                          <ChevronRight size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                {tableData.map((row, index) => (
+                  <>
+                    <tr 
+                      key={index} 
+                      className={`hover:bg-gray-50 cursor-pointer ${row.expandedView ? 'bg-gray-50' : ''}`}
+                      onClick={() => toggleExpandedView(index)}
+                    >
+                      <td className="py-3 px-4 border-b border-gray-200">
+                        <span className="text-blue-600 hover:underline">{row.url}</span>
+                      </td>
+                      <td className="text-center py-3 px-4 border-b border-gray-200">
+                        {row.change > 0 ? (
+                          <span className="text-green-500 flex items-center justify-center">
+                            <ArrowUp size={16} className="mr-1" /> {row.change}
+                          </span>
+                        ) : row.change < 0 ? (
+                          <span className="text-red-500 flex items-center justify-center">
+                            <ArrowDown size={16} className="mr-1" /> {Math.abs(row.change)}
+                          </span>
+                        ) : (
+                          row.change
+                        )}
+                      </td>
+                      <td className="text-center py-3 px-4 border-b border-gray-200">{row.high}</td>
+                      <td className="text-center py-3 px-4 border-b border-gray-200">{row.low}</td>
+                      <td className="text-center py-3 px-4 border-b border-gray-200">{row.keywords}</td>
+                      <td className="py-3 px-4 border-b border-gray-200">
+                        {row.movement === 'up' ? (
+                          <div className="h-2 rounded bg-green-500 w-3/4"></div>
+                        ) : row.movement === 'down' ? (
+                          <div className="h-2 rounded bg-red-500 w-3/4"></div>
+                        ) : (
+                          <div className="h-2 rounded bg-gray-200 w-3/4"></div>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 border-b border-gray-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-center space-x-2">
+                          <button className="text-blue-500 hover:text-blue-700">
+                            <LinkIcon size={16} />
+                          </button>
+                          <button className="text-red-500 hover:text-red-700">
+                            <X size={16} />
+                          </button>
+                          <button 
+                            className="text-gray-500 hover:text-gray-700"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleExpandedView(index);
+                            }}
+                          >
+                            {row.expandedView ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    
+                    {/* Expanded keyword view */}
+                    {row.expandedView && row.keywordData && (
+                      <tr>
+                        <td colSpan={7} className="p-0">
+                          <div className="bg-gray-50 p-4">
+                            {/* Filter and bulk action bar */}
+                            <div className="flex justify-between mb-4">
+                              <Input 
+                                type="text" 
+                                placeholder="Type to filter keywords" 
+                                className="max-w-xs border rounded px-3 py-2 text-sm"
+                                value={keywordFilter}
+                                onChange={(e) => setKeywordFilter(e.target.value)}
+                              />
+                              <div className="flex items-center space-x-2">
+                                <div className="text-sm text-gray-500">Bulk actions</div>
+                                <ChevronDown className="h-4 w-4 text-gray-500" />
+                                <Button 
+                                  className="ml-2 bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded text-sm"
+                                >
+                                  Add Keywords
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            {/* Keywords table */}
+                            <table className="min-w-full border-collapse">
+                              <thead>
+                                <tr className="bg-white">
+                                  <th className="w-8 py-2 px-3 text-left">
+                                    <Checkbox />
+                                  </th>
+                                  <th className="w-8 py-2 px-1 text-left"></th>
+                                  <th className="py-2 px-3 text-left text-sm font-medium text-gray-600">Keyword</th>
+                                  <th className="py-2 px-3 text-left text-sm font-medium text-gray-600">Rank</th>
+                                  <th className="py-2 px-3 text-left text-sm font-medium text-gray-600">Change</th>
+                                  <th className="py-2 px-3 text-left text-sm font-medium text-gray-600">Volume</th>
+                                  <th className="py-2 px-3 text-left text-sm font-medium text-gray-600">Search Engine</th>
+                                  <th className="py-2 px-3 text-left text-sm font-medium text-gray-600">Location</th>
+                                  <th className="py-2 px-3 text-left text-sm font-medium text-gray-600">Platform</th>
+                                  <th className="py-2 px-3 text-left text-sm font-medium text-gray-600">Updated</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {row.keywordData.filter(k => 
+                                  k.keyword.toLowerCase().includes(keywordFilter.toLowerCase())
+                                ).map((keyword, kIndex) => (
+                                  <tr key={kIndex} className="hover:bg-gray-100">
+                                    <td className="py-2 px-3">
+                                      <Checkbox 
+                                        checked={selectedKeywords.includes(keyword.keyword)}
+                                        onCheckedChange={() => toggleKeywordSelection(keyword.keyword)}
+                                      />
+                                    </td>
+                                    <td className="py-2 px-1">
+                                      <Star className="h-4 w-4 text-gray-300" />
+                                    </td>
+                                    <td className="py-2 px-3 text-sm text-blue-600">{keyword.keyword}</td>
+                                    <td className="py-2 px-3 text-sm font-medium text-blue-600">{keyword.rank}</td>
+                                    <td className="py-2 px-3 text-sm">-</td>
+                                    <td className="py-2 px-3 text-sm">{keyword.volume || '-'}</td>
+                                    <td className="py-2 px-3 text-sm">{keyword.searchEngine}</td>
+                                    <td className="py-2 px-3 text-sm">{keyword.location}</td>
+                                    <td className="py-2 px-3 text-sm">{keyword.platform}</td>
+                                    <td className="py-2 px-3 text-sm">{keyword.updated}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
                 ))}
               </tbody>
             </table>
