@@ -12,6 +12,7 @@ import SimpleLogin from "@/pages/SimpleLogin";
 import SimpleRegister from "@/pages/SimpleRegister";
 import Profile from "@/pages/Profile";
 import Settings from "@/pages/Settings";
+import ApiKeys from "@/pages/ApiKeys";
 import Screen1 from "@/pages/reddit_scraper/screen1";
 import Screen2 from "@/pages/reddit_scraper/screen2";
 import Screen3 from "@/pages/reddit_scraper/screen3";
@@ -53,6 +54,9 @@ function Router() {
       {/* User account routes */}
       <Route path="/profile">
         {isAuthenticated ? <Profile /> : <SimpleLogin />}
+      </Route>
+      <Route path="/api_keys">
+        {isAuthenticated ? <ApiKeys /> : <SimpleLogin />}
       </Route>
       <Route path="/settings">
         {isAuthenticated ? <Settings /> : <SimpleLogin />}

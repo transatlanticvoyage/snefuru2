@@ -111,6 +111,11 @@ export default function UserLoginStatus() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
+          <Link href="/api_keys">
+            <span className="w-full">API Keys</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/settings">
             <span className="w-full">Settings</span>
           </Link>
