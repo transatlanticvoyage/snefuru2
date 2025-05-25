@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useNavigate, Link } from 'wouter';
+import { useLocation, Link } from 'wouter';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,12 +9,29 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Register, registerSchema } from '@shared/schema';
-import { apiRequest } from '@/lib/queryClient';
+import { z } from 'zod';
+
+// Define register schema locally to avoid import issues
+const registerSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirm_password: z.string().min(6, "Password must be at least 6 characters"),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  terms_accepted: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms and conditions"
+  }),
+}).refine(data => data.password === data.confirm_password, {
+  message: "Passwords do not match",
+  path: ["confirm_password"]
+});
+
+type Register = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<Register>({
@@ -34,11 +51,19 @@ export default function RegisterPage() {
     mutationFn: async (data: Register) => {
       // Remove confirm_password and terms_accepted as they're not needed by the API
       const { confirm_password, terms_accepted, ...registerData } = data;
-      return apiRequest('/api/auth/register', {
+      
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(registerData),
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       toast({

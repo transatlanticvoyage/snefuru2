@@ -5,6 +5,7 @@ import StorageSelection from "@/components/StorageSelection";
 import WordPressConnection from "@/components/WordPressConnection";
 import ImageGeneration from "@/components/ImageGeneration";
 import ProgressIndicator, { ProgressStage } from "@/components/ProgressIndicator";
+import UserLoginStatus from "@/components/UserLoginStatus";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
@@ -183,15 +184,20 @@ export default function Home() {
               <span className="text-base text-neutral-400 font-normal">AI Image Generation & Management</span>
             </h1>
             
-            {/* Quick Generate Button */}
-            <button 
-              className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md transition-colors duration-200 font-medium flex items-center"
-              onClick={handleGenerateImages}
-              disabled={isPending}
-            >
-              <i className="mdi mdi-image-multiple mr-2"></i>
-              {isPending ? 'Generating...' : 'Generate Images'}
-            </button>
+            <div className="flex items-center space-x-4">
+              {/* User Login Status */}
+              <UserLoginStatus />
+              
+              {/* Quick Generate Button */}
+              <button 
+                className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md transition-colors duration-200 font-medium flex items-center"
+                onClick={handleGenerateImages}
+                disabled={isPending}
+              >
+                <i className="mdi mdi-image-multiple mr-2"></i>
+                {isPending ? 'Generating...' : 'Generate Images'}
+              </button>
+            </div>
           </div>
           
           {/* Header Progress Bar */}
