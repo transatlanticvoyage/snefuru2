@@ -17,6 +17,7 @@ import Screen1 from "@/pages/reddit_scraper/screen1";
 import Screen2 from "@/pages/reddit_scraper/screen2";
 import Screen3 from "@/pages/reddit_scraper/screen3";
 import Screen4 from "@/pages/reddit_scraper/screen4";
+import AffiliatePrograms from "@/pages/reddit_scraper/affiliate_programs1";
 import ImageHandlerScreen1 from "@/pages/image_handler/screen1";
 import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 
@@ -75,6 +76,9 @@ function Router() {
       </Route>
       <Route path="/reddit_scraper/screen4">
         {isAuthenticated ? <Screen4 /> : <SimpleLogin />}
+      </Route>
+      <Route path="/reddit_scraper/affiliate_programs1">
+        {isAuthenticated ? <AffiliatePrograms /> : <SimpleLogin />}
       </Route>
       <Route path="/image_handler/screen1">
         {isAuthenticated ? <ImageHandlerScreen1 /> : <SimpleLogin />}
