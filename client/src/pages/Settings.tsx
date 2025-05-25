@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import Header from '@/components/Header';
 
 interface User {
   id: number;
@@ -125,8 +126,10 @@ export default function SettingsPage() {
   }
   
   return (
-    <div className="min-h-screen bg-neutral-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="min-h-screen bg-neutral-50">
+      <Header pageTitle="Account Settings" />
+      
+      <div className="container mx-auto px-4 max-w-4xl py-8">
         <div className="flex items-center mb-8">
           <Button
             variant="ghost"
