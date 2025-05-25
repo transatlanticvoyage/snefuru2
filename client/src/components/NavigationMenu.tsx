@@ -68,6 +68,20 @@ export default function MainNavigationMenu() {
             Reddit Scraper - Screen 1
           </a>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <a 
+            href="/rank_tracker/screen1" 
+            className="w-full cursor-pointer"
+            onClick={(e) => {
+              if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                handleNavigate("/rank_tracker/screen1");
+              }
+            }}
+          >
+            Rank Tracker - Screen 1
+          </a>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

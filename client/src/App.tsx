@@ -18,6 +18,7 @@ import Screen2 from "@/pages/reddit_scraper/screen2";
 import Screen3 from "@/pages/reddit_scraper/screen3";
 import Screen4 from "@/pages/reddit_scraper/screen4";
 import ImageHandlerScreen1 from "@/pages/image_handler/screen1";
+import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 
 // Protected route component that redirects to login if not authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, path: string }) {
@@ -77,6 +78,9 @@ function Router() {
       </Route>
       <Route path="/image_handler/screen1">
         {isAuthenticated ? <ImageHandlerScreen1 /> : <SimpleLogin />}
+      </Route>
+      <Route path="/rank_tracker/screen1">
+        {isAuthenticated ? <RankTrackerScreen1 /> : <SimpleLogin />}
       </Route>
       
       {/* Fallback route */}
