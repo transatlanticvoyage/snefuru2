@@ -50,6 +50,20 @@ const PromptTube: React.FC = () => {
             </Button>
           </div>
           
+          {/* Green Google Sheets Button */}
+          <div className="mb-6">
+            <a 
+              href="https://docs.google.com/spreadsheets/d/1-yPm-uFuGmij7hjJyuew--DBLZgJ4uuWD6V2On1zYZo/edit?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <Button className="bg-green-600 hover:bg-green-700 text-white text-lg px-8 py-3">
+                &gt;&gt; Go To The Google Sheet &lt;&lt; (Recommended)
+              </Button>
+            </a>
+          </div>
+          
           <div className="mb-2 text-sm text-gray-500">
             Enter your prompts below, one per line:
           </div>
