@@ -7,6 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer 
+} from 'recharts';
+import { 
   ArrowUp, 
   ArrowDown, 
   Link as LinkIcon, 
@@ -15,6 +24,22 @@ import {
   ChevronDown,
   Star,
 } from 'lucide-react';
+
+// Historical ranking data for keywords
+const rankingHistoryData = [
+  { date: 'Apr 21, 2025', position: 5 },
+  { date: 'Apr 24, 2025', position: 42 },
+  { date: 'Apr 27, 2025', position: 4 },
+  { date: 'Apr 30, 2025', position: 4 },
+  { date: 'May 3, 2025', position: 4 },
+  { date: 'May 6, 2025', position: 4 },
+  { date: 'May 9, 2025', position: 4 },
+  { date: 'May 12, 2025', position: 5 },
+  { date: 'May 15, 2025', position: 8 },
+  { date: 'May 18, 2025', position: 7 },
+  { date: 'May 21, 2025', position: 7 },
+  { date: 'May 24, 2025', position: 8 },
+];
 
 // Dummy data based on the screenshot
 const dummyData = [
@@ -27,11 +52,66 @@ const dummyData = [
     movement: 'neutral',
     expandedView: false,
     keywordData: [
-      { keyword: 'auckland concrete', rank: 4, change: 0, volume: 210, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:13:16 PM' },
-      { keyword: 'auckland concrete service', rank: 1, change: 0, volume: 0, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:13:18 PM' },
-      { keyword: 'auckland concrete services', rank: 1, change: 0, volume: 30, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:13:21 PM' },
-      { keyword: 'concrete auckland', rank: 8, change: 0, volume: 0, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:13:24 PM' },
-      { keyword: 'concrete contractors auckland', rank: 7, change: 0, volume: 50, searchEngine: 'www.google.co.nz', location: 'Auckland, Auckland, New Zealand', platform: 'Desktop', updated: 'May 25 8:44:58 PM' },
+      { 
+        keyword: 'auckland concrete', 
+        rank: 4, 
+        change: 0, 
+        volume: 210, 
+        searchEngine: 'www.google.co.nz', 
+        location: 'Auckland, Auckland, New Zealand', 
+        platform: 'Desktop', 
+        updated: 'May 25 8:13:16 PM',
+        showHistory: false,
+        history: rankingHistoryData
+      },
+      { 
+        keyword: 'auckland concrete service', 
+        rank: 1, 
+        change: 0, 
+        volume: 0, 
+        searchEngine: 'www.google.co.nz', 
+        location: 'Auckland, Auckland, New Zealand', 
+        platform: 'Desktop', 
+        updated: 'May 25 8:13:18 PM',
+        showHistory: false,
+        history: rankingHistoryData
+      },
+      { 
+        keyword: 'auckland concrete services', 
+        rank: 1, 
+        change: 0, 
+        volume: 30, 
+        searchEngine: 'www.google.co.nz', 
+        location: 'Auckland, Auckland, New Zealand', 
+        platform: 'Desktop', 
+        updated: 'May 25 8:13:21 PM',
+        showHistory: false,
+        history: rankingHistoryData
+      },
+      { 
+        keyword: 'concrete auckland', 
+        rank: 8, 
+        change: 0, 
+        volume: 0, 
+        searchEngine: 'www.google.co.nz', 
+        location: 'Auckland, Auckland, New Zealand', 
+        platform: 'Desktop', 
+        updated: 'May 25 8:13:24 PM',
+        showHistory: false,
+        history: rankingHistoryData
+      },
+      { 
+        keyword: 'concrete contractors auckland', 
+        rank: 7, 
+        change: 0, 
+        volume: 50, 
+        searchEngine: 'www.google.co.nz', 
+        location: 'Auckland, Auckland, New Zealand', 
+        platform: 'Desktop', 
+        updated: 'May 25 8:44:58 PM',
+        showHistory: false,
+        history: rankingHistoryData
+      },
     ]
   },
   { url: 'aucklandplumbersgroup.co.nz', change: 0, high: 1, low: 1, keywords: 1, movement: 'neutral' },
@@ -74,6 +154,25 @@ export default function RankTrackerScreen1() {
       setSelectedKeywords(selectedKeywords.filter(k => k !== keyword));
     } else {
       setSelectedKeywords([...selectedKeywords, keyword]);
+    }
+  };
+  
+  // Toggle keyword history chart
+  const toggleKeywordHistory = (urlIndex: number, keywordIndex: number) => {
+    const newData = [...tableData];
+    if (newData[urlIndex].keywordData) {
+      // Reset all other keyword history views first
+      newData[urlIndex].keywordData.forEach((kw, idx) => {
+        if (kw.showHistory && idx !== keywordIndex) {
+          kw.showHistory = false;
+        }
+      });
+      
+      // Toggle the selected keyword's history view
+      newData[urlIndex].keywordData[keywordIndex].showHistory = 
+        !newData[urlIndex].keywordData[keywordIndex].showHistory;
+      
+      setTableData(newData);
     }
   };
   
@@ -265,25 +364,79 @@ export default function RankTrackerScreen1() {
                                 {row.keywordData.filter(k => 
                                   k.keyword.toLowerCase().includes(keywordFilter.toLowerCase())
                                 ).map((keyword, kIndex) => (
-                                  <tr key={kIndex} className="hover:bg-gray-100">
-                                    <td className="py-2 px-3">
-                                      <Checkbox 
-                                        checked={selectedKeywords.includes(keyword.keyword)}
-                                        onCheckedChange={() => toggleKeywordSelection(keyword.keyword)}
-                                      />
-                                    </td>
-                                    <td className="py-2 px-1">
-                                      <Star className="h-4 w-4 text-gray-300" />
-                                    </td>
-                                    <td className="py-2 px-3 text-sm text-blue-600">{keyword.keyword}</td>
-                                    <td className="py-2 px-3 text-sm font-medium text-blue-600">{keyword.rank}</td>
-                                    <td className="py-2 px-3 text-sm">-</td>
-                                    <td className="py-2 px-3 text-sm">{keyword.volume || '-'}</td>
-                                    <td className="py-2 px-3 text-sm">{keyword.searchEngine}</td>
-                                    <td className="py-2 px-3 text-sm">{keyword.location}</td>
-                                    <td className="py-2 px-3 text-sm">{keyword.platform}</td>
-                                    <td className="py-2 px-3 text-sm">{keyword.updated}</td>
-                                  </tr>
+                                  <>
+                                    <tr 
+                                      key={kIndex} 
+                                      className="hover:bg-gray-100 cursor-pointer"
+                                      onClick={() => toggleKeywordHistory(index, kIndex)}
+                                    >
+                                      <td className="py-2 px-3" onClick={(e) => e.stopPropagation()}>
+                                        <Checkbox 
+                                          checked={selectedKeywords.includes(keyword.keyword)}
+                                          onCheckedChange={() => toggleKeywordSelection(keyword.keyword)}
+                                        />
+                                      </td>
+                                      <td className="py-2 px-1">
+                                        <Star className="h-4 w-4 text-gray-300" />
+                                      </td>
+                                      <td className="py-2 px-3 text-sm text-blue-600">{keyword.keyword}</td>
+                                      <td className="py-2 px-3 text-sm font-medium text-blue-600">{keyword.rank}</td>
+                                      <td className="py-2 px-3 text-sm">-</td>
+                                      <td className="py-2 px-3 text-sm">{keyword.volume || '-'}</td>
+                                      <td className="py-2 px-3 text-sm">{keyword.searchEngine}</td>
+                                      <td className="py-2 px-3 text-sm">{keyword.location}</td>
+                                      <td className="py-2 px-3 text-sm">{keyword.platform}</td>
+                                      <td className="py-2 px-3 text-sm">{keyword.updated}</td>
+                                    </tr>
+                                    
+                                    {/* Keyword ranking history chart */}
+                                    {keyword.showHistory && (
+                                      <tr>
+                                        <td colSpan={10} className="p-0 border-b">
+                                          <div className="bg-white p-4">
+                                            <div className="h-64 w-full">
+                                              <ResponsiveContainer width="100%" height="100%">
+                                                <LineChart
+                                                  data={keyword.history}
+                                                  margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
+                                                >
+                                                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                  <XAxis 
+                                                    dataKey="date" 
+                                                    tick={{ fontSize: 12 }}
+                                                    tickMargin={10}
+                                                  />
+                                                  <YAxis 
+                                                    domain={[0, 50]} 
+                                                    reversed
+                                                    ticks={[0, 5, 10, 15, 20, 25, 30, 35, 40, 45]}
+                                                    tick={{ fontSize: 12 }}
+                                                    tickMargin={10}
+                                                    label={{ 
+                                                      value: '', 
+                                                      position: 'insideLeft',
+                                                      angle: -90,
+                                                      style: { textAnchor: 'middle' }
+                                                    }}
+                                                  />
+                                                  <Tooltip />
+                                                  <Line 
+                                                    type="monotone" 
+                                                    dataKey="position" 
+                                                    stroke="#FF6B00" 
+                                                    strokeWidth={2}
+                                                    dot={{ r: 4, fill: "#FF6B00" }}
+                                                    activeDot={{ r: 6 }}
+                                                    connectNulls
+                                                  />
+                                                </LineChart>
+                                              </ResponsiveContainer>
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </>
                                 ))}
                               </tbody>
                             </table>
