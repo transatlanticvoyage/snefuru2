@@ -15,6 +15,10 @@ interface ApiKeysState {
   dropbox: string;
   midjourney: string;
   gemini: string;
+  dataforseo: {
+    login: string;
+    password: string;
+  };
   wordpress: {
     url: string;
     username: string;
@@ -41,6 +45,10 @@ export default function ApiKeysPage() {
   const [midjourneyApiKey, setMidjourneyApiKey] = useState('');
   const [geminiApiKey, setGeminiApiKey] = useState('');
   
+  // DataForSEO credentials
+  const [dataforseoLogin, setDataforseoLogin] = useState('');
+  const [dataforseoPassword, setDataforseoPassword] = useState('');
+  
   // WordPress credentials
   const [wordpressUrl, setWordpressUrl] = useState('');
   const [wordpressUsername, setWordpressUsername] = useState('');
@@ -65,6 +73,10 @@ export default function ApiKeysPage() {
         setMidjourneyApiKey(userData.api_keys.midjourney || '');
         setGeminiApiKey(userData.api_keys.gemini || '');
         
+        // Load DataForSEO credentials
+        setDataforseoLogin(userData.api_keys.dataforseo?.login || '');
+        setDataforseoPassword(userData.api_keys.dataforseo?.password || '');
+        
         // Load WordPress credentials
         setWordpressUrl(userData.api_keys.wordpress?.url || '');
         setWordpressUsername(userData.api_keys.wordpress?.username || '');
@@ -88,6 +100,10 @@ export default function ApiKeysPage() {
         dropbox: dropboxApiKey,
         midjourney: midjourneyApiKey,
         gemini: geminiApiKey,
+        dataforseo: {
+          login: dataforseoLogin,
+          password: dataforseoPassword,
+        },
         wordpress: {
           url: wordpressUrl,
           username: wordpressUsername,
@@ -239,6 +255,56 @@ export default function ApiKeysPage() {
           
           <TabsContent value="publishing">
             <div className="grid grid-cols-1 gap-6">
+              {/* DataForSEO API Credentials */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>DataForSEO API Credentials</CardTitle>
+                  <CardDescription>
+                    Add your DataForSEO credentials to track keyword rankings.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="dataforseo-login" className="text-base font-semibold">
+                        DataForSEO API Login
+                      </Label>
+                      <Input
+                        id="dataforseo-login"
+                        placeholder="your-email@example.com"
+                        value={dataforseoLogin}
+                        onChange={(e) => setDataforseoLogin(e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="dataforseo-password" className="text-base font-semibold">
+                        DataForSEO API Password
+                      </Label>
+                      <Input
+                        id="dataforseo-password"
+                        type="password"
+                        placeholder="Your API password"
+                        value={dataforseoPassword}
+                        onChange={(e) => setDataforseoPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">
+                    Used for keyword rank tracking and SEO data retrieval.
+                    <a 
+                      href="https://app.dataforseo.com/register" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary ml-1 hover:underline"
+                    >
+                      Get your DataForSEO API credentials
+                    </a>
+                  </p>
+                </CardContent>
+              </Card>
+              
               {/* Dropbox API Key */}
               <Card>
                 <CardHeader>
