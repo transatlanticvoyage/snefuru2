@@ -95,14 +95,11 @@ export default function Home() {
       return;
     }
 
-    // WordPress info is optional - only validate if info was entered but not saved
-    if ((wpCredentials.url || wpCredentials.username || wpCredentials.password) && !wpInfoSaved) {
-      toast({
-        title: "WordPress info not saved",
-        description: "Please save your WordPress credentials or clear the fields",
-        variant: "destructive",
-      });
-      return;
+    // WordPress info is completely optional - no validation needed
+    // We'll automatically save any WordPress credentials if they exist
+    if (wpCredentials.url && wpCredentials.username && wpCredentials.password && !wpInfoSaved) {
+      // Auto-save WordPress credentials
+      setWpInfoSaved(true);
     }
 
     generateImages();
