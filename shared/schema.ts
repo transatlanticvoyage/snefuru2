@@ -17,6 +17,14 @@ export const image_batches = pgTable("image_batches", {
   note1: text("note1"),
 });
 
+// Reddit URLs table
+export const reddit_urls1 = pgTable("reddit_urls1", {
+  id: serial("id").primaryKey(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  url1: text("url1").notNull(),
+  note1: text("note1"),
+});
+
 // Users table (kept from original schema)
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -35,6 +43,11 @@ export const insertImageBatchSchema = createInsertSchema(image_batches).omit({
   created_at: true,
 });
 
+export const insertRedditUrlSchema = createInsertSchema(reddit_urls1).omit({
+  id: true,
+  created_at: true,
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -43,6 +56,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 // Export types
 export type InsertImage = z.infer<typeof insertImageSchema>;
 export type InsertImageBatch = z.infer<typeof insertImageBatchSchema>;
+export type InsertRedditUrl = z.infer<typeof insertRedditUrlSchema>;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
 export type Image = typeof images.$inferSelect;
@@ -66,13 +80,9 @@ export const imageGenerationRequestSchema = z.object({
   wpCredentials: wpCredentialsSchema,
 });
 
-export type WpCredentials = z.infer<typeof wpCredentialsSchema>;
-export type ImageGenerationRequest = z.infer<typeof imageGenerationRequestSchema>;
-
-// Minimal spreadsheet data validation schema
 export const spreadsheetRowSchema = z.object({
-  actual_prompt_for_image_generating_ai_tool: z.string().min(1),
-  file_name: z.string().min(1),
+  actual_prompt_for_image_generating_ai_tool: z.string(),
+  file_name: z.string(),
 });
 
 export type SpreadsheetRow = z.infer<typeof spreadsheetRowSchema>;
