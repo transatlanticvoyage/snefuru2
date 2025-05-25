@@ -8,6 +8,7 @@ import Screen1 from "@/pages/reddit_scraper/screen1";
 import Screen2 from "@/pages/reddit_scraper/screen2";
 import Screen3 from "@/pages/reddit_scraper/screen3";
 import Screen4 from "@/pages/reddit_scraper/screen4";
+import ImageHandlerScreen1 from "@/pages/image_handler/screen1";
 
 function Router() {
   return (
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/reddit_scraper/screen2" component={Screen2} />
       <Route path="/reddit_scraper/screen3" component={Screen3} />
       <Route path="/reddit_scraper/screen4" component={Screen4} />
+      <Route path="/image_handler/screen1" component={ImageHandlerScreen1} />
       <Route component={NotFound} />
     </Switch>
   );
