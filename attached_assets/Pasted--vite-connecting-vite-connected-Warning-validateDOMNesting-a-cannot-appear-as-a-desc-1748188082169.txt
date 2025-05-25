@@ -1,0 +1,63 @@
+[vite] connecting...
+[vite] connected.
+Warning: validateDOMNesting(...): <a> cannot appear as a descendant of &lt;a&gt;.
+    at a
+    at a
+    at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=14678474:337:18
+    at label
+    at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXMZZQ2X.js?v=14678474:42:13
+    at Label
+    at _c (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/label.tsx:25:11)
+    at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/form.tsx:96:6
+    at div
+    at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/form.tsx:72:6
+    at Controller (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=14678474:298:35)
+    at FormField (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/form.tsx:33:6)
+    at form
+    at FormProvider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=14678474:102:11)
+    at div
+    at _c9 (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at RegisterPage (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/pages/Register.tsx?t=1748187841851:46:21)
+    at Route (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=14678474:323:16)
+    at Switch (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=14678474:379:17)
+    at Router (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/App.tsx?t=1748187856662&v=a9vMIE0NamT7-3wYbCZXi:60:31)
+    at Provider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-GFOGKHJ2.js?v=14678474:22:15)
+    at TooltipProvider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=14678474:57:5)
+    at AuthProvider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/hooks/useAuth.tsx:21:32)
+    at QueryClientProvider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=14678474:2805:3)
+    at App
+at a
+at a
+at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=14678474:337:18
+at label
+at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-AXMZZQ2X.js?v=14678474:42:13
+at Label
+at _c (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/label.tsx:25:11)
+at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/form.tsx:96:6
+at div
+at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/form.tsx:72:6
+at Controller (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=14678474:298:35)
+at FormField (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/form.tsx:33:6)
+at form
+at FormProvider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4BFJKWC4.js?v=14678474:102:11)
+at div
+at _c9 (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/card.tsx:114:12)
+at div
+at _c (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/components/ui/card.tsx:20:11)
+at div
+at RegisterPage (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/pages/Register.tsx?t=1748187841851:46:21)
+at Route (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=14678474:323:16)
+at Switch (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=14678474:379:17)
+at Router (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/App.tsx?t=1748187856662&amp;v=a9vMIE0NamT7-3wYbCZXi:60:31)
+at Provider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-GFOGKHJ2.js?v=14678474:22:15)
+at TooltipProvider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=14678474:57:5)
+at AuthProvider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/src/hooks/useAuth.tsx:21:32)
+at QueryClientProvider (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=14678474:2805:3)
+at App
+at t.value (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400

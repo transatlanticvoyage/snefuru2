@@ -251,7 +251,7 @@ export default function RegisterPage() {
                       />
                     </FormControl>
                     <FormLabel className="text-sm font-normal">
-                      I accept the <Link href="/terms"><a className="text-primary-600 hover:underline">Terms and Conditions</a></Link>
+                      I accept the <span className="text-primary-600 hover:underline cursor-pointer" onClick={() => window.open('/terms', '_blank')}>Terms and Conditions</span>
                     </FormLabel>
                     <FormMessage />
                   </FormItem>

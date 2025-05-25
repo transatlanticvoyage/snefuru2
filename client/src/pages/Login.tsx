@@ -173,9 +173,12 @@ export default function LoginPage() {
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-center text-neutral-600">
             Don't have an account?{' '}
-            <Link href="/register">
-              <a className="text-primary-600 hover:underline">Register</a>
-            </Link>
+            <span 
+              className="text-primary-600 hover:underline cursor-pointer" 
+              onClick={() => navigate('/register')}
+            >
+              Register
+            </span>
           </div>
         </CardFooter>
       </Card>
