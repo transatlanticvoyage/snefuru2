@@ -74,6 +74,15 @@ export type ImageBatch = typeof image_batches.$inferSelect;
 export type User = typeof users.$inferSelect;
 
 // Additional schema types for the application
+export type WpCredentials = {
+  url: string;
+  username: string;
+  password: string;
+  post_id: string;
+  mapping_key: string;
+  application_password?: string;
+};
+
 export const wpCredentialsSchema = z.object({
   url: z.string().url().optional().or(z.literal('')),
   username: z.string().min(1).optional().or(z.literal('')),

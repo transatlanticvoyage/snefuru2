@@ -5,12 +5,12 @@ import StorageSelection from "@/components/StorageSelection";
 import WordPressConnection from "@/components/WordPressConnection";
 import ImageGeneration from "@/components/ImageGeneration";
 import ProgressIndicator, { ProgressStage } from "@/components/ProgressIndicator";
-import UserLoginStatus from "@/components/UserLoginStatus";
-import MainNavigationMenu from "@/components/NavigationMenu";
+import Header from "@/components/Header";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
-import type { SpreadsheetRow, WpCredentials } from "@shared/schema";
+import type { SpreadsheetRow } from "../../../shared/schema";
+import type { WpCredentials } from "../../../shared/schema";
 
 export default function Home() {
   const [spreadsheetData, setSpreadsheetData] = useState<SpreadsheetRow[]>([]);
@@ -176,46 +176,34 @@ export default function Home() {
 
   return (
     <div className="font-sans bg-neutral-50 text-neutral-500 min-h-screen">
-      {/* Full-width header */}
-      <header className="w-full bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-semibold text-neutral-600 flex items-center">
-              <span className="mr-2">Snefuru</span>
-              <span className="text-base text-neutral-400 font-normal">AI Image Generation & Management</span>
-            </h1>
-            
-            <div className="flex items-center space-x-4">
-              {/* Navigation Menu */}
-              <MainNavigationMenu />
-              
-              {/* User Login Status */}
-              <UserLoginStatus />
-              
-              {/* Quick Generate Button */}
-              <button 
-                className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md transition-colors duration-200 font-medium flex items-center"
-                onClick={handleGenerateImages}
-                disabled={isPending}
-              >
-                <i className="mdi mdi-image-multiple mr-2"></i>
-                {isPending ? 'Generating...' : 'Generate Images'}
-              </button>
-            </div>
-          </div>
-          
-          {/* Header Progress Bar */}
-          {(isPending || generationProgress > 0) && (
-            <div className="mt-4">
-              <ProgressIndicator 
-                progress={generationProgress} 
-                statusStage={progressStage} 
-                errorMessage={progressError} 
-              />
-            </div>
-          )}
+      {/* Header */}
+      <Header pageTitle="AI Image Generation & Management" />
+      
+      {/* Generate Button and Progress Bar */}
+      <div className="w-full bg-white border-b">
+        <div className="container mx-auto px-4 py-2 flex justify-end">
+          {/* Quick Generate Button */}
+          <button 
+            className="bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-md transition-colors duration-200 font-medium flex items-center"
+            onClick={handleGenerateImages}
+            disabled={isPending}
+          >
+            <i className="mdi mdi-image-multiple mr-2"></i>
+            {isPending ? 'Generating...' : 'Generate Images'}
+          </button>
         </div>
-      </header>
+        
+        {/* Progress Bar */}
+        {(isPending || generationProgress > 0) && (
+          <div className="container mx-auto px-4 pb-4">
+            <ProgressIndicator 
+              progress={generationProgress} 
+              statusStage={progressStage} 
+              errorMessage={progressError} 
+            />
+          </div>
+        )}
+      </div>
 
       {/* Spreadsheet section - 100% width */}
       <div className="w-full py-6 bg-neutral-50">

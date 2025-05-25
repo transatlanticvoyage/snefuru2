@@ -708,6 +708,170 @@ export default function ApiKeysPage() {
                 </CardContent>
               </Card>
               
+              {/* Amazon S3 API Keys */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Amazon S3</CardTitle>
+                  <CardDescription>
+                    Add your Amazon S3 credentials to enable cloud storage.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-base font-semibold">
+                      Amazon S3 Credentials
+                    </Label>
+                    <div className="flex space-x-2">
+                      {!amazonS3EditMode && amazonS3AccessKeyId && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => setAmazonS3EditMode(true)}
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {amazonS3EditMode && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={createSaveHandler(
+                            'amazons3', 
+                            {
+                              accessKeyId: amazonS3AccessKeyId,
+                              secretAccessKey: amazonS3SecretAccessKey,
+                              region: amazonS3Region,
+                              bucketName: amazonS3BucketName
+                            },
+                            setAmazonS3EditMode,
+                            'Amazon S3 Credentials'
+                          )}
+                        >
+                          <Save className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="amazon-s3-access-key-id" className="text-base font-semibold">
+                      Access Key ID
+                    </Label>
+                    {amazonS3EditMode ? (
+                      <Input
+                        id="amazon-s3-access-key-id"
+                        placeholder="Access Key ID..."
+                        value={amazonS3AccessKeyId}
+                        onChange={(e) => setAmazonS3AccessKeyId(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {amazonS3AccessKeyId ? (
+                          <div className="flex items-center text-muted-foreground">
+                            <Lock className="h-3.5 w-3.5 mr-2" />
+                            {amazonS3AccessKeyId.substring(0, 3)}...{amazonS3AccessKeyId.substring(amazonS3AccessKeyId.length - 4)}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No Access Key ID set</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="amazon-s3-secret-access-key" className="text-base font-semibold">
+                      Secret Access Key
+                    </Label>
+                    {amazonS3EditMode ? (
+                      <Input
+                        id="amazon-s3-secret-access-key"
+                        type="password"
+                        placeholder="Secret Access Key..."
+                        value={amazonS3SecretAccessKey}
+                        onChange={(e) => setAmazonS3SecretAccessKey(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {amazonS3SecretAccessKey ? (
+                          <div className="flex items-center text-muted-foreground">
+                            <Lock className="h-3.5 w-3.5 mr-2" />
+                            {amazonS3SecretAccessKey.substring(0, 3)}...{amazonS3SecretAccessKey.substring(amazonS3SecretAccessKey.length - 4)}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No Secret Access Key set</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="amazon-s3-region" className="text-base font-semibold">
+                        Region
+                      </Label>
+                      {amazonS3EditMode ? (
+                        <Input
+                          id="amazon-s3-region"
+                          placeholder="us-east-1"
+                          value={amazonS3Region}
+                          onChange={(e) => setAmazonS3Region(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {amazonS3Region ? (
+                            <div className="flex items-center text-muted-foreground">
+                              {amazonS3Region}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No Region set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="amazon-s3-bucket-name" className="text-base font-semibold">
+                        Bucket Name
+                      </Label>
+                      {amazonS3EditMode ? (
+                        <Input
+                          id="amazon-s3-bucket-name"
+                          placeholder="my-bucket"
+                          value={amazonS3BucketName}
+                          onChange={(e) => setAmazonS3BucketName(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {amazonS3BucketName ? (
+                            <div className="flex items-center text-muted-foreground">
+                              {amazonS3BucketName}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No Bucket Name set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">
+                    Used for storing generated images in your Amazon S3 bucket.
+                    <a 
+                      href="https://aws.amazon.com/s3/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary ml-1 hover:underline"
+                    >
+                      Learn more about Amazon S3
+                    </a>
+                  </p>
+                </CardContent>
+              </Card>
+              
               {/* WordPress API Connection */}
               <Card>
                 <CardHeader>
@@ -717,16 +881,67 @@ export default function ApiKeysPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-base font-semibold">
+                      WordPress Credentials
+                    </Label>
+                    <div className="flex space-x-2">
+                      {!wordpressEditMode && wordpressUrl && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => setWordpressEditMode(true)}
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {wordpressEditMode && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={createSaveHandler(
+                            'wordpress', 
+                            {
+                              url: wordpressUrl,
+                              username: wordpressUsername,
+                              password: wordpressPassword
+                            },
+                            setWordpressEditMode,
+                            'WordPress Connection'
+                          )}
+                        >
+                          <Save className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="wordpress-url" className="text-base font-semibold">
                       WordPress Site URL
                     </Label>
-                    <Input
-                      id="wordpress-url"
-                      placeholder="https://your-site.com"
-                      value={wordpressUrl}
-                      onChange={(e) => setWordpressUrl(e.target.value)}
-                    />
+                    {wordpressEditMode ? (
+                      <Input
+                        id="wordpress-url"
+                        placeholder="https://your-site.com"
+                        value={wordpressUrl}
+                        onChange={(e) => setWordpressUrl(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {wordpressUrl ? (
+                          <div className="flex items-center text-muted-foreground">
+                            {wordpressUrl}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No WordPress URL set</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -734,25 +949,50 @@ export default function ApiKeysPage() {
                       <Label htmlFor="wordpress-username" className="text-base font-semibold">
                         WordPress Username
                       </Label>
-                      <Input
-                        id="wordpress-username"
-                        placeholder="Your username"
-                        value={wordpressUsername}
-                        onChange={(e) => setWordpressUsername(e.target.value)}
-                      />
+                      {wordpressEditMode ? (
+                        <Input
+                          id="wordpress-username"
+                          placeholder="Your username"
+                          value={wordpressUsername}
+                          onChange={(e) => setWordpressUsername(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {wordpressUsername ? (
+                            <div className="flex items-center text-muted-foreground">
+                              {wordpressUsername}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No Username set</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="wordpress-password" className="text-base font-semibold">
                         Application Password
                       </Label>
-                      <Input
-                        id="wordpress-password"
-                        type="password"
-                        placeholder="xxxx xxxx xxxx xxxx"
-                        value={wordpressPassword}
-                        onChange={(e) => setWordpressPassword(e.target.value)}
-                      />
+                      {wordpressEditMode ? (
+                        <Input
+                          id="wordpress-password"
+                          type="password"
+                          placeholder="xxxx xxxx xxxx xxxx"
+                          value={wordpressPassword}
+                          onChange={(e) => setWordpressPassword(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {wordpressPassword ? (
+                            <div className="flex items-center text-muted-foreground">
+                              <Lock className="h-3.5 w-3.5 mr-2" />
+                              {wordpressPassword.substring(0, 3)}...{wordpressPassword.substring(wordpressPassword.length - 4)}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No Password set</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   
