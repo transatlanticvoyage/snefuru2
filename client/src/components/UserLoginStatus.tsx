@@ -106,19 +106,28 @@ export default function UserLoginStatus() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/profile">
-            <span className="w-full">Profile</span>
-          </Link>
+          <a 
+            href="/profile" 
+            className="w-full cursor-pointer"
+          >
+            Profile
+          </a>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/api_keys">
-            <span className="w-full">API Keys</span>
-          </Link>
+          <a 
+            href="/api_keys" 
+            className="w-full cursor-pointer"
+          >
+            API Keys
+          </a>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/settings">
-            <span className="w-full">Settings</span>
-          </Link>
+          <a 
+            href="/settings" 
+            className="w-full cursor-pointer"
+          >
+            Settings
+          </a>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

@@ -24,14 +24,49 @@ export default function MainNavigationMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[200px]">
-        <DropdownMenuItem onClick={() => handleNavigate("/")}>
-          Home
+        <DropdownMenuItem asChild>
+          <a 
+            href="/" 
+            className="w-full cursor-pointer"
+            onClick={(e) => {
+              // Only handle left-click without modifier keys
+              if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                handleNavigate("/");
+              }
+              // Other clicks (middle, right, or with Ctrl/Cmd) will use default browser behavior
+            }}
+          >
+            Home
+          </a>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleNavigate("/image_handler/screen1")}>
-          Screen1
+        <DropdownMenuItem asChild>
+          <a 
+            href="/image_handler/screen1" 
+            className="w-full cursor-pointer"
+            onClick={(e) => {
+              if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                handleNavigate("/image_handler/screen1");
+              }
+            }}
+          >
+            Screen1
+          </a>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleNavigate("/reddit_scraper/screen1")}>
-          Screen2
+        <DropdownMenuItem asChild>
+          <a 
+            href="/reddit_scraper/screen1" 
+            className="w-full cursor-pointer"
+            onClick={(e) => {
+              if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                handleNavigate("/reddit_scraper/screen1");
+              }
+            }}
+          >
+            Screen2
+          </a>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
