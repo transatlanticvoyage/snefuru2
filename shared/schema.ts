@@ -231,6 +231,7 @@ export type User = typeof users.$inferSelect;
 export type CalendarConnection = typeof calendar_connections.$inferSelect;
 export type CalendarEvent = typeof calendar_events.$inferSelect;
 export type NotionNote = typeof notion_notes.$inferSelect;
+export type Domain = typeof domains1.$inferSelect;
 
 // Additional schema types for the application
 export type WpCredentials = {

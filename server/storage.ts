@@ -18,7 +18,13 @@ import {
   type InsertCalendarEvent,
   users, 
   type User, 
-  type InsertUser 
+  type InsertUser,
+  notion_notes,
+  domains1,
+  type NotionNote,
+  type InsertNotionNote,
+  type Domain,
+  type InsertDomain
 } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "./db";
@@ -82,6 +88,14 @@ export interface IStorage {
   updateNotionNote(id: number, data: Partial<InsertNotionNote>): Promise<NotionNote>;
   deleteNotionNotes(ids: number[]): Promise<void>;
   upsertNotionNote(note: InsertNotionNote): Promise<NotionNote>;
+
+  // Domain methods
+  createDomain(domain: InsertDomain): Promise<Domain>;
+  getDomain(id: number): Promise<Domain | undefined>;
+  getUserDomains(userId: number): Promise<Domain[]>;
+  bulkCreateDomains(domains: InsertDomain[]): Promise<Domain[]>;
+  deleteDomain(id: number): Promise<void>;
+  bulkDeleteDomains(ids: number[]): Promise<void>;
 }
 
 // Database implementation of storage
@@ -347,6 +361,82 @@ export class DatabaseStorage implements IStorage {
       const [created] = await db.insert(calendar_events).values(event).returning();
       return created;
     }
+  }
+
+  // Domain methods
+  async createDomain(domain: InsertDomain): Promise<Domain> {
+    const [newDomain] = await db
+      .insert(domains1)
+      .values(domain)
+      .returning();
+    return newDomain;
+  }
+
+  async getDomain(id: number): Promise<Domain | undefined> {
+    const [domain] = await db
+      .select()
+      .from(domains1)
+      .where(eq(domains1.id, id));
+    return domain || undefined;
+  }
+
+  async getUserDomains(userId: number): Promise<Domain[]> {
+    return await db
+      .select()
+      .from(domains1)
+      .where(eq(domains1.rel_user_id, userId))
+      .orderBy(desc(domains1.created_at));
+  }
+
+  async bulkCreateDomains(domains: InsertDomain[]): Promise<Domain[]> {
+    if (domains.length === 0) return [];
+    
+    return await db
+      .insert(domains1)
+      .values(domains)
+      .returning();
+  }
+
+  async deleteDomain(id: number): Promise<void> {
+    await db
+      .delete(domains1)
+      .where(eq(domains1.id, id));
+  }
+
+  async bulkDeleteDomains(ids: number[]): Promise<void> {
+    if (ids.length === 0) return;
+    
+    // Use a simple loop for now - can be optimized with inArray later
+    for (const id of ids) {
+      await db
+        .delete(domains1)
+        .where(eq(domains1.id, id));
+    }
+  }
+
+  // Placeholder Notion methods for interface compliance
+  async createNotionNote(note: InsertNotionNote): Promise<NotionNote> {
+    throw new Error("Notion integration not implemented");
+  }
+
+  async getNotionNote(id: number): Promise<NotionNote | undefined> {
+    throw new Error("Notion integration not implemented");
+  }
+
+  async getNotionNotesByUserId(userId: number): Promise<NotionNote[]> {
+    return [];
+  }
+
+  async updateNotionNote(id: number, data: Partial<InsertNotionNote>): Promise<NotionNote> {
+    throw new Error("Notion integration not implemented");
+  }
+
+  async deleteNotionNotes(ids: number[]): Promise<void> {
+    // Placeholder
+  }
+
+  async upsertNotionNote(note: InsertNotionNote): Promise<NotionNote> {
+    throw new Error("Notion integration not implemented");
   }
 }
 
