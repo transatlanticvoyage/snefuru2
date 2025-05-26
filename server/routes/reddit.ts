@@ -162,46 +162,78 @@ router.post('/upload-positions', upload.single('file'), async (req: AuthRequestW
 
     // Process data rows and create position records
     const positions = [];
-    for (const row of dataRows) {
+    const skippedRows = [];
+    
+    for (let rowIndex = 0; rowIndex < dataRows.length; rowIndex++) {
+      const row = dataRows[rowIndex];
+      
       // Skip empty rows
       if (!row || row.every(cell => !cell)) continue;
 
-      const positionData: any = {
-        user_id: userId,
-        search_engine: 'google',
-        language: 'en'
-      };
+      try {
+        const positionData: any = {
+          user_id: userId,
+          search_engine: 'google',
+          language: 'en'
+        };
 
-      // Map data from row to our schema
-      Object.entries(columnMap).forEach(([colIndex, fieldName]) => {
-        const value = row[parseInt(colIndex)];
-        if (value !== undefined && value !== null && value !== '') {
-          // Handle numeric fields
-          if (['position', 'previous_position', 'position_change', 'search_volume', 'traffic', 'estimated_clicks', 'word_count', 'backlinks', 'referring_domains', 'social_shares'].includes(fieldName)) {
-            const numValue = parseFloat(value);
-            if (!isNaN(numValue)) {
-              positionData[fieldName] = Math.round(numValue);
+        // Map data from row to our schema
+        Object.entries(columnMap).forEach(([colIndex, fieldName]) => {
+          const value = row[parseInt(colIndex)];
+          if (value !== undefined && value !== null && value !== '') {
+            // Handle numeric fields
+            if (['position', 'previous_position', 'position_change', 'search_volume', 'traffic', 'estimated_clicks', 'word_count', 'backlinks', 'referring_domains', 'social_shares'].includes(fieldName)) {
+              const numValue = parseFloat(String(value));
+              if (!isNaN(numValue)) {
+                positionData[fieldName] = Math.round(numValue);
+              }
+            } else if (['cpc', 'traffic_cost', 'difficulty', 'visibility', 'click_through_rate', 'page_authority', 'domain_authority'].includes(fieldName)) {
+              // Handle decimal/string fields that shouldn't be rounded
+              positionData[fieldName] = String(value).trim();
+            } else {
+              // Handle string fields - ensure they're not too long
+              const stringValue = String(value).trim();
+              if (fieldName === 'keyword' && stringValue.length > 500) {
+                positionData[fieldName] = stringValue.substring(0, 500);
+              } else if (fieldName === 'url' && stringValue.length > 2048) {
+                positionData[fieldName] = stringValue.substring(0, 2048);
+              } else if (fieldName === 'domain' && stringValue.length > 255) {
+                positionData[fieldName] = stringValue.substring(0, 255);
+              } else {
+                positionData[fieldName] = stringValue;
+              }
             }
+          }
+        });
+
+        // Ensure required fields are present
+        if (positionData.keyword && positionData.url) {
+          // Extract domain from URL if not provided
+          if (!positionData.domain && positionData.url) {
+            try {
+              const urlObj = new URL(positionData.url);
+              positionData.domain = urlObj.hostname;
+            } catch (e) {
+              // If URL parsing fails, use the first part of the URL
+              const urlParts = positionData.url.split('/');
+              if (urlParts.length > 2) {
+                positionData.domain = urlParts[2];
+              }
+            }
+          }
+
+          // Validate the data before adding
+          if (positionData.keyword.length > 0 && positionData.url.length > 0) {
+            positions.push(positionData);
           } else {
-            // Handle string fields
-            positionData[fieldName] = String(value).trim();
+            skippedRows.push(rowIndex + 2); // +2 because of header row and 0-based index
           }
+        } else {
+          skippedRows.push(rowIndex + 2); // +2 because of header row and 0-based index
         }
-      });
-
-      // Ensure required fields are present
-      if (positionData.keyword && positionData.url) {
-        // Extract domain from URL if not provided
-        if (!positionData.domain && positionData.url) {
-          try {
-            const urlObj = new URL(positionData.url);
-            positionData.domain = urlObj.hostname;
-          } catch (e) {
-            // If URL parsing fails, skip domain extraction
-          }
-        }
-
-        positions.push(positionData);
+      } catch (error) {
+        console.error(`Error processing row ${rowIndex + 2}:`, error);
+        skippedRows.push(rowIndex + 2);
       }
     }
 
@@ -215,17 +247,34 @@ router.post('/upload-positions', upload.single('file'), async (req: AuthRequestW
     // Bulk insert positions
     const createdPositions = await storage.bulkCreateRedditOrganicPositions(positions);
 
+    let message = `Successfully imported ${createdPositions.length} records`;
+    if (skippedRows.length > 0) {
+      message += `. Skipped ${skippedRows.length} rows due to missing required data (rows: ${skippedRows.join(', ')})`;
+    }
+
     res.json({ 
       success: true, 
-      message: 'File uploaded and processed successfully',
-      count: createdPositions.length 
+      message: message,
+      count: createdPositions.length,
+      skipped: skippedRows.length 
     });
 
   } catch (error) {
     console.error('Error processing uploaded file:', error);
+    console.error('Error stack:', (error as Error).stack);
+    
+    let errorMessage = 'Failed to process uploaded file';
+    if (error instanceof Error) {
+      if (error.message.includes('call stack')) {
+        errorMessage = 'File too large or complex. Please try uploading smaller batches of data.';
+      } else {
+        errorMessage = 'Failed to process uploaded file: ' + error.message;
+      }
+    }
+    
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to process uploaded file: ' + (error as Error).message 
+      message: errorMessage
     });
   }
 });

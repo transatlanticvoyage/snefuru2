@@ -233,11 +233,20 @@ export class DatabaseStorage implements IStorage {
   async bulkCreateRedditOrganicPositions(positions: InsertRedditOrganicPosition[]): Promise<RedditOrganicPosition[]> {
     if (positions.length === 0) return [];
     
-    const createdPositions = await db
-      .insert(reddit_organic_positions)
-      .values(positions)
-      .returning();
-    return createdPositions;
+    // Process in smaller batches to avoid call stack issues
+    const batchSize = 100;
+    const allCreated: RedditOrganicPosition[] = [];
+    
+    for (let i = 0; i < positions.length; i += batchSize) {
+      const batch = positions.slice(i, i + batchSize);
+      const createdBatch = await db
+        .insert(reddit_organic_positions)
+        .values(batch)
+        .returning();
+      allCreated.push(...createdBatch);
+    }
+    
+    return allCreated;
   }
 
   // Calendar connection methods
