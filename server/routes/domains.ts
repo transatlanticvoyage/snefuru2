@@ -37,88 +37,73 @@ router.get('/', async (req: any, res) => {
   }
 });
 
-// POST /api/domains/bulk-add - Add multiple domains
+// POST /api/domains/bulk-add - Add multiple domains with proper duplicate prevention
 router.post('/bulk-add', async (req: any, res) => {
   try {
     const validatedData = bulkDomainsSchema.parse(req.body);
+    const userId = 1; // For now, using hardcoded user ID
     
-    // For now, we'll use a hardcoded user ID of 1
-    // In a real app, this would come from authentication middleware
-    const userId = 1;
-    
-    // Filter out empty domains and normalize
-    const filteredDomains = validatedData.domains
-      .filter(domain => domain.trim().length > 0)
+    // Filter and normalize input domains
+    const inputDomains = validatedData.domains
+      .filter(domain => domain && domain.trim().length > 0)
       .map(domain => domain.trim().toLowerCase());
     
-    if (filteredDomains.length === 0) {
+    if (inputDomains.length === 0) {
       return res.status(400).json({ 
         message: 'No valid domains provided',
         success: false 
       });
     }
     
-    // Get existing domains for this user to check for duplicates
+    // Get ALL existing domains for this user from database
     const existingDomains = await storage.getUserDomains(userId);
-    const existingDomainSet = new Set<string>();
+    const existingDomainNames = new Set<string>();
     
-    // Build set of existing domain names (normalized to lowercase)
-    for (const domain of existingDomains) {
+    existingDomains.forEach(domain => {
       if (domain.domain_base) {
-        existingDomainSet.add(domain.domain_base.toLowerCase().trim());
+        existingDomainNames.add(domain.domain_base.toLowerCase().trim());
       }
-    }
+    });
     
-    console.log('Existing domains in database:', Array.from(existingDomainSet));
+    // Process input domains to find duplicates
+    const processedDomains = {
+      newDomains: [] as string[],
+      inputDuplicates: [] as string[],
+      dbDuplicates: [] as string[]
+    };
     
-    // Remove duplicates from input list and check against existing domains
-    const seenInInput = new Set<string>();
-    const newDomains: string[] = [];
-    const duplicatesInInput: string[] = [];
-    const duplicatesInDb: string[] = [];
+    const seenInThisRequest = new Set<string>();
     
-    console.log('Input domains to check:', filteredDomains);
-    
-    for (const domain of filteredDomains) {
-      const normalizedDomain = domain.toLowerCase().trim();
+    for (const domainName of inputDomains) {
+      const normalizedDomain = domainName.toLowerCase().trim();
       
-      if (seenInInput.has(normalizedDomain)) {
-        console.log(`Found duplicate in input: ${domain}`);
-        duplicatesInInput.push(domain);
-      } else if (existingDomainSet.has(normalizedDomain)) {
-        console.log(`Found existing domain in DB: ${domain}`);
-        duplicatesInDb.push(domain);
+      if (seenInThisRequest.has(normalizedDomain)) {
+        // Duplicate within this request
+        processedDomains.inputDuplicates.push(domainName);
+      } else if (existingDomainNames.has(normalizedDomain)) {
+        // Already exists in database
+        processedDomains.dbDuplicates.push(domainName);
       } else {
-        console.log(`Adding new domain: ${domain}`);
-        seenInInput.add(normalizedDomain);
-        newDomains.push(domain);
+        // New domain to add
+        processedDomains.newDomains.push(domainName);
+        seenInThisRequest.add(normalizedDomain);
       }
     }
     
-    console.log('New domains to add:', newDomains);
-    console.log('Duplicates in input:', duplicatesInInput);
-    console.log('Duplicates in DB:', duplicatesInDb);
-    
+    // Insert only new domains
     let insertedDomains: any[] = [];
-    if (newDomains.length > 0) {
-      // Prepare domains for bulk insert
-      const domainsToInsert = newDomains.map(domain => ({
+    if (processedDomains.newDomains.length > 0) {
+      const domainsToInsert = processedDomains.newDomains.map(domain => ({
         domain_base: domain,
         rel_user_id: userId
       }));
       
-      try {
-        insertedDomains = await storage.bulkCreateDomains(domainsToInsert);
-      } catch (error) {
-        // Handle database constraint errors (if we add unique constraints later)
-        console.error('Error inserting domains:', error);
-        throw error;
-      }
+      insertedDomains = await storage.bulkCreateDomains(domainsToInsert);
     }
     
-    // Create detailed response message
+    // Create response message
+    const totalDuplicates = processedDomains.inputDuplicates.length + processedDomains.dbDuplicates.length;
     let message = '';
-    const totalDuplicates = duplicatesInInput.length + duplicatesInDb.length;
     
     if (insertedDomains.length > 0 && totalDuplicates > 0) {
       message = `Successfully added ${insertedDomains.length} new domains. Skipped ${totalDuplicates} duplicates`;
@@ -133,11 +118,11 @@ router.post('/bulk-add', async (req: any, res) => {
     res.json({ 
       message,
       added: insertedDomains.length,
-      duplicatesInInput: duplicatesInInput.length,
-      duplicatesInDatabase: duplicatesInDb.length,
+      duplicatesInInput: processedDomains.inputDuplicates.length,
+      duplicatesInDatabase: processedDomains.dbDuplicates.length,
       totalDuplicates: totalDuplicates,
       domains: insertedDomains,
-      skippedDomains: [...duplicatesInInput, ...duplicatesInDb],
+      skippedDomains: [...processedDomains.inputDuplicates, ...processedDomains.dbDuplicates],
       success: true 
     });
   } catch (error) {
