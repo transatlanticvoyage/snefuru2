@@ -20,9 +20,50 @@ export const image_batches = pgTable("image_batches", {
 // Reddit URLs table
 export const reddit_urls1 = pgTable("reddit_urls1", {
   id: serial("id").primaryKey(),
+  user_id: integer("user_id").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   url1: text("url1").notNull(),
   note1: text("note1"),
+});
+
+// Reddit Organic Positions table for comprehensive keyword tracking
+export const reddit_organic_positions = pgTable("reddit_organic_positions", {
+  id: serial("id").primaryKey(),
+  user_id: integer("user_id").notNull(),
+  keyword: varchar("keyword", { length: 500 }).notNull(),
+  url: varchar("url", { length: 2048 }).notNull(),
+  domain: varchar("domain", { length: 255 }),
+  position: integer("position"),
+  previous_position: integer("previous_position"),
+  position_change: integer("position_change"),
+  search_volume: integer("search_volume"),
+  cpc: varchar("cpc", { length: 20 }),
+  competition: varchar("competition", { length: 50 }),
+  traffic: integer("traffic"),
+  traffic_cost: varchar("traffic_cost", { length: 20 }),
+  timestamp: varchar("timestamp", { length: 50 }),
+  location: varchar("location", { length: 100 }),
+  device: varchar("device", { length: 50 }),
+  search_engine: varchar("search_engine", { length: 50 }).default('google'),
+  language: varchar("language", { length: 10 }).default('en'),
+  date_captured: varchar("date_captured", { length: 50 }),
+  serp_features: text("serp_features"),
+  difficulty: varchar("difficulty", { length: 20 }),
+  visibility: varchar("visibility", { length: 20 }),
+  estimated_clicks: integer("estimated_clicks"),
+  click_through_rate: varchar("click_through_rate", { length: 20 }),
+  title: text("title"),
+  description: text("description"),
+  meta_description: text("meta_description"),
+  h1_tag: text("h1_tag"),
+  word_count: integer("word_count"),
+  page_authority: varchar("page_authority", { length: 20 }),
+  domain_authority: varchar("domain_authority", { length: 20 }),
+  backlinks: integer("backlinks"),
+  referring_domains: integer("referring_domains"),
+  social_shares: integer("social_shares"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow()
 });
 
 // Calendar integration tables
@@ -109,6 +150,12 @@ export const insertRedditUrlSchema = createInsertSchema(reddit_urls1).omit({
   created_at: true,
 });
 
+export const insertRedditOrganicPositionSchema = createInsertSchema(reddit_organic_positions).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   created_at: true,
@@ -133,12 +180,14 @@ export const insertCalendarEventSchema = createInsertSchema(calendar_events).omi
 export type InsertImage = z.infer<typeof insertImageSchema>;
 export type InsertImageBatch = z.infer<typeof insertImageBatchSchema>;
 export type InsertRedditUrl = z.infer<typeof insertRedditUrlSchema>;
+export type InsertRedditOrganicPosition = z.infer<typeof insertRedditOrganicPositionSchema>;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertCalendarConnection = z.infer<typeof insertCalendarConnectionSchema>;
 export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
 
 export type Image = typeof images.$inferSelect;
 export type ImageBatch = typeof image_batches.$inferSelect;
+export type RedditOrganicPosition = typeof reddit_organic_positions.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type CalendarConnection = typeof calendar_connections.$inferSelect;
 export type CalendarEvent = typeof calendar_events.$inferSelect;

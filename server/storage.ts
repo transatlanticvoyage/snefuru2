@@ -2,6 +2,7 @@ import {
   images, 
   image_batches, 
   reddit_urls1,
+  reddit_organic_positions,
   calendar_connections,
   calendar_events,
   type Image, 
@@ -9,6 +10,8 @@ import {
   type InsertImage, 
   type InsertImageBatch,
   type InsertRedditUrl,
+  type RedditOrganicPosition,
+  type InsertRedditOrganicPosition,
   type CalendarConnection,
   type CalendarEvent,
   type InsertCalendarConnection,
@@ -47,6 +50,13 @@ export interface IStorage {
   createRedditUrl(url: InsertRedditUrl): Promise<any>;
   getRedditUrl(id: number): Promise<any | undefined>;
   getAllRedditUrls(): Promise<any[]>;
+
+  // Reddit organic positions methods
+  createRedditOrganicPosition(position: InsertRedditOrganicPosition): Promise<RedditOrganicPosition>;
+  getRedditOrganicPosition(id: number): Promise<RedditOrganicPosition | undefined>;
+  getRedditOrganicPositionsByUserId(userId: number): Promise<RedditOrganicPosition[]>;
+  deleteRedditOrganicPositions(ids: number[]): Promise<void>;
+  bulkCreateRedditOrganicPositions(positions: InsertRedditOrganicPosition[]): Promise<RedditOrganicPosition[]>;
 
   // Calendar connection methods
   createCalendarConnection(connection: InsertCalendarConnection): Promise<CalendarConnection>;
