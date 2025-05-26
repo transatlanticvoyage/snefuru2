@@ -125,10 +125,27 @@ export default function DomainsAddNewPage() {
       }
     },
     onSuccess: (data) => {
+      // Create detailed success message based on results
+      let title = "Domains Processed!";
+      let description = "";
+      
+      if (data.added > 0 && data.totalDuplicates > 0) {
+        title = "Partially Successful";
+        description = `Added ${data.added} new domains. Skipped ${data.totalDuplicates} duplicates (${data.duplicatesInDatabase} already in your account, ${data.duplicatesInInput} duplicates in your input).`;
+      } else if (data.added > 0) {
+        title = "Success!";
+        description = `Successfully added ${data.added} domains to your account.`;
+      } else if (data.totalDuplicates > 0) {
+        title = "No New Domains";
+        description = `All ${data.totalDuplicates} domains were duplicates. ${data.duplicatesInDatabase} already exist in your account, ${data.duplicatesInInput} were duplicates in your input.`;
+      }
+      
       toast({
-        title: "Success!",
-        description: `Successfully added ${data.added} domains to your account.`
+        title,
+        description,
+        variant: data.added > 0 ? "default" : "destructive"
       });
+      
       setDomainsText('');
       setValidationResult(null);
       queryClient.invalidateQueries({ queryKey: ['/api/domains'] });

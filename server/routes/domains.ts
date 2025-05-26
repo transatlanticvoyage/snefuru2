@@ -46,37 +46,74 @@ router.post('/bulk-add', async (req: any, res) => {
     // In a real app, this would come from authentication middleware
     const userId = 1;
     
-    // Filter out empty domains and duplicates
-    const filteredDomains = validatedData.domains.filter(domain => domain.trim().length > 0);
-    const seenDomains = new Set<string>();
-    const uniqueDomains: string[] = [];
+    // Filter out empty domains and normalize
+    const filteredDomains = validatedData.domains
+      .filter(domain => domain.trim().length > 0)
+      .map(domain => domain.trim().toLowerCase());
     
-    for (const domain of filteredDomains) {
-      if (!seenDomains.has(domain)) {
-        seenDomains.add(domain);
-        uniqueDomains.push(domain);
-      }
-    }
-    
-    if (uniqueDomains.length === 0) {
+    if (filteredDomains.length === 0) {
       return res.status(400).json({ 
         message: 'No valid domains provided',
         success: false 
       });
     }
     
-    // Prepare domains for bulk insert
-    const domainsToInsert = uniqueDomains.map(domain => ({
-      domain_base: domain.trim(),
-      rel_user_id: userId
-    }));
+    // Get existing domains for this user to check for duplicates
+    const existingDomains = await storage.getUserDomains(userId);
+    const existingDomainSet = new Set(
+      existingDomains.map(domain => domain.domain_base?.toLowerCase()).filter(Boolean)
+    );
     
-    const insertedDomains = await storage.bulkCreateDomains(domainsToInsert);
+    // Remove duplicates from input list and check against existing domains
+    const seenInInput = new Set<string>();
+    const newDomains: string[] = [];
+    const duplicatesInInput: string[] = [];
+    const duplicatesInDb: string[] = [];
+    
+    for (const domain of filteredDomains) {
+      if (seenInInput.has(domain)) {
+        duplicatesInInput.push(domain);
+      } else if (existingDomainSet.has(domain)) {
+        duplicatesInDb.push(domain);
+      } else {
+        seenInInput.add(domain);
+        newDomains.push(domain);
+      }
+    }
+    
+    let insertedDomains: any[] = [];
+    if (newDomains.length > 0) {
+      // Prepare domains for bulk insert
+      const domainsToInsert = newDomains.map(domain => ({
+        domain_base: domain,
+        rel_user_id: userId
+      }));
+      
+      insertedDomains = await storage.bulkCreateDomains(domainsToInsert);
+    }
+    
+    // Create detailed response message
+    let message = '';
+    const totalDuplicates = duplicatesInInput.length + duplicatesInDb.length;
+    
+    if (insertedDomains.length > 0 && totalDuplicates > 0) {
+      message = `Successfully added ${insertedDomains.length} new domains. Skipped ${totalDuplicates} duplicates`;
+    } else if (insertedDomains.length > 0) {
+      message = `Successfully added ${insertedDomains.length} domains`;
+    } else if (totalDuplicates > 0) {
+      message = `No new domains added. All ${totalDuplicates} domains were duplicates`;
+    } else {
+      message = 'No domains processed';
+    }
     
     res.json({ 
-      message: `Successfully added ${insertedDomains.length} domains`,
+      message,
       added: insertedDomains.length,
+      duplicatesInInput: duplicatesInInput.length,
+      duplicatesInDatabase: duplicatesInDb.length,
+      totalDuplicates: totalDuplicates,
       domains: insertedDomains,
+      skippedDomains: [...duplicatesInInput, ...duplicatesInDb],
       success: true 
     });
   } catch (error) {
