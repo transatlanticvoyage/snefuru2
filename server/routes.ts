@@ -95,13 +95,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ];
 
         // Store sample events in database
+        let savedCount = 0;
         for (const eventData of sampleEvents) {
           try {
-            await storage.upsertCalendarEvent(eventData);
+            console.log('Attempting to save event:', eventData.title);
+            const savedEvent = await storage.upsertCalendarEvent(eventData);
+            console.log('Successfully saved event:', savedEvent);
+            savedCount++;
           } catch (error) {
             console.error('Error saving sample event:', eventData.title, error);
           }
         }
+        console.log(`Total events saved: ${savedCount}`);
 
         return res.json({
           success: true,
