@@ -25,7 +25,7 @@ import Domains1 from "@/pages/image_handler/domains1";
 import HostingCascade from "@/pages/image_handler/hosting_cascade";
 import CalendarPage from "@/pages/calendar/calendar1";
 import AirtableCalendarPage from "@/pages/calendar/airtable1";
-// import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
+import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 import ChatScreen1 from "@/pages/chat/chatscreen1";
 
 // Protected route component that redirects to login if not authenticated
@@ -111,9 +111,9 @@ function Router() {
       <Route path="/calendar/airtable1">
         {isAuthenticated ? <AirtableCalendarPage /> : <SimpleLogin />}
       </Route>
-      {/* <Route path="/rank_tracker/screen1">
+      <Route path="/rank_tracker/screen1">
         {isAuthenticated ? <RankTrackerScreen1 /> : <SimpleLogin />}
-      </Route> */}
+      </Route>
       <Route path="/chat/chatscreen1" component={ChatScreen1} />
       
       {/* Fallback route */}
