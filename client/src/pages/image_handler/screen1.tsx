@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
+// Define interfaces
+interface Domain {
+  id: number;
+  domain_name: string;
+}
 
 // Define the image data interface
 interface ImageData {
@@ -28,6 +35,26 @@ interface ImageData {
 
 const ImageHandlerScreen1: React.FC = () => {
   useDocumentTitle("Image Handler - Screen 1 - Snefuru");
+  
+  // State for domains and selections
+  const [domains, setDomains] = useState<Domain[]>([]);
+  const [selectedDomain, setSelectedDomain] = useState<string>("");
+  const [selectedPageType, setSelectedPageType] = useState<string>("home");
+
+  // Fetch domains on component mount
+  useEffect(() => {
+    const fetchDomains = async () => {
+      try {
+        const response = await fetch('/api/domains?user_id=current_user_id');
+        const data = await response.json();
+        setDomains(data);
+      } catch (error) {
+        console.error('Error fetching domains:', error);
+      }
+    };
+    fetchDomains();
+  }, []);
+
   // Dummy data based on the screenshot
   const imageData: ImageData[] = [
     {
@@ -161,8 +188,56 @@ const ImageHandlerScreen1: React.FC = () => {
       <Header pageTitle="Image Handler" />
 
       {/* Sticky Bar */}
-      <div className="sticky top-0 z-50 w-full h-[30px] bg-black m-0 p-0 flex items-center justify-center">
+      <div className="sticky top-0 z-50 w-full h-[30px] bg-black m-0 p-0 flex items-center justify-between px-4">
         <span className="text-white font-bold">STICKY BAR 1</span>
+        
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <span className="text-white text-sm">Select a Domain:</span>
+            <Select value={selectedDomain} onValueChange={setSelectedDomain}>
+              <SelectTrigger className="w-[200px] h-[24px] bg-white">
+                <SelectValue placeholder="Select domain" />
+              </SelectTrigger>
+              <SelectContent>
+                {domains.map((domain) => (
+                  <SelectItem key={domain.id} value={domain.id.toString()}>
+                    {domain.domain_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <span className="text-white text-sm">Select a Page:</span>
+            <div className="flex space-x-1">
+              <Button 
+                variant={selectedPageType === "home" ? "default" : "outline"}
+                size="sm"
+                className="h-[24px] bg-white text-black hover:bg-gray-100"
+                onClick={() => setSelectedPageType("home")}
+              >
+                Home
+              </Button>
+              <Button 
+                variant={selectedPageType === "services_hub" ? "default" : "outline"}
+                size="sm"
+                className="h-[24px] bg-white text-black hover:bg-gray-100"
+                onClick={() => setSelectedPageType("services_hub")}
+              >
+                Services Hub
+              </Button>
+              <Button 
+                variant={selectedPageType === "individual_service" ? "default" : "outline"}
+                size="sm"
+                className="h-[24px] bg-white text-black hover:bg-gray-100"
+                onClick={() => setSelectedPageType("individual_service")}
+              >
+                Individual Service
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="container mx-auto p-6">
