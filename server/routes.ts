@@ -25,7 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add the refresh route FIRST without authentication  
   app.post('/api/calendar/refresh-items', async (req, res) => {
     try {
-      const { google } = require('googleapis');
+      const { google } = await import('googleapis');
       
       // Google Calendar credentials
       const GOOGLE_CALENDAR_CREDENTIALS = {
