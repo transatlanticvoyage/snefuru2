@@ -281,6 +281,73 @@ const RedditScraperScreen1: React.FC = () => {
     }
   };
 
+  // Pagination controls as a reusable variable
+  const PaginationControls = (
+    totalPages > 1 && (
+      <div className="flex flex-col md:flex-row md:items-center justify-between px-6 py-4 border-t border-b border-gray-200 dark:border-gray-700 gap-2">
+        <div className="text-sm text-gray-700 dark:text-gray-300 mb-2 md:mb-0">
+          Showing {startIndex + 1} to {Math.min(startIndex + rowsPerPage, sortedData.length)} of {sortedData.length} records
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Results per page selector */}
+          <Select value={rowsPerPage.toString()} onValueChange={val => { setRowsPerPage(Number(val)); setCurrentPage(1); }}>
+            <SelectTrigger className="w-[90px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[25, 50, 100, 250, 500].map(opt => (
+                <SelectItem key={opt} value={opt.toString()}>{opt} / page</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+          <span className="text-sm text-gray-700 dark:text-gray-300">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          {/* Go to page input */}
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              const page = Number((e.target as any).elements.page.value);
+              if (!isNaN(page) && page >= 1 && page <= totalPages) {
+                setCurrentPage(page);
+              }
+            }}
+            className="flex items-center gap-1"
+          >
+            <Input
+              name="page"
+              type="number"
+              min={1}
+              max={totalPages}
+              defaultValue={currentPage}
+              className="w-16 h-8 px-2 text-sm"
+              style={{ minWidth: 0 }}
+            />
+            <Button type="submit" size="sm" variant="outline">Go</Button>
+          </form>
+        </div>
+      </div>
+    )
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header pageTitle="Reddit Scraper" />
@@ -486,6 +553,8 @@ const RedditScraperScreen1: React.FC = () => {
             </div>
           ) : (
             <>
+              {/* Top Pagination Controls */}
+              {PaginationControls}
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
@@ -650,38 +719,8 @@ const RedditScraperScreen1: React.FC = () => {
                   </TableBody>
                 </Table>
               </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                  <div className="text-sm text-gray-700 dark:text-gray-300">
-                    Showing {startIndex + 1} to {Math.min(startIndex + rowsPerPage, sortedData.length)} of {sortedData.length} records
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Previous
-                    </Button>
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages}
-                    >
-                      Next
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              {/* Bottom Pagination Controls */}
+              {PaginationControls}
             </>
           )}
         </div>
