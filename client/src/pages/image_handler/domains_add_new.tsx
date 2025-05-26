@@ -108,11 +108,21 @@ export default function DomainsAddNewPage() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to add domains');
+        let errorMessage = 'Failed to add domains';
+        try {
+          const error = await response.json();
+          errorMessage = error.message || errorMessage;
+        } catch {
+          errorMessage = `Server error: ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
-      return response.json();
+      try {
+        return await response.json();
+      } catch (parseError) {
+        throw new Error('Invalid response from server');
+      }
     },
     onSuccess: (data) => {
       toast({
