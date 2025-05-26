@@ -16,6 +16,13 @@ export default function MainNavigationMenu() {
     navigate(path);
   };
 
+  // Priority focus pages
+  const priorityPages = [
+    { name: "Image Handler - Screen 1", path: "/image_handler/screen1" },
+    { name: "Image Handler - Screen 2", path: "/image_handler/screen2" },
+    { name: "Reddit Scraper - Screen 1", path: "/reddit_scraper/screen1" },
+  ];
+
   // List of all pages and their paths
   const pages = [
     { name: "Home", path: "/" },
@@ -33,30 +40,60 @@ export default function MainNavigationMenu() {
   ];
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="px-4 flex items-center gap-1">
-          Pages <ChevronDown className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[250px]">
-        {pages.map((page) => (
-          <DropdownMenuItem asChild key={page.path}>
-            <a
-              href={page.path}
-              className="w-full cursor-pointer"
-              onClick={(e) => {
-                if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
-                  e.preventDefault();
-                  handleNavigate(page.path);
-                }
-              }}
-            >
-              {page.name}
-            </a>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center space-x-2">
+      {/* Priority Focus Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="px-4 flex items-center gap-1">
+            Priority Focus <ChevronDown className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-[220px]">
+          {priorityPages.map((page) => (
+            <DropdownMenuItem asChild key={page.path}>
+              <a
+                href={page.path}
+                className="w-full cursor-pointer"
+                onClick={(e) => {
+                  if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    handleNavigate(page.path);
+                  }
+                }}
+              >
+                {page.name}
+              </a>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Pages Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="px-4 flex items-center gap-1">
+            Pages <ChevronDown className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-[250px]">
+          {pages.map((page) => (
+            <DropdownMenuItem asChild key={page.path}>
+              <a
+                href={page.path}
+                className="w-full cursor-pointer"
+                onClick={(e) => {
+                  if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    handleNavigate(page.path);
+                  }
+                }}
+              >
+                {page.name}
+              </a>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
