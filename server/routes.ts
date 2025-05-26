@@ -25,13 +25,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add the refresh route FIRST without authentication
   app.post('/api/calendar/refresh-items', async (req, res) => {
     try {
-      res.json({
-        success: true,
-        message: 'Calendar refresh functionality is ready! Your Google Calendar integration is working.',
-        events_count: 0,
-        note: 'This demonstrates the refresh button works without authentication errors.'
-      });
+      const { google } = require('googleapis');
+      
+      // Google Calendar credentials
+      const GOOGLE_CALENDAR_CREDENTIALS = {
+        client_id: process.env.GOOGLE_CALENDAR_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CALENDAR_CLIENT_SECRET,
+        redirect_uri: process.env.NODE_ENV === 'production' 
+          ? 'https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/api/calendar/callback'
+          : 'https://1d53bee8-fc85-40d3-b574-30e270e906d7-00-6s2plh4n1668.riker.replit.dev/api/calendar/callback'
+      };
+
+      if (!GOOGLE_CALENDAR_CREDENTIALS.client_id || !GOOGLE_CALENDAR_CREDENTIALS.client_secret) {
+        return res.status(400).json({
+          success: false,
+          message: 'Google Calendar credentials not configured. Please check your environment variables.'
+        });
+      }
+
+      // Check if we have a valid Google Calendar access token
+      // In a real implementation, you would retrieve this from your database
+      // For now, we'll use a placeholder that indicates we need to complete OAuth
+      
+      const hasValidToken = false; // This would check your stored OAuth tokens
+      
+      if (!hasValidToken) {
+        return res.json({
+          success: false,
+          message: 'Google Calendar access token required. Please complete the OAuth flow by clicking "Connect Google Calendar" first.',
+          events_count: 0,
+          action_required: 'oauth_connection'
+        });
+      }
+
+      // Set up OAuth2 client with stored tokens (when available)
+      const oauth2Client = new google.auth.OAuth2(
+        GOOGLE_CALENDAR_CREDENTIALS.client_id,
+        GOOGLE_CALENDAR_CREDENTIALS.client_secret,
+        GOOGLE_CALENDAR_CREDENTIALS.redirect_uri
+      );
+
+      // This is where you would set the actual access tokens from your database
+      // oauth2Client.setCredentials({
+      //   access_token: 'your_stored_access_token',
+      //   refresh_token: 'your_stored_refresh_token',
+      // });
+
+      // Initialize Google Calendar API
+      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+
+      // Fetch events from Google Calendar (next 30 days)
+      const now = new Date();
+      const timeMax = new Date();
+      timeMax.setDate(now.getDate() + 30);
+
+      try {
+        const response = await calendar.events.list({
+          calendarId: 'primary',
+          timeMin: now.toISOString(),
+          timeMax: timeMax.toISOString(),
+          maxResults: 100,
+          singleEvents: true,
+          orderBy: 'startTime',
+        });
+
+        const events = response.data.items || [];
+        const savedEvents = [];
+
+        // Store events in database
+        for (const event of events) {
+          if (!event.start || !event.end) continue;
+
+          const eventData = {
+            user_id: 1, // This would come from your authentication system
+            connection_id: 1, // This would come from your database
+            external_event_id: event.id || '',
+            title: event.summary || 'Untitled Event',
+            description: event.description || null,
+            start_date: event.start.date || event.start.dateTime?.split('T')[0] || '',
+            start_time: event.start.dateTime ? new Date(event.start.dateTime).toTimeString().slice(0, 8) : '00:00:00',
+            end_date: event.end.date || event.end.dateTime?.split('T')[0] || '',
+            end_time: event.end.dateTime ? new Date(event.end.dateTime).toTimeString().slice(0, 8) : '23:59:59',
+            location: event.location || null,
+            attendees: event.attendees?.map(a => a.email).filter(Boolean) || [],
+            organizer: event.organizer?.email || null,
+            calendar_source: 'google',
+            event_type: 'other',
+            priority: 'medium',
+            status: event.status || 'confirmed',
+            is_recurring: !!event.recurringEventId,
+            timezone: event.start.timeZone || 'UTC'
+          };
+
+          try {
+            const savedEvent = await storage.upsertCalendarEvent(eventData);
+            savedEvents.push(savedEvent);
+          } catch (error) {
+            console.error('Error saving event:', event.summary, error);
+          }
+        }
+
+        res.json({
+          success: true,
+          message: `Successfully refreshed ${savedEvents.length} calendar items from Google Calendar`,
+          events_count: savedEvents.length
+        });
+
+      } catch (apiError) {
+        console.error('Google Calendar API error:', apiError);
+        res.status(400).json({
+          success: false,
+          message: 'Failed to fetch calendar data from Google Calendar API. Please reconnect your account.'
+        });
+      }
+
     } catch (error) {
+      console.error('Error refreshing calendar items:', error);
       res.status(500).json({
         success: false,
         message: 'Failed to refresh calendar items'
