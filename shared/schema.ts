@@ -67,6 +67,14 @@ export const reddit_organic_positions = pgTable("reddit_organic_positions", {
   updated_at: timestamp("updated_at").defaultNow()
 });
 
+// Domains table
+export const domains1 = pgTable("domains1", {
+  id: serial("id").primaryKey(),
+  domain_base: text("domain_base"),
+  rel_user_id: integer("rel_user_id"),
+  created_at: timestamp("created_at").defaultNow()
+});
+
 // Calendar integration tables
 export const calendar_connections = pgTable("calendar_connections", {
   id: serial("id").primaryKey(),
@@ -200,6 +208,11 @@ export const insertNotionNoteSchema = createInsertSchema(notion_notes).omit({
   updated_at: true,
 });
 
+export const insertDomainSchema = createInsertSchema(domains1).omit({
+  id: true,
+  created_at: true,
+});
+
 // Export types
 export type InsertImage = z.infer<typeof insertImageSchema>;
 export type InsertImageBatch = z.infer<typeof insertImageBatchSchema>;
@@ -209,6 +222,7 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertCalendarConnection = z.infer<typeof insertCalendarConnectionSchema>;
 export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
 export type InsertNotionNote = z.infer<typeof insertNotionNoteSchema>;
+export type InsertDomain = z.infer<typeof insertDomainSchema>;
 
 export type Image = typeof images.$inferSelect;
 export type ImageBatch = typeof image_batches.$inferSelect;

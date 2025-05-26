@@ -27,6 +27,7 @@ import CalendarPage from "@/pages/calendar/calendar1";
 import AirtableCalendarPage from "@/pages/calendar/airtable1";
 import NotionNotesPage from "@/pages/calendar/notion1";
 import EmailManagerPage from "@/pages/calendar/email1";
+import DomainsAddNewPage from "@/pages/image_handler/domains_add_new";
 import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 import ChatScreen1 from "@/pages/chat/chatscreen1";
 
@@ -118,6 +119,9 @@ function Router() {
       </Route>
       <Route path="/calendar/email1">
         {isAuthenticated ? <EmailManagerPage /> : <SimpleLogin />}
+      </Route>
+      <Route path="/image_handler/domains_add_new">
+        {isAuthenticated ? <DomainsAddNewPage /> : <SimpleLogin />}
       </Route>
       <Route path="/rank_tracker/screen1">
         {isAuthenticated ? <RankTrackerScreen1 /> : <SimpleLogin />}
