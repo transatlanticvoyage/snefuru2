@@ -28,6 +28,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register calendar routes
   app.use('/api/calendar', calendarRoutes);
   
+  // Register domain routes
+  app.use('/api/domains', domainRoutes);
+  
   // Register Reddit routes
   app.use('/api/reddit', redditRoutes);
   
