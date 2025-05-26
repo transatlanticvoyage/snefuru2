@@ -210,8 +210,31 @@ const CalendarPage: React.FC = () => {
   };
 
   // Handle Google Calendar connection
-  const connectGoogleCalendar = () => {
-    window.location.href = '/api/calendar/auth/google';
+  const connectGoogleCalendar = async () => {
+    try {
+      const response = await fetch('/api/calendar/auth/google', {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to get authentication URL');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.authUrl) {
+        // Redirect to Google's authentication page
+        window.location.href = data.authUrl;
+      } else {
+        throw new Error('Invalid response from authentication service');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Authentication Error",
+        description: error.message || "Failed to connect to Google Calendar",
+        variant: "destructive",
+      });
+    }
   };
 
   // Format date and time
