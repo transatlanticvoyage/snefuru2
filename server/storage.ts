@@ -74,6 +74,14 @@ export interface IStorage {
   deleteCalendarEvent(id: number): Promise<void>;
   deleteEventsByConnectionId(connectionId: number): Promise<void>;
   upsertCalendarEvent(event: InsertCalendarEvent): Promise<CalendarEvent>;
+
+  // Notion notes methods
+  createNotionNote(note: InsertNotionNote): Promise<NotionNote>;
+  getNotionNote(id: number): Promise<NotionNote | undefined>;
+  getNotionNotesByUserId(userId: number): Promise<NotionNote[]>;
+  updateNotionNote(id: number, data: Partial<InsertNotionNote>): Promise<NotionNote>;
+  deleteNotionNotes(ids: number[]): Promise<void>;
+  upsertNotionNote(note: InsertNotionNote): Promise<NotionNote>;
 }
 
 // Database implementation of storage

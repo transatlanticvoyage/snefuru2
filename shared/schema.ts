@@ -194,6 +194,12 @@ export const insertCalendarEventSchema = createInsertSchema(calendar_events).omi
   last_synced: true,
 });
 
+export const insertNotionNoteSchema = createInsertSchema(notion_notes).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
 // Export types
 export type InsertImage = z.infer<typeof insertImageSchema>;
 export type InsertImageBatch = z.infer<typeof insertImageBatchSchema>;
@@ -202,6 +208,7 @@ export type InsertRedditOrganicPosition = z.infer<typeof insertRedditOrganicPosi
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type InsertCalendarConnection = z.infer<typeof insertCalendarConnectionSchema>;
 export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
+export type InsertNotionNote = z.infer<typeof insertNotionNoteSchema>;
 
 export type Image = typeof images.$inferSelect;
 export type ImageBatch = typeof image_batches.$inferSelect;
@@ -209,6 +216,7 @@ export type RedditOrganicPosition = typeof reddit_organic_positions.$inferSelect
 export type User = typeof users.$inferSelect;
 export type CalendarConnection = typeof calendar_connections.$inferSelect;
 export type CalendarEvent = typeof calendar_events.$inferSelect;
+export type NotionNote = typeof notion_notes.$inferSelect;
 
 // Additional schema types for the application
 export type WpCredentials = {
