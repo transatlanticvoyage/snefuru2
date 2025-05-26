@@ -16,6 +16,7 @@ import authRoutes from "./routes/auth";
 import calendarRoutes from "./routes/calendar";
 import redditRoutes from "./routes/reddit";
 import chatRoutes from "./routes/chat";
+import domainRoutes from "./routes/domains";
 import { optionalAuth, type AuthRequest } from "./middleware/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -32,6 +33,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Chat routes
   app.use('/api/chat', chatRoutes);
+  
+  // Register Domain routes
+  app.use('/api/domains', domainRoutes);
   
   // Apply optional authentication to all routes
   app.use(optionalAuth);
