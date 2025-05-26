@@ -15,10 +15,11 @@ const GOOGLE_CALENDAR_CREDENTIALS = {
 };
 
 // Get user's calendar connections
-router.get('/connections', async (req: Request, res: Response) => {
+router.get('/connections', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    // For now, return empty array since we don't have authentication working
-    res.json([]);
+    const userId = req.user!.id;
+    const connections = await storage.getCalendarConnectionsByUserId(userId);
+    res.json(connections);
   } catch (error) {
     console.error('Error fetching calendar connections:', error);
     res.status(500).json({ 
@@ -29,10 +30,11 @@ router.get('/connections', async (req: Request, res: Response) => {
 });
 
 // Get user's calendar events
-router.get('/events', async (req: Request, res: Response) => {
+router.get('/events', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    // For now, return empty array since we don't have authentication working
-    res.json([]);
+    const userId = req.user!.id;
+    const events = await storage.getCalendarEventsByUserId(userId);
+    res.json(events);
   } catch (error) {
     console.error('Error fetching calendar events:', error);
     res.status(500).json({ 
@@ -84,15 +86,13 @@ router.get('/auth/google', async (req: Request, res: Response) => {
 });
 
 // Handle Google OAuth callback
-router.get('/callback', async (req: Request, res: Response) => {
+router.get('/callback', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const { code } = req.query;
+    const userId = req.user!.id;
 
     if (!code) {
-      return res.status(400).json({
-        success: false,
-        message: 'Authorization code not provided'
-      });
+      return res.redirect('/calendar/calendar1?error=no_code');
     }
 
     const oauth2Client = new google.auth.OAuth2(
@@ -104,13 +104,127 @@ router.get('/callback', async (req: Request, res: Response) => {
     const { tokens } = await oauth2Client.getToken(code as string);
     oauth2Client.setCredentials(tokens);
 
-    // Here you would typically save the tokens to your database
-    // For now, we'll just redirect back to the calendar page
+    // Save the connection to database
+    await storage.createCalendarConnection({
+      user_id: userId,
+      calendar_source: 'google',
+      access_token: tokens.access_token || '',
+      refresh_token: tokens.refresh_token || '',
+      token_expires_at: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
+      calendar_id: 'primary',
+      calendar_name: 'Google Calendar'
+    });
+
     res.redirect('/calendar/calendar1?connected=true');
 
   } catch (error) {
     console.error('Error handling Google OAuth callback:', error);
     res.redirect('/calendar/calendar1?error=auth_failed');
+  }
+});
+
+// Refresh all calendar items from Google Calendar API
+router.post('/refresh-items', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    
+    // Get user's Google Calendar connection
+    const connections = await storage.getCalendarConnectionsByUserId(userId);
+    const googleConnection = connections.find(conn => conn.calendar_source === 'google');
+    
+    if (!googleConnection) {
+      return res.status(400).json({
+        success: false,
+        message: 'No Google Calendar connection found. Please connect your Google Calendar first.'
+      });
+    }
+
+    // Set up OAuth2 client with stored tokens
+    const oauth2Client = new google.auth.OAuth2(
+      GOOGLE_CALENDAR_CREDENTIALS.client_id,
+      GOOGLE_CALENDAR_CREDENTIALS.client_secret,
+      GOOGLE_CALENDAR_CREDENTIALS.redirect_uri
+    );
+
+    oauth2Client.setCredentials({
+      access_token: googleConnection.access_token,
+      refresh_token: googleConnection.refresh_token,
+    });
+
+    // Initialize Google Calendar API
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+
+    // Fetch events from Google Calendar (next 30 days)
+    const now = new Date();
+    const timeMax = new Date();
+    timeMax.setDate(now.getDate() + 30);
+
+    const response = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin: now.toISOString(),
+      timeMax: timeMax.toISOString(),
+      maxResults: 100,
+      singleEvents: true,
+      orderBy: 'startTime',
+    });
+
+    const events = response.data.items || [];
+    
+    // Store events in database
+    const savedEvents = [];
+    for (const event of events) {
+      if (!event.start || !event.end) continue;
+
+      const eventData = {
+        user_id: userId,
+        connection_id: googleConnection.id,
+        external_event_id: event.id || '',
+        title: event.summary || 'Untitled Event',
+        description: event.description || null,
+        start_date: event.start.date || event.start.dateTime?.split('T')[0] || '',
+        start_time: event.start.dateTime ? new Date(event.start.dateTime).toTimeString().slice(0, 8) : '00:00:00',
+        end_date: event.end.date || event.end.dateTime?.split('T')[0] || '',
+        end_time: event.end.dateTime ? new Date(event.end.dateTime).toTimeString().slice(0, 8) : '23:59:59',
+        location: event.location || null,
+        attendees: event.attendees?.map(a => a.email).filter(Boolean) || [],
+        organizer: event.organizer?.email || null,
+        calendar_source: 'google',
+        event_type: 'other',
+        priority: 'medium',
+        status: event.status || 'confirmed',
+        is_recurring: !!event.recurringEventId,
+        timezone: event.start.timeZone || 'UTC'
+      };
+
+      try {
+        const savedEvent = await storage.upsertCalendarEvent(eventData);
+        savedEvents.push(savedEvent);
+      } catch (error) {
+        console.error('Error saving event:', event.summary, error);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Successfully refreshed ${savedEvents.length} calendar items`,
+      events_count: savedEvents.length
+    });
+
+  } catch (error) {
+    console.error('Error refreshing calendar items:', error);
+    
+    // Handle token refresh if needed
+    if (error.code === 401) {
+      return res.status(401).json({
+        success: false,
+        message: 'Google Calendar access token expired. Please reconnect your Google Calendar.'
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Failed to refresh calendar items'
+    });
   }
 });
 

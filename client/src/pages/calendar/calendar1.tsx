@@ -266,6 +266,35 @@ const CalendarPage: React.FC = () => {
     }
   };
 
+  // Refresh calendar items mutation
+  const refreshItemsMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/calendar/refresh-items', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to refresh calendar items');
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: `Successfully refreshed ${data.events_count} calendar items from Google Calendar`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to refresh calendar items",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Check if user is connected to Google Calendar
   const isConnectedToGoogle = connections.some((conn: any) => 
     conn.calendar_source === 'google' || conn.provider === 'google'
@@ -371,6 +400,14 @@ const CalendarPage: React.FC = () => {
                     >
                       <Calendar className="h-4 w-4" />
                       {syncMutation.isPending ? 'Syncing...' : 'Sync Calendars'}
+                    </Button>
+                    <Button 
+                      onClick={() => refreshItemsMutation.mutate()}
+                      disabled={refreshItemsMutation.isPending}
+                      className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
+                    >
+                      <Calendar className="h-4 w-4" />
+                      {refreshItemsMutation.isPending ? 'Refreshing...' : 'Refresh All Calendar Items'}
                     </Button>
                     <Button 
                       onClick={() => {
