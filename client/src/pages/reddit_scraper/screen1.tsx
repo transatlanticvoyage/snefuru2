@@ -97,7 +97,7 @@ const RedditScraperScreen1: React.FC = () => {
   const [domainFilter, setDomainFilter] = useState('');
 
   // Fetch Reddit organic positions data
-  const { data: organicPositions = [], isLoading, error } = useQuery({
+  const { data: organicPositions = [], isLoading, error } = useQuery<RedditOrganicPosition[]>({
     queryKey: ['/api/reddit/organic-positions'],
     retry: false,
   });

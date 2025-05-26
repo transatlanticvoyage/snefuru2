@@ -195,6 +195,51 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(reddit_urls1);
   }
 
+  async createRedditOrganicPosition(insertPosition: InsertRedditOrganicPosition): Promise<RedditOrganicPosition> {
+    const [position] = await db
+      .insert(reddit_organic_positions)
+      .values(insertPosition)
+      .returning();
+    return position;
+  }
+
+  async getRedditOrganicPosition(id: number): Promise<RedditOrganicPosition | undefined> {
+    const [position] = await db
+      .select()
+      .from(reddit_organic_positions)
+      .where(eq(reddit_organic_positions.id, id));
+    return position;
+  }
+
+  async getRedditOrganicPositionsByUserId(userId: number): Promise<RedditOrganicPosition[]> {
+    const positions = await db
+      .select()
+      .from(reddit_organic_positions)
+      .where(eq(reddit_organic_positions.user_id, userId))
+      .orderBy(desc(reddit_organic_positions.created_at));
+    return positions;
+  }
+
+  async deleteRedditOrganicPositions(ids: number[]): Promise<void> {
+    if (ids.length === 0) return;
+    
+    for (const id of ids) {
+      await db
+        .delete(reddit_organic_positions)
+        .where(eq(reddit_organic_positions.id, id));
+    }
+  }
+
+  async bulkCreateRedditOrganicPositions(positions: InsertRedditOrganicPosition[]): Promise<RedditOrganicPosition[]> {
+    if (positions.length === 0) return [];
+    
+    const createdPositions = await db
+      .insert(reddit_organic_positions)
+      .values(positions)
+      .returning();
+    return createdPositions;
+  }
+
   // Calendar connection methods
   async createCalendarConnection(connection: InsertCalendarConnection): Promise<CalendarConnection> {
     const [result] = await db.insert(calendar_connections).values(connection).returning();
