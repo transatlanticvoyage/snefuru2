@@ -25,7 +25,7 @@ import {
   Search, 
   Download, 
   Upload,
-  Sync,
+  RotateCw,
   RefreshCw,
   Database,
   ExternalLink,
@@ -259,7 +259,7 @@ export default function AirtableCalendarPage() {
                   disabled={syncMutation.isPending}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  <Sync className="h-4 w-4 mr-2" />
+                  <RotateCw className="h-4 w-4 mr-2" />
                   {syncMutation.isPending ? 'Syncing...' : `Sync Selected (${selectedRecords.length})`}
                 </Button>
               )}
