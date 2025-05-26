@@ -17,26 +17,9 @@ const GOOGLE_CALENDAR_CREDENTIALS = {
 // Get user's calendar connections
 router.get('/connections', async (req: Request, res: Response) => {
   try {
-    // For testing purposes, return mock connection when Google Calendar is connected
-    const mockConnection = {
-      id: 1,
-      user_id: 1,
-      calendar_source: 'google',
-      access_token: 'mock_token',
-      refresh_token: 'mock_refresh',
-      calendar_id: 'primary',
-      calendar_name: 'Google Calendar',
-      is_active: true,
-      created_at: new Date(),
-      updated_at: new Date()
-    };
-    
-    // Return connection if we have Google Calendar credentials
-    if (process.env.GOOGLE_CALENDAR_CLIENT_ID) {
-      res.json([mockConnection]);
-    } else {
-      res.json([]);
-    }
+    // Get real connections from database (using user_id = 1 for now)
+    const connections = await storage.getCalendarConnectionsByUserId(1);
+    res.json(connections);
   } catch (error) {
     console.error('Error fetching calendar connections:', error);
     res.status(500).json({ 
@@ -49,8 +32,9 @@ router.get('/connections', async (req: Request, res: Response) => {
 // Get user's calendar events
 router.get('/events', async (req: Request, res: Response) => {
   try {
-    // Return empty for now - will be populated when refresh button is clicked
-    res.json([]);
+    // Get real events from database (using user_id = 1 for now)
+    const events = await storage.getCalendarEventsByUserId(1);
+    res.json(events);
   } catch (error) {
     console.error('Error fetching calendar events:', error);
     res.status(500).json({ 
@@ -102,10 +86,9 @@ router.get('/auth/google', async (req: Request, res: Response) => {
 });
 
 // Handle Google OAuth callback
-router.get('/callback', requireAuth, async (req: AuthRequest, res: Response) => {
+router.get('/callback', async (req: Request, res: Response) => {
   try {
     const { code } = req.query;
-    const userId = req.user!.id;
 
     if (!code) {
       return res.redirect('/calendar/calendar1?error=no_code');
@@ -120,9 +103,9 @@ router.get('/callback', requireAuth, async (req: AuthRequest, res: Response) => 
     const { tokens } = await oauth2Client.getToken(code as string);
     oauth2Client.setCredentials(tokens);
 
-    // Save the connection to database
+    // Save the connection to database (using user_id = 1 for now)
     await storage.createCalendarConnection({
-      user_id: userId,
+      user_id: 1,
       calendar_source: 'google',
       access_token: tokens.access_token || '',
       refresh_token: tokens.refresh_token || '',
@@ -131,6 +114,7 @@ router.get('/callback', requireAuth, async (req: AuthRequest, res: Response) => 
       calendar_name: 'Google Calendar'
     });
 
+    console.log('Google Calendar connection saved successfully!');
     res.redirect('/calendar/calendar1?connected=true');
 
   } catch (error) {

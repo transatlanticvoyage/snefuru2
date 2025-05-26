@@ -43,13 +43,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Check if we have a valid Google Calendar access token
-      // In a real implementation, you would retrieve this from your database
-      // For now, we'll use a placeholder that indicates we need to complete OAuth
+      // Get stored Google Calendar connection from database
+      const connections = await storage.getCalendarConnectionsByUserId(1); // Using user_id = 1 for now
+      const googleConnection = connections.find(conn => conn.calendar_source === 'google');
       
-      const hasValidToken = false; // This would check your stored OAuth tokens
-      
-      if (!hasValidToken) {
+      if (!googleConnection || !googleConnection.access_token) {
         return res.json({
           success: false,
           message: 'Google Calendar access token required. Please complete the OAuth flow by clicking "Connect Google Calendar" first.',
@@ -65,11 +63,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         GOOGLE_CALENDAR_CREDENTIALS.redirect_uri
       );
 
-      // This is where you would set the actual access tokens from your database
-      // oauth2Client.setCredentials({
-      //   access_token: 'your_stored_access_token',
-      //   refresh_token: 'your_stored_refresh_token',
-      // });
+      // Set the actual access tokens from your database
+      oauth2Client.setCredentials({
+        access_token: googleConnection.access_token,
+        refresh_token: googleConnection.refresh_token,
+      });
 
       // Initialize Google Calendar API
       const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
