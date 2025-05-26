@@ -160,6 +160,11 @@ const ImageHandlerScreen1: React.FC = () => {
     <div className="min-h-screen bg-neutral-50">
       <Header pageTitle="Image Handler" />
 
+      {/* Sticky Bar */}
+      <div className="sticky top-0 z-50 w-full h-[30px] bg-black m-0 p-0 flex items-center justify-center">
+        <span className="text-white font-bold">STICKY BAR 1</span>
+      </div>
+
       <div className="container mx-auto p-6">
         {/* Welcome Card */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
