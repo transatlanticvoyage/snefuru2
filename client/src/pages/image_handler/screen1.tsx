@@ -1,7 +1,7 @@
-import React from 'react';
-import Header from '@/components/Header';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import React from "react";
+import Header from "@/components/Header";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 // Define the image data interface
@@ -43,12 +43,13 @@ const ImageHandlerScreen1: React.FC = () => {
       img_url3: "460",
       img_url4: "The Roofing Co roofing contractor",
       img_url5: "centr.",
-      presented_1: "Professional roofing team working on a shingle roof replacement",
+      presented_1:
+        "Professional roofing team working on a shingle roof replacement",
       nice_name_actual: "close up of a roofer installing a metal roof panel",
       for_page_1: "",
       nice_name_2: "",
       alt_text: "",
-      detail: ""
+      detail: "",
     },
     {
       id: 17,
@@ -63,12 +64,13 @@ const ImageHandlerScreen1: React.FC = () => {
       img_url3: "460",
       img_url4: "Roof Repairs - patching up leaks in the roof",
       img_url5: "centr.",
-      presented_1: "Roofer removing old shingles from a home roof and preparing surface for installation of the new roof sheeting",
+      presented_1:
+        "Roofer removing old shingles from a home roof and preparing surface for installation of the new roof sheeting",
       nice_name_actual: "",
       for_page_1: "",
       nice_name_2: "",
       alt_text: "",
-      detail: ""
+      detail: "",
     },
     {
       id: 18,
@@ -88,7 +90,7 @@ const ImageHandlerScreen1: React.FC = () => {
       for_page_1: "",
       nice_name_2: "",
       alt_text: "",
-      detail: ""
+      detail: "",
     },
     {
       id: 19,
@@ -103,12 +105,13 @@ const ImageHandlerScreen1: React.FC = () => {
       img_url3: "460",
       img_url4: "New Roof roof roofing leak repair",
       img_url5: "centr.",
-      presented_1: "Close up of professional roof replacement crew installing new shingles on a building roof",
+      presented_1:
+        "Close up of professional roof replacement crew installing new shingles on a building roof",
       nice_name_actual: "",
       for_page_1: "",
       nice_name_2: "",
       alt_text: "",
-      detail: ""
+      detail: "",
     },
     {
       id: 20,
@@ -123,12 +126,13 @@ const ImageHandlerScreen1: React.FC = () => {
       img_url3: "460",
       img_url4: "Storm Damage Major roof repairs",
       img_url5: "centr.",
-      presented_1: "Residential roof wearing visible water staining from a leak through a damaged area of a house",
+      presented_1:
+        "Residential roof wearing visible water staining from a leak through a damaged area of a house",
       nice_name_actual: "",
       for_page_1: "",
       nice_name_2: "",
       alt_text: "",
-      detail: ""
+      detail: "",
     },
     {
       id: 21,
@@ -148,8 +152,8 @@ const ImageHandlerScreen1: React.FC = () => {
       for_page_1: "",
       nice_name_2: "",
       alt_text: "",
-      detail: ""
-    }
+      detail: "",
+    },
   ];
 
   return (
@@ -160,11 +164,10 @@ const ImageHandlerScreen1: React.FC = () => {
         {/* Welcome Card */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <p className="text-gray-600 mb-4">
-            Welcome to the Image Handler page. This is where you can manage your images.
+            Welcome to the Image Handler page. This is where you can manage your
+            images.
           </p>
-          <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
             Get Started
           </Button>
         </div>
@@ -177,30 +180,76 @@ const ImageHandlerScreen1: React.FC = () => {
                 <th className="p-2 border border-gray-700 w-10 bg-white align-middle">
                   <Checkbox />
                 </th>
-                <th className="p-2 border border-gray-700 bg-white align-middle">Actions</th>
-                <th className="p-2 border border-gray-700 w-10 bg-gray-200 align-middle">global_id</th>
-                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">rel_images2_batch_id</th>
-                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">batch date created</th>
-                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">batch name</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">batch total images (dynamic pull field qty)</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">image preview</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">img_url1</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">image extension</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">img_file_size</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">width5</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">height5</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">folder</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">img_zpf_code</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">width1</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">height1</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">associated_text_content_on_page1</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">file_name1</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">more_instructions1</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">prompt1</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">ai_tool1</th>
+                <th className="p-2 border border-gray-700 bg-white align-middle">
+                  Actions
+                </th>
+                <th className="p-2 border border-gray-700 w-10 bg-gray-200 align-middle">
+                  global_id
+                </th>
+                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">
+                  rel_images2_batch_id
+                </th>
+                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">
+                  batch date created
+                </th>
+                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">
+                  batch name
+                </th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
+                  batch total images (dynamic pull field qty)
+                </th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
+                  image preview
+                </th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
+                  img_url1
+                </th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
+                  image extension
+                </th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
+                  img_file_size
+                </th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
+                  width5
+                </th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
+                  height5
+                </th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
+                  folder
+                </th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
+                  img_zpf_code
+                </th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
+                  width1
+                </th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
+                  height1
+                </th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
+                  associated_text_content_on_page1
+                </th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
+                  file_name1
+                </th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
+                  more_instructions1
+                </th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
+                  prompt1
+                </th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
+                  ai_tool1
+                </th>
                 <th className="bg-black w-[5px] border border-gray-700 align-middle" />
-                <th className="p-2 border border-gray-700 bg-blue-100 align-middle">meta_data_wiped1</th>
-                <th className="p-2 border border-gray-700 bg-blue-100 align-middle">screenshotted1</th>
+                <th className="p-2 border border-gray-700 bg-blue-100 align-middle">
+                  meta_data_wiped1
+                </th>
+                <th className="p-2 border border-gray-700 bg-blue-100 align-middle">
+                  screenshotted1
+                </th>
                 <th className="bg-black w-[5px] border border-gray-700 align-middle" />
               </tr>
             </thead>
@@ -211,30 +260,62 @@ const ImageHandlerScreen1: React.FC = () => {
                     <Checkbox />
                   </td>
                   <td className="p-2 border border-gray-700 align-middle">
-                    <Button variant="outline" size="sm" className="mr-1">Edit</Button>
-                    <Button variant="outline" size="sm" className="text-red-500">Delete</Button>
+                    <Button variant="outline" size="sm" className="mr-1">
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-red-500"
+                    >
+                      Delete
+                    </Button>
                   </td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.id}</td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.img_url2}</td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.img_url3}</td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.img_url4}</td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.img_url5}</td>
-                  <td className="p-2 border border-gray-700 align-middle" style={{ minHeight: '150px', height: '100%' }}>
-                    <div className="w-24 min-h-[150px] h-full flex items-center justify-center">
-                      <img 
-                        src={`https://picsum.photos/seed/${image.id}/100/100`} 
-                        alt="Thumbnail" 
-                        className="object-cover w-full h-full min-h-[150px]"
-                        style={{ height: '100%', minHeight: '150px', display: 'block' }}
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.id}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.img_url2}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.img_url3}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.img_url4}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.img_url5}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    <div className="w-24 h-full flex items-center justify-center">
+                      <img
+                        src={`https://picsum.photos/seed/${image.id}/100/100`}
+                        alt="Thumbnail"
+                        className="object-cover w-full h-full"
+                        style={{
+                          display: "block",
+                        }}
                       />
                     </div>
                   </td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.filename}</td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.filesize}</td>
-                  <td className="p-2 border border-gray-700 align-middle max-w-xs truncate">{image.path}</td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.img_url1}</td>
-                  <td className="p-2 border border-gray-700 align-middle">{image.presented_1}</td>
-                  <td className="p-2 border border-gray-700 align-middle max-w-xs truncate">{image.nice_name_actual}</td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.filename}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.filesize}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle max-w-xs truncate">
+                    {image.path}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.img_url1}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle">
+                    {image.presented_1}
+                  </td>
+                  <td className="p-2 border border-gray-700 align-middle max-w-xs truncate">
+                    {image.nice_name_actual}
+                  </td>
                 </tr>
               ))}
             </tbody>
