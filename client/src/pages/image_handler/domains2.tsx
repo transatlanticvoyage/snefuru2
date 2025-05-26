@@ -198,10 +198,18 @@ export default function DomainsManagementPage() {
   };
 
   const handleSelectAll = () => {
-    if (selectedDomains.length === paginatedDomains.length) {
+    if (selectedDomains.length === paginatedDomains.length && paginatedDomains.length > 0) {
       setSelectedDomains([]);
     } else {
       setSelectedDomains(paginatedDomains.map(domain => domain.id));
+    }
+  };
+
+  const handleSelectAllVisible = () => {
+    if (selectedDomains.length === sortedDomains.length && sortedDomains.length > 0) {
+      setSelectedDomains([]);
+    } else {
+      setSelectedDomains(sortedDomains.map(domain => domain.id));
     }
   };
 
@@ -223,7 +231,27 @@ export default function DomainsManagementPage() {
       return;
     }
 
-    deleteDomainsMutation.mutate(selectedDomains);
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${selectedDomains.length} selected domain(s)? This action cannot be undone.`
+    );
+    
+    if (confirmed) {
+      deleteDomainsMutation.mutate(selectedDomains);
+    }
+  };
+
+  const handleDeleteSingle = (domainId: number) => {
+    const domain = domains.find(d => d.id === domainId);
+    const domainName = domain?.domain_base || 'this domain';
+    
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${domainName}"? This action cannot be undone.`
+    );
+    
+    if (confirmed) {
+      deleteDomainsMutation.mutate([domainId]);
+    }
   };
 
   const handleRefresh = () => {
@@ -314,9 +342,29 @@ export default function DomainsManagementPage() {
           {selectedDomains.length > 0 && (
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
               <div className="flex items-center justify-between">
-                <span className="text-blue-800 dark:text-blue-200 font-medium">
-                  {selectedDomains.length} domain(s) selected
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className="text-blue-800 dark:text-blue-200 font-medium">
+                    {selectedDomains.length} domain(s) selected
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleSelectAllVisible}
+                      className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                    >
+                      {selectedDomains.length === sortedDomains.length ? 'Deselect All' : 'Select All Visible'}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedDomains([])}
+                      className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                    >
+                      Clear Selection
+                    </Button>
+                  </div>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     size="sm"
@@ -332,7 +380,7 @@ export default function DomainsManagementPage() {
                     ) : (
                       <>
                         <Trash2 className="h-4 w-4 mr-1" />
-                        Delete Selected
+                        Delete Selected ({selectedDomains.length})
                       </>
                     )}
                   </Button>
@@ -476,14 +524,30 @@ export default function DomainsManagementPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
+                          title="View domain details"
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 hover:bg-orange-50 hover:text-orange-600"
+                          title="Edit domain"
+                        >
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                          title="Delete domain"
+                          onClick={() => handleDeleteSingle(domain.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </TableCell>

@@ -144,10 +144,11 @@ router.post('/bulk-add', async (req: any, res) => {
   }
 });
 
-// DELETE /api/domains/bulk-delete - Delete multiple domains
+// DELETE /api/domains/bulk-delete - Delete multiple domains (user-specific)
 router.delete('/bulk-delete', async (req: any, res) => {
   try {
     const validatedData = bulkDeleteSchema.parse(req.body);
+    const userId = 1; // For now, using hardcoded user ID
     
     if (validatedData.domainIds.length === 0) {
       return res.status(400).json({ 
@@ -156,11 +157,33 @@ router.delete('/bulk-delete', async (req: any, res) => {
       });
     }
     
-    await storage.bulkDeleteDomains(validatedData.domainIds);
+    // First, verify that all domains belong to the current user
+    const userDomains = await storage.getUserDomains(userId);
+    const userDomainIds = new Set(userDomains.map(domain => domain.id));
+    
+    // Filter domain IDs to only include ones that belong to the user
+    const validDomainIds = validatedData.domainIds.filter(id => userDomainIds.has(id));
+    const unauthorizedIds = validatedData.domainIds.filter(id => !userDomainIds.has(id));
+    
+    if (validDomainIds.length === 0) {
+      return res.status(403).json({ 
+        message: 'None of the specified domains belong to your account',
+        success: false 
+      });
+    }
+    
+    // Delete only the domains that belong to the user
+    await storage.bulkDeleteDomains(validDomainIds);
+    
+    let message = `Successfully deleted ${validDomainIds.length} domains`;
+    if (unauthorizedIds.length > 0) {
+      message += `. Skipped ${unauthorizedIds.length} domains that don't belong to your account`;
+    }
     
     res.json({ 
-      message: `Successfully deleted ${validatedData.domainIds.length} domains`,
-      deleted: validatedData.domainIds.length,
+      message,
+      deleted: validDomainIds.length,
+      skipped: unauthorizedIds.length,
       success: true 
     });
   } catch (error) {
