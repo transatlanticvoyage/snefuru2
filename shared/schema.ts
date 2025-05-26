@@ -83,6 +83,23 @@ export const calendar_connections = pgTable("calendar_connections", {
   updated_at: timestamp("updated_at").defaultNow(),
 });
 
+export const notion_notes = pgTable("notion_notes", {
+  id: serial("id").primaryKey(),
+  user_id: integer("user_id").references(() => users.id),
+  notion_id: varchar("notion_id", { length: 255 }).unique(),
+  title: varchar("title", { length: 500 }),
+  status: varchar("status", { length: 100 }),
+  category: varchar("category", { length: 100 }),
+  tags: jsonb("tags"),
+  content_preview: text("content_preview"),
+  notion_url: varchar("notion_url", { length: 500 }),
+  created_time: timestamp("created_time"),
+  last_edited_time: timestamp("last_edited_time"),
+  last_synced: timestamp("last_synced").defaultNow(),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
 export const calendar_events = pgTable("calendar_events", {
   id: serial("id").primaryKey(),
   user_id: integer("user_id").notNull(),

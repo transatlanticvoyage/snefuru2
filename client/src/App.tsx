@@ -25,6 +25,7 @@ import Domains1 from "@/pages/image_handler/domains1";
 import HostingCascade from "@/pages/image_handler/hosting_cascade";
 import CalendarPage from "@/pages/calendar/calendar1";
 import AirtableCalendarPage from "@/pages/calendar/airtable1";
+import NotionNotesPage from "@/pages/calendar/notion1";
 import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 import ChatScreen1 from "@/pages/chat/chatscreen1";
 
@@ -110,6 +111,9 @@ function Router() {
       </Route>
       <Route path="/calendar/airtable1">
         {isAuthenticated ? <AirtableCalendarPage /> : <SimpleLogin />}
+      </Route>
+      <Route path="/calendar/notion1">
+        {isAuthenticated ? <NotionNotesPage /> : <SimpleLogin />}
       </Route>
       <Route path="/rank_tracker/screen1">
         {isAuthenticated ? <RankTrackerScreen1 /> : <SimpleLogin />}
