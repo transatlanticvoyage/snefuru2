@@ -296,6 +296,7 @@ const ImageHandlerScreen1: React.FC = () => {
                         className="object-cover w-full h-full"
                         style={{
                           display: "block",
+                          height: "100%"
                         }}
                       />
                     </div>
