@@ -219,12 +219,13 @@ const ImageHandlerScreen1: React.FC = () => {
                   <td className="p-2 border border-gray-700 align-middle">{image.img_url3}</td>
                   <td className="p-2 border border-gray-700 align-middle">{image.img_url4}</td>
                   <td className="p-2 border border-gray-700 align-middle">{image.img_url5}</td>
-                  <td className="p-2 border border-gray-700 align-middle">
-                    <div className="w-12 h-12 bg-gray-200 rounded overflow-hidden">
+                  <td className="p-2 border border-gray-700 align-middle" style={{ minHeight: '150px', height: '100%' }}>
+                    <div className="w-24 min-h-[150px] h-full flex items-center justify-center">
                       <img 
                         src={`https://picsum.photos/seed/${image.id}/100/100`} 
                         alt="Thumbnail" 
-                        className="w-full h-full object-cover"
+                        className="object-cover w-full h-full min-h-[150px]"
+                        style={{ height: '100%', minHeight: '150px', display: 'block' }}
                       />
                     </div>
                   </td>
