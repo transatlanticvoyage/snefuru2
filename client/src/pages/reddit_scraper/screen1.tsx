@@ -177,6 +177,54 @@ const RedditScraperScreen1: React.FC = () => {
     },
   });
 
+  // Scrape URLs mutation
+  const scrapeMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      const response = await fetch('/api/reddit/scrape-urls', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ ids }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to scrape URLs');
+      }
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: `Successfully scraped ${data.scraped_count} URLs`,
+      });
+      setSelectedRecords([]);
+      queryClient.invalidateQueries({ queryKey: ['/api/reddit/organic-positions'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Scraping Error",
+        description: error.message || "Failed to scrape URLs",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle scrape URLs
+  const handleScrapeUrls = () => {
+    if (selectedRecords.length === 0) {
+      toast({
+        title: "No URLs Selected",
+        description: "Please select URLs to scrape from the table",
+        variant: "destructive",
+      });
+      return;
+    }
+    scrapeMutation.mutate(selectedRecords);
+  };
+
   // Filter and search functionality
   const filteredData = organicPositions.filter((record: RedditOrganicPosition) => {
     const matchesSearch = record.keyword?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -385,6 +433,16 @@ const RedditScraperScreen1: React.FC = () => {
                 onChange={handleFileUpload}
                 className="hidden"
               />
+              {selectedRecords.length > 0 && (
+                <Button
+                  onClick={handleScrapeUrls}
+                  disabled={scrapeMutation.isPending}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  <Globe className="h-4 w-4 mr-2" />
+                  {scrapeMutation.isPending ? 'Scraping...' : `Scrape URLs (${selectedRecords.length})`}
+                </Button>
+              )}
               {selectedRecords.length > 0 && (
                 <Button
                   onClick={() => deleteMutation.mutate(selectedRecords)}

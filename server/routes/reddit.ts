@@ -360,4 +360,98 @@ router.get('/organic-positions/:id', async (req: Request, res: Response) => {
   }
 });
 
+// Scrape URLs using ScraperAPI
+router.post('/scrape-urls', async (req: Request, res: Response) => {
+  try {
+    const userId = 1;
+    const { ids } = req.body;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid or empty IDs array' 
+      });
+    }
+
+    // Get ScraperAPI key from environment variables
+    const scraperApiKey = process.env.SCRAPERAPI_KEY;
+    if (!scraperApiKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'ScraperAPI key not configured. Please add your ScraperAPI key to environment variables.'
+      });
+    }
+
+    let scrapedCount = 0;
+    let failedCount = 0;
+
+    // Process each URL
+    for (const id of ids) {
+      try {
+        // Get the position record
+        const position = await storage.getRedditOrganicPosition(id);
+        if (!position || position.user_id !== userId) {
+          console.log(`Skipping unauthorized record ${id}`);
+          failedCount++;
+          continue;
+        }
+
+        if (!position.url) {
+          console.log(`Skipping record ${id} - no URL`);
+          failedCount++;
+          continue;
+        }
+
+        // Import node-fetch dynamically
+        const fetch = (await import('node-fetch')).default;
+
+        // Encode the URL for ScraperAPI
+        const encodedUrl = encodeURIComponent(position.url);
+        const scraperUrl = `https://api.scraperapi.com/?api_key=${scraperApiKey}&url=${encodedUrl}`;
+
+        console.log(`Scraping URL: ${position.url}`);
+
+        // Make request to ScraperAPI
+        const response = await fetch(scraperUrl, {
+          method: 'GET',
+          timeout: 30000, // 30 second timeout
+        });
+
+        if (response.ok) {
+          const pageContent = await response.text();
+          
+          // Update the record with scraped content
+          await storage.updateRedditOrganicPosition(id, {
+            raw_page_fetched_1: pageContent
+          });
+
+          console.log(`Successfully scraped ${position.url}`);
+          scrapedCount++;
+        } else {
+          console.error(`Failed to scrape ${position.url}: ${response.status} ${response.statusText}`);
+          failedCount++;
+        }
+
+      } catch (error) {
+        console.error(`Error scraping URL for record ${id}:`, error);
+        failedCount++;
+      }
+    }
+
+    res.json({ 
+      success: true, 
+      message: `Scraping completed: ${scrapedCount} successful, ${failedCount} failed`,
+      scraped_count: scrapedCount,
+      failed_count: failedCount
+    });
+
+  } catch (error) {
+    console.error('Error scraping URLs:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to scrape URLs' 
+    });
+  }
+});
+
 export default router;

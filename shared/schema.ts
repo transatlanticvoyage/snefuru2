@@ -62,6 +62,7 @@ export const reddit_organic_positions = pgTable("reddit_organic_positions", {
   backlinks: integer("backlinks"),
   referring_domains: integer("referring_domains"),
   social_shares: integer("social_shares"),
+  raw_page_fetched_1: text("raw_page_fetched_1"),
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow()
 });
