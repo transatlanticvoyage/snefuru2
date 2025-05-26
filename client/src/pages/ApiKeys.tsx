@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -46,6 +47,7 @@ interface User {
 }
 
 export default function ApiKeysPage() {
+  useDocumentTitle("API Keys");
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [isSaving, setIsSaving] = useState(false);

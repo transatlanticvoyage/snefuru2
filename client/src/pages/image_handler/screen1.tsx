@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 // Define the image data interface
 interface ImageData {
@@ -26,6 +27,7 @@ interface ImageData {
 }
 
 const ImageHandlerScreen1: React.FC = () => {
+  useDocumentTitle("Image Handler - Screen 1 - Snefuru");
   // Dummy data based on the screenshot
   const imageData: ImageData[] = [
     {
@@ -153,7 +155,7 @@ const ImageHandlerScreen1: React.FC = () => {
   return (
     <div className="min-h-screen bg-neutral-50">
       <Header pageTitle="Image Handler" />
-      
+
       <div className="container mx-auto p-6">
         {/* Welcome Card */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
@@ -166,7 +168,7 @@ const ImageHandlerScreen1: React.FC = () => {
             Get Started
           </Button>
         </div>
-        
+
         {/* Image Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -230,4 +232,4 @@ const ImageHandlerScreen1: React.FC = () => {
   );
 };
 
-export default ImageHandlerScreen1; 
+export default ImageHandlerScreen1;

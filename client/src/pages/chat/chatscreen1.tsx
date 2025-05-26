@@ -27,6 +27,8 @@ import {
   Zap,
   RotateCcw
 } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 interface ChatMessage {
   id: string;
@@ -37,6 +39,7 @@ interface ChatMessage {
 }
 
 const ChatScreen1: React.FC = () => {
+  useDocumentTitle("Chat - Snefuru");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [selectedModel, setSelectedModel] = useState('gpt-4o');
@@ -69,11 +72,11 @@ const ChatScreen1: React.FC = () => {
           conversationHistory: messages 
         }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to send message');
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
@@ -216,7 +219,7 @@ const ChatScreen1: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Header pageTitle="AI Chat" />
-      
+
       <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full px-4 py-6">
         {/* Chat Header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4">
@@ -228,7 +231,7 @@ const ChatScreen1: React.FC = () => {
                 <p className="text-gray-600 dark:text-gray-400">Chat with advanced AI models</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               {/* Model Selection */}
               <div className="flex items-center gap-2">
@@ -259,7 +262,7 @@ const ChatScreen1: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               {/* Action Buttons */}
               {messages.length > 0 && (
                 <>
@@ -331,7 +334,7 @@ const ChatScreen1: React.FC = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className={`max-w-[80%] ${message.role === 'user' ? 'order-1' : ''}`}>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -349,7 +352,7 @@ const ChatScreen1: React.FC = () => {
                         {formatTime(message.timestamp)}
                       </span>
                     </div>
-                    
+
                     <Card className={`${
                       message.role === 'user' 
                         ? 'bg-blue-600 text-white' 
@@ -359,7 +362,7 @@ const ChatScreen1: React.FC = () => {
                         <div className="whitespace-pre-wrap break-words">
                           {message.content}
                         </div>
-                        
+
                         {message.role === 'assistant' && (
                           <div className="mt-2 flex gap-2">
                             <Button
@@ -376,7 +379,7 @@ const ChatScreen1: React.FC = () => {
                       </CardContent>
                     </Card>
                   </div>
-                  
+
                   {message.role === 'user' && (
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
@@ -387,7 +390,7 @@ const ChatScreen1: React.FC = () => {
                 </div>
               ))
             )}
-            
+
             {/* Typing Indicator */}
             {isTyping && (
               <div className="flex gap-3 justify-start">
@@ -421,10 +424,10 @@ const ChatScreen1: React.FC = () => {
                 </div>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
-          
+
           {/* Input Area */}
           <div className="border-t border-gray-200 dark:border-gray-700 p-4">
             <div className="flex gap-3">
@@ -452,7 +455,7 @@ const ChatScreen1: React.FC = () => {
                 )}
               </Button>
             </div>
-            
+
             <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               Model: {selectedModel} • Press Enter to send • Shift+Enter for new line
             </div>

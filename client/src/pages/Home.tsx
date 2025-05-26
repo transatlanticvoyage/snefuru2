@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import SpreadsheetInput from "@/components/SpreadsheetInput";
 import ModelSelection from "@/components/ModelSelection";
 import StorageSelection from "@/components/StorageSelection";
@@ -13,6 +14,7 @@ import type { SpreadsheetRow } from "../../../shared/schema";
 import type { WpCredentials } from "../../../shared/schema";
 
 export default function Home() {
+  useDocumentTitle("Home");
   const [spreadsheetData, setSpreadsheetData] = useState<SpreadsheetRow[]>([]);
   const [selectedAiModel, setSelectedAiModel] = useState<string | null>(null);
   const [selectedStorage, setSelectedStorage] = useState<string | null>(null);

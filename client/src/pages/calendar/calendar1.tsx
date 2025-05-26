@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Star, Flag, ChevronLeft, ChevronRight, Search, Filter, Calendar, Clock, MapPin, Users, ExternalLink, Sparkles } from 'lucide-react';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 interface CalendarEvent {
   id: string;
@@ -55,8 +56,9 @@ interface CalendarEvent {
 }
 
 const CalendarPage: React.FC = () => {
+  useDocumentTitle("Calendar - Snefuru");
   const queryClient = useQueryClient();
-  
+
   // Fetch real calendar events from database
   const { data: calendarEvents = [], isLoading, error } = useQuery({
     queryKey: ['/api/calendar/events'],
@@ -139,12 +141,12 @@ const CalendarPage: React.FC = () => {
     const matchesSearch = event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          event.location?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesSource = sourceFilter === 'all' || event.calendar_source === sourceFilter;
     const matchesType = typeFilter === 'all' || event.event_type === typeFilter;
     const matchesPriority = priorityFilter === 'all' || event.priority === priorityFilter;
     const matchesStatus = statusFilter === 'all' || event.status === statusFilter;
-    
+
     return matchesSearch && matchesSource && matchesType && matchesPriority && matchesStatus;
   });
 
@@ -152,12 +154,12 @@ const CalendarPage: React.FC = () => {
   const sortedData = [...filteredData].sort((a: any, b: any) => {
     let aValue = a[sortField];
     let bValue = b[sortField];
-    
+
     if (sortField === 'start_date' || sortField === 'end_date') {
       aValue = new Date(aValue + ' ' + (sortField === 'start_date' ? a.start_time : a.end_time));
       bValue = new Date(bValue + ' ' + (sortField === 'start_date' ? b.start_time : b.end_time));
     }
-    
+
     if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
     if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
@@ -244,13 +246,13 @@ const CalendarPage: React.FC = () => {
       const response = await fetch('/api/calendar/auth/google', {
         credentials: 'include',
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to get authentication URL');
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success && data.authUrl) {
         // Redirect to Google's authentication page
         window.location.href = data.authUrl;
@@ -319,7 +321,7 @@ const CalendarPage: React.FC = () => {
     const durationMs = end.getTime() - start.getTime();
     const hours = Math.floor(durationMs / (1000 * 60 * 60));
     const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     }
@@ -366,7 +368,7 @@ const CalendarPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header pageTitle="Calendar Management" />
-      
+
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
@@ -429,7 +431,7 @@ const CalendarPage: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Connection Status */}
           {connections.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-6">
@@ -460,7 +462,7 @@ const CalendarPage: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Source" />

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useForm } from 'react-hook-form';
 import { useLocation, Link } from 'wouter';
 import { useMutation } from '@tanstack/react-query';
@@ -30,6 +31,7 @@ const registerSchema = z.object({
 type Register = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
+  useDocumentTitle("Register");
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [isLoading, setIsLoading] = useState(false);

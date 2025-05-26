@@ -29,6 +29,8 @@ import {
   Copy,
   ExternalLink
 } from 'lucide-react';
+import { useLocation } from 'wouter';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 interface HostingAccount {
   id: string;
@@ -257,13 +259,15 @@ const sampleHostingData: HostingAccount[] = [
 ];
 
 const HostingCascadePage: React.FC = () => {
+  useDocumentTitle("Hosting Cascade - Snefuru");
+  const [, navigate] = useLocation();
   // State management
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [sortField, setSortField] = useState<string>('companyName');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  
+
   // Filter states
   const [endpointFilter, setEndpointFilter] = useState('All');
   const [columnTemplate, setColumnTemplate] = useState('All');
@@ -274,11 +278,11 @@ const HostingCascadePage: React.FC = () => {
   const [showNetworks, setShowNetworks] = useState('All');
   const [maxNetSort, setMaxNetSort] = useState('All');
   const [slotWidth, setSlotWidth] = useState('1250px');
-  
+
   // Active settings
   const [activeDomainEggAccounts, setActiveDomainEggAccounts] = useState(true);
   const [activeHostPlansOnly, setActiveHostPlansOnly] = useState(false);
-  
+
   // Pagination settings
   const [rowsPerPage, setRowsPerPage] = useState(25);
 
@@ -290,9 +294,9 @@ const HostingCascadePage: React.FC = () => {
     const matchesSearch = account.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          account.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          account.user.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesEndpoint = endpointFilter === 'All' || account.accountType === endpointFilter.toLowerCase();
-    
+
     return matchesSearch && matchesEndpoint;
   });
 
@@ -300,10 +304,10 @@ const HostingCascadePage: React.FC = () => {
   const sortedData = [...filteredData].sort((a, b) => {
     let aValue = a[sortField as keyof HostingAccount];
     let bValue = b[sortField as keyof HostingAccount];
-    
+
     if (typeof aValue === 'string') aValue = aValue.toLowerCase();
     if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-    
+
     if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
     if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
@@ -344,7 +348,7 @@ const HostingCascadePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header pageTitle="Hosting Cascade" />
-      
+
       <div className="container mx-auto px-4 py-6">
         {/* Page Header */}
         <div className="mb-6">

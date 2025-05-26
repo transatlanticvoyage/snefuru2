@@ -443,8 +443,11 @@ const dummyAffiliateProgramsData: AffiliateProgram[] = [
   },
 ];
 
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
 // Main component
 const AffiliatePrograms: React.FC = () => {
+  useDocumentTitle("Affiliate Programs - Snefuru");
   // State for pagination and filtering
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -460,15 +463,15 @@ const AffiliatePrograms: React.FC = () => {
       program.niches_served.some(niche => 
         niche.toLowerCase().includes(searchTerm.toLowerCase())
       );
-    
+
     const matchesStatusFilter = 
       statusFilter === 'all' || 
       program.signed_up === statusFilter;
-    
+
     const matchesCampaignFilter = 
       campaignFilter === 'all' || 
       program.actively_running_their_campaigns === campaignFilter;
-    
+
     return matchesSearch && matchesStatusFilter && matchesCampaignFilter;
   });
 
@@ -492,7 +495,7 @@ const AffiliatePrograms: React.FC = () => {
   return (
     <div className="min-h-screen bg-neutral-50">
       <Header pageTitle="Affiliate Programs" />
-      
+
       <div className="container mx-auto p-6">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
@@ -506,7 +509,7 @@ const AffiliatePrograms: React.FC = () => {
               </Button>
             </div>
           </div>
-          
+
           {/* Filters and search */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-grow">
@@ -519,7 +522,7 @@ const AffiliatePrograms: React.FC = () => {
                 onChange={handleSearch}
               />
             </div>
-            
+
             <div className="flex gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[160px]">
@@ -531,7 +534,7 @@ const AffiliatePrograms: React.FC = () => {
                   <SelectItem value="not yet">Not Yet Signed Up</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select value={campaignFilter} onValueChange={setCampaignFilter}>
                 <SelectTrigger className="w-[160px]">
                   <SelectValue placeholder="Campaign Status" />
@@ -544,7 +547,7 @@ const AffiliatePrograms: React.FC = () => {
               </Select>
             </div>
           </div>
-          
+
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -628,7 +631,7 @@ const AffiliatePrograms: React.FC = () => {
               </tbody>
             </table>
           </div>
-          
+
           {/* Pagination */}
           <div className="flex items-center justify-between px-4 py-3 sm:px-6">
             <div className="flex-1 flex justify-between sm:hidden">
@@ -647,7 +650,7 @@ const AffiliatePrograms: React.FC = () => {
                 Next
               </Button>
             </div>
-            
+
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
@@ -666,21 +669,21 @@ const AffiliatePrograms: React.FC = () => {
                       className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                     />
                   </PaginationItem>
-                  
+
                   {/* First page */}
                   {currentPage > 2 && (
                     <PaginationItem>
                       <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
                     </PaginationItem>
                   )}
-                  
+
                   {/* Ellipsis if not showing first page */}
                   {currentPage > 3 && (
                     <PaginationItem>
                       <PaginationEllipsis />
                     </PaginationItem>
                   )}
-                  
+
                   {/* Previous page if not on first page */}
                   {currentPage > 1 && (
                     <PaginationItem>
@@ -689,14 +692,14 @@ const AffiliatePrograms: React.FC = () => {
                       </PaginationLink>
                     </PaginationItem>
                   )}
-                  
+
                   {/* Current page */}
                   <PaginationItem>
                     <PaginationLink isActive onClick={() => handlePageChange(currentPage)}>
                       {currentPage}
                     </PaginationLink>
                   </PaginationItem>
-                  
+
                   {/* Next page if not on last page */}
                   {currentPage < totalPages && (
                     <PaginationItem>
@@ -705,14 +708,14 @@ const AffiliatePrograms: React.FC = () => {
                       </PaginationLink>
                     </PaginationItem>
                   )}
-                  
+
                   {/* Ellipsis if not showing last page */}
                   {currentPage < totalPages - 2 && (
                     <PaginationItem>
                       <PaginationEllipsis />
                     </PaginationItem>
                   )}
-                  
+
                   {/* Last page */}
                   {currentPage < totalPages - 1 && (
                     <PaginationItem>
@@ -721,7 +724,7 @@ const AffiliatePrograms: React.FC = () => {
                       </PaginationLink>
                     </PaginationItem>
                   )}
-                  
+
                   <PaginationItem>
                     <PaginationNext 
                       onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}

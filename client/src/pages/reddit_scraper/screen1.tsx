@@ -37,6 +37,9 @@ import {
   Globe
 } from 'lucide-react';
 
+// Import the custom hook
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
 interface RedditOrganicPosition {
   id: number;
   user_id: number;
@@ -77,6 +80,9 @@ interface RedditOrganicPosition {
 }
 
 const RedditScraperScreen1: React.FC = () => {
+  // Set the document title using the custom hook
+  useDocumentTitle("Reddit Scraper - Screen 1 - Snefuru");
+
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -87,7 +93,7 @@ const RedditScraperScreen1: React.FC = () => {
   const [sortField, setSortField] = useState<string>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [rowsPerPage, setRowsPerPage] = useState(25);
-  
+
   // Filter states
   const [deviceFilter, setDeviceFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
@@ -107,17 +113,17 @@ const RedditScraperScreen1: React.FC = () => {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      
+
       const response = await fetch('/api/reddit/upload-positions', {
         method: 'POST',
         credentials: 'include',
         body: formData,
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to upload file');
       }
-      
+
       return response.json();
     },
     onSuccess: (data) => {
@@ -147,11 +153,11 @@ const RedditScraperScreen1: React.FC = () => {
         credentials: 'include',
         body: JSON.stringify({ ids }),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to delete records');
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -177,12 +183,12 @@ const RedditScraperScreen1: React.FC = () => {
                          record.url?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          record.domain?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          record.title?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesDevice = deviceFilter === 'all' || record.device === deviceFilter;
     const matchesLocation = locationFilter === 'all' || record.location === locationFilter;
     const matchesCompetition = competitionFilter === 'all' || record.competition === competitionFilter;
     const matchesDomain = !domainFilter || record.domain?.toLowerCase().includes(domainFilter.toLowerCase());
-    
+
     let matchesPositionRange = true;
     if (positionRangeMin && record.position) {
       matchesPositionRange = matchesPositionRange && record.position >= parseInt(positionRangeMin);
@@ -190,7 +196,7 @@ const RedditScraperScreen1: React.FC = () => {
     if (positionRangeMax && record.position) {
       matchesPositionRange = matchesPositionRange && record.position <= parseInt(positionRangeMax);
     }
-    
+
     return matchesSearch && matchesDevice && matchesLocation && matchesCompetition && matchesDomain && matchesPositionRange;
   });
 
@@ -198,14 +204,14 @@ const RedditScraperScreen1: React.FC = () => {
   const sortedData = [...filteredData].sort((a, b) => {
     let aValue = a[sortField as keyof RedditOrganicPosition];
     let bValue = b[sortField as keyof RedditOrganicPosition];
-    
+
     // Handle null values
     if (aValue === null) aValue = '';
     if (bValue === null) bValue = '';
-    
+
     if (typeof aValue === 'string') aValue = aValue.toLowerCase();
     if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-    
+
     if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
     if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
@@ -250,7 +256,7 @@ const RedditScraperScreen1: React.FC = () => {
     if (!current || !previous || change === null) {
       return <Minus className="h-4 w-4 text-gray-400" />;
     }
-    
+
     if (change > 0) {
       return <TrendingUp className="h-4 w-4 text-green-600" />;
     } else if (change < 0) {
@@ -351,7 +357,7 @@ const RedditScraperScreen1: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header pageTitle="Reddit Scraper" />
-      
+
       <div className="container mx-auto px-4 py-6">
         {/* Page Header */}
         <div className="mb-6">
@@ -390,7 +396,7 @@ const RedditScraperScreen1: React.FC = () => {
               )}
             </div>
           </div>
-          
+
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
@@ -442,7 +448,7 @@ const RedditScraperScreen1: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <Select value={deviceFilter} onValueChange={setDeviceFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="Device" />

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,6 +41,9 @@ const rankingHistoryData = [
   { date: 'May 24, 2025', position: 8 },
 ];
 
+export default function RankTrackerScreen1() {
+  useDocumentTitle("RankTracker");
+  
 // Dummy data based on the screenshot
 const dummyData = [
   { 

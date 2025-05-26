@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useLocation } from 'wouter';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -227,13 +229,14 @@ const sampleDomains: Domain[] = [
 ];
 
 const DomainsPage: React.FC = () => {
+  useDocumentTitle('Domains Main - Snefuru');
   // State management
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
   const [sortField, setSortField] = useState<string>('domain');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  
+
   // Filter states
   const [domainFunction, setDomainFunction] = useState('All Users');
   const [groupFilter, setGroupFilter] = useState('All');
@@ -245,7 +248,7 @@ const DomainsPage: React.FC = () => {
   const [registrarFilter, setRegistrarFilter] = useState('All');
   const [notesFilter, setNotesFilter] = useState('All');
   const [quickAddFilter, setQuickAddFilter] = useState('All');
-  
+
   // Pagination settings
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [showColumns, setShowColumns] = useState({
@@ -270,10 +273,10 @@ const DomainsPage: React.FC = () => {
                          domain.registrar.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          domain.st_ip.includes(searchTerm) ||
                          domain.ns.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesGroup = groupFilter === 'All' || domain.group === groupFilter;
     const matchesSubnetworks = subnetworksFilter === 'All' || domain.subnetworks === subnetworksFilter;
-    
+
     return matchesSearch && matchesGroup && matchesSubnetworks;
   });
 
@@ -281,10 +284,10 @@ const DomainsPage: React.FC = () => {
   const sortedData = [...filteredData].sort((a, b) => {
     let aValue = a[sortField as keyof Domain];
     let bValue = b[sortField as keyof Domain];
-    
+
     if (typeof aValue === 'string') aValue = aValue.toLowerCase();
     if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-    
+
     if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
     if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
@@ -323,7 +326,7 @@ const DomainsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header pageTitle="Domains Management" />
-      
+
       <div className="container mx-auto px-4 py-6">
         {/* Page Header */}
         <div className="mb-6">
@@ -385,7 +388,7 @@ const DomainsPage: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="text-sm">
               <label className="block text-xs text-gray-600 mb-1">Group</label>
               <Select value={groupFilter} onValueChange={setGroupFilter}>

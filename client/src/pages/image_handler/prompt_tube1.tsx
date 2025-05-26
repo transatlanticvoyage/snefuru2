@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const PromptTube: React.FC = () => {
+  useDocumentTitle("Prompt Tube - Snefuru");
   // Generate initial content with numbers 1-300, each on a new line
   const generateInitialContent = () => {
     let content = '';
@@ -22,7 +24,7 @@ const PromptTube: React.FC = () => {
 
   const handleSave = () => {
     setIsSaving(true);
-    
+
     // Simulate saving process
     setTimeout(() => {
       setIsSaving(false);
@@ -36,7 +38,7 @@ const PromptTube: React.FC = () => {
   return (
     <div className="min-h-screen bg-neutral-50">
       <Header pageTitle="Prompt Tube" />
-      
+
       <div className="container mx-auto p-6">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex justify-between items-center mb-4">
@@ -49,7 +51,7 @@ const PromptTube: React.FC = () => {
               {isSaving ? 'Saving...' : 'Save Prompts'}
             </Button>
           </div>
-          
+
           {/* Green Google Sheets Button */}
           <div className="mb-6">
             <a 
@@ -63,11 +65,11 @@ const PromptTube: React.FC = () => {
               </Button>
             </a>
           </div>
-          
+
           <div className="mb-2 text-sm text-gray-500">
             Enter your prompts below, one per line:
           </div>
-          
+
           {/* Large text editor area */}
           <div className="border border-gray-200 rounded-md">
             <textarea
@@ -77,7 +79,7 @@ const PromptTube: React.FC = () => {
               spellCheck={false}
             />
           </div>
-          
+
           <div className="mt-4 flex justify-between items-center">
             <div className="text-sm text-gray-500">
               {textContent.split('\n').length} lines

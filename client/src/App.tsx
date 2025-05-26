@@ -19,6 +19,7 @@ import Screen3 from "@/pages/reddit_scraper/screen3";
 import Screen4 from "@/pages/reddit_scraper/screen4";
 import AffiliatePrograms from "@/pages/reddit_scraper/affiliate_programs1";
 import ImageHandlerScreen1 from "@/pages/image_handler/screen1";
+import ImageHandlerScreen2 from "@/pages/image_handler/screen2";
 import PromptTube from "@/pages/image_handler/prompt_tube1";
 import Domains1 from "@/pages/image_handler/domains1";
 import HostingCascade from "@/pages/image_handler/hosting_cascade";
@@ -87,6 +88,9 @@ function Router() {
       </Route>
       <Route path="/image_handler/screen1">
         {isAuthenticated ? <ImageHandlerScreen1 /> : <SimpleLogin />}
+      </Route>
+      <Route path="/image_handler/screen2">
+        {isAuthenticated ? <ImageHandlerScreen2 /> : <SimpleLogin />}
       </Route>
       <Route path="/image_handler/prompt_tube1">
         {isAuthenticated ? <PromptTube /> : <SimpleLogin />}
