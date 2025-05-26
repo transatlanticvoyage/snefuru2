@@ -47,7 +47,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const connections = await storage.getCalendarConnectionsByUserId(1); // Using user_id = 1 for now
       const googleConnection = connections.find(conn => conn.calendar_source === 'google');
       
-      if (!googleConnection || !googleConnection.access_token || googleConnection.access_token === 'mock_token') {
+      console.log('Google connection found:', googleConnection);
+      console.log('Access token:', googleConnection?.access_token);
+      
+      if (!googleConnection || !googleConnection.access_token || googleConnection.access_token === 'mock_token' || googleConnection.access_token === '') {
         // For demonstration, let's create sample calendar events to show the functionality works
         console.log('No valid Google Calendar token found, creating sample events for demo');
         
