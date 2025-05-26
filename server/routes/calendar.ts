@@ -161,10 +161,10 @@ router.post('/refresh-items', async (req: Request, res: Response) => {
     // Initialize Google Calendar API
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-    // Fetch events from Google Calendar (next 30 days)
+    // Fetch events from Google Calendar (next 6 months)
     const now = new Date();
     const timeMax = new Date();
-    timeMax.setDate(now.getDate() + 30);
+    timeMax.setMonth(now.getMonth() + 6);
 
     const response = await calendar.events.list({
       calendarId: 'primary',
