@@ -134,6 +134,8 @@ const dummyData = [
 ];
 
 export default function RankTrackerScreen1() {
+  useDocumentTitle("RankTracker");
+  
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState('url');
   const [timeFilter, setTimeFilter] = useState('last');
