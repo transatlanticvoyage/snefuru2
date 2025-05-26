@@ -166,17 +166,27 @@ router.post('/refresh-items', async (req: Request, res: Response) => {
     const timeMax = new Date();
     timeMax.setMonth(now.getMonth() + 6);
 
+    console.log(`Fetching events from ${now.toISOString()} to ${timeMax.toISOString()}`);
+    
     const response = await calendar.events.list({
       calendarId: 'primary',
       timeMin: now.toISOString(),
       timeMax: timeMax.toISOString(),
-      maxResults: 100,
+      maxResults: 250, // Increased from 100 to get more events
       singleEvents: true,
       orderBy: 'startTime',
+      showDeleted: false,
     });
 
     const events = response.data.items || [];
-    const savedEvents = [];
+    console.log(`Found ${events.length} total events from Google Calendar`);
+    
+    // Get existing event IDs to check for duplicates
+    const existingEvents = await storage.getCalendarEventsByUserId(1);
+    const existingEventIds = new Set(existingEvents.map(e => e.external_event_id));
+    
+    const newEvents = [];
+    const updatedEvents = [];
 
     // Store events in database
     for (const event of events) {
@@ -205,17 +215,37 @@ router.post('/refresh-items', async (req: Request, res: Response) => {
 
       try {
         const savedEvent = await storage.upsertCalendarEvent(eventData);
-        savedEvents.push(savedEvent);
+        
+        if (existingEventIds.has(event.id || '')) {
+          updatedEvents.push(savedEvent);
+        } else {
+          newEvents.push(savedEvent);
+        }
       } catch (error) {
         console.error('Error saving event:', event.summary, error);
       }
     }
 
-    res.json({
-      success: true,
-      message: `Successfully refreshed ${savedEvents.length} calendar items from Google Calendar`,
-      events_count: savedEvents.length
-    });
+    const totalSaved = newEvents.length + updatedEvents.length;
+    console.log(`Processed ${totalSaved} events: ${newEvents.length} new, ${updatedEvents.length} updated`);
+
+    if (newEvents.length === 0 && updatedEvents.length > 0) {
+      res.json({
+        success: true,
+        message: `0 new items found to fetch. Updated ${updatedEvents.length} existing events from Google Calendar`,
+        events_count: totalSaved,
+        new_events: newEvents.length,
+        updated_events: updatedEvents.length
+      });
+    } else {
+      res.json({
+        success: true,
+        message: `Successfully refreshed ${totalSaved} calendar items from Google Calendar (${newEvents.length} new, ${updatedEvents.length} updated)`,
+        events_count: totalSaved,
+        new_events: newEvents.length,
+        updated_events: updatedEvents.length
+      });
+    }
 
   } catch (error) {
     console.error('Error refreshing calendar items:', error);
