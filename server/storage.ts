@@ -55,6 +55,7 @@ export interface IStorage {
   createRedditOrganicPosition(position: InsertRedditOrganicPosition): Promise<RedditOrganicPosition>;
   getRedditOrganicPosition(id: number): Promise<RedditOrganicPosition | undefined>;
   getRedditOrganicPositionsByUserId(userId: number): Promise<RedditOrganicPosition[]>;
+  updateRedditOrganicPosition(id: number, data: Partial<InsertRedditOrganicPosition>): Promise<RedditOrganicPosition>;
   deleteRedditOrganicPositions(ids: number[]): Promise<void>;
   bulkCreateRedditOrganicPositions(positions: InsertRedditOrganicPosition[]): Promise<RedditOrganicPosition[]>;
 
@@ -218,6 +219,15 @@ export class DatabaseStorage implements IStorage {
       .where(eq(reddit_organic_positions.user_id, userId))
       .orderBy(desc(reddit_organic_positions.created_at));
     return positions;
+  }
+
+  async updateRedditOrganicPosition(id: number, data: Partial<InsertRedditOrganicPosition>): Promise<RedditOrganicPosition> {
+    const [position] = await db
+      .update(reddit_organic_positions)
+      .set({ ...data, updated_at: new Date() })
+      .where(eq(reddit_organic_positions.id, id))
+      .returning();
+    return position;
   }
 
   async deleteRedditOrganicPositions(ids: number[]): Promise<void> {

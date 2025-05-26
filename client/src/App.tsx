@@ -71,6 +71,9 @@ function Router() {
       </Route>
       
       {/* Protected routes */}
+      <Route path="/reddit-scraper">
+        {isAuthenticated ? <Screen1 /> : <SimpleLogin />}
+      </Route>
       <Route path="/reddit_scraper/screen1">
         {isAuthenticated ? <Screen1 /> : <SimpleLogin />}
       </Route>

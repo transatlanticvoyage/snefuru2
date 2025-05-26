@@ -411,11 +411,16 @@ router.post('/scrape-urls', async (req: Request, res: Response) => {
 
         console.log(`Scraping URL: ${position.url}`);
 
-        // Make request to ScraperAPI
+        // Make request to ScraperAPI with proper timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
         const response = await fetch(scraperUrl, {
           method: 'GET',
-          timeout: 30000, // 30 second timeout
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (response.ok) {
           const pageContent = await response.text();
