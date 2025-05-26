@@ -209,6 +209,35 @@ const CalendarPage: React.FC = () => {
     }
   };
 
+  // Disconnect calendar mutation
+  const disconnectMutation = useMutation({
+    mutationFn: async (connectionId: number) => {
+      const response = await fetch(`/api/calendar/connections/${connectionId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to disconnect calendar');
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: "Google Calendar disconnected successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/calendar/connections'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to disconnect calendar",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Handle Google Calendar connection
   const connectGoogleCalendar = async () => {
     try {
@@ -236,6 +265,11 @@ const CalendarPage: React.FC = () => {
       });
     }
   };
+
+  // Check if user is connected to Google Calendar
+  const isConnectedToGoogle = connections.some((conn: any) => 
+    conn.calendar_source === 'google' || conn.provider === 'google'
+  );
 
   // Format date and time
   const formatDateTime = (date: string, time: string) => {
@@ -312,25 +346,50 @@ const CalendarPage: React.FC = () => {
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Calendar Management</h1>
               <p className="text-gray-600 dark:text-gray-400">Sync and manage your calendar events from multiple sources</p>
             </div>
-            <div className="flex gap-3">
-              {connections.length === 0 ? (
-                <Button 
-                  onClick={connectGoogleCalendar}
-                  className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
-                >
-                  <Calendar className="h-4 w-4" />
-                  Connect Google Calendar
-                </Button>
-              ) : (
-                <Button 
-                  onClick={() => syncMutation.mutate()}
-                  disabled={syncMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
-                >
-                  <Calendar className="h-4 w-4" />
-                  {syncMutation.isPending ? 'Syncing...' : 'Sync Calendars'}
-                </Button>
-              )}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                {!isConnectedToGoogle ? (
+                  <Button 
+                    onClick={connectGoogleCalendar}
+                    className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    Connect Google Calendar
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                        Google Calendar Connected
+                      </span>
+                    </div>
+                    <Button 
+                      onClick={() => syncMutation.mutate()}
+                      disabled={syncMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                    >
+                      <Calendar className="h-4 w-4" />
+                      {syncMutation.isPending ? 'Syncing...' : 'Sync Calendars'}
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        const googleConnection = connections.find((conn: any) => 
+                          conn.calendar_source === 'google' || conn.provider === 'google'
+                        );
+                        if (googleConnection) {
+                          disconnectMutation.mutate(googleConnection.id);
+                        }
+                      }}
+                      disabled={disconnectMutation.isPending}
+                      variant="outline"
+                      className="border-red-200 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
+                    >
+                      {disconnectMutation.isPending ? 'Disconnecting...' : 'Disconnect'}
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           
