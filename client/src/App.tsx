@@ -24,6 +24,7 @@ import Domains1 from "@/pages/image_handler/domains1";
 import HostingCascade from "@/pages/image_handler/hosting_cascade";
 import CalendarPage from "@/pages/calendar/calendar1";
 import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
+import ChatScreen1 from "@/pages/chat/chatscreen1";
 
 // Protected route component that redirects to login if not authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, path: string }) {
@@ -102,6 +103,7 @@ function Router() {
       <Route path="/rank_tracker/screen1">
         {isAuthenticated ? <RankTrackerScreen1 /> : <SimpleLogin />}
       </Route>
+      <Route path="/chat/chatscreen1" component={ChatScreen1} />
       
       {/* Fallback route */}
       <Route component={NotFound} />

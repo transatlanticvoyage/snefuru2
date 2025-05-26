@@ -15,6 +15,7 @@ import OpenAI from "openai";
 import authRoutes from "./routes/auth";
 import calendarRoutes from "./routes/calendar";
 import redditRoutes from "./routes/reddit";
+import chatRoutes from "./routes/chat";
 import { optionalAuth, type AuthRequest } from "./middleware/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -26,6 +27,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Reddit routes
   app.use('/api/reddit', redditRoutes);
+  
+  // Register Chat routes
+  app.use('/api/chat', chatRoutes);
   
   // Apply optional authentication to all routes
   app.use(optionalAuth);
