@@ -21,6 +21,7 @@ import AffiliatePrograms from "@/pages/reddit_scraper/affiliate_programs1";
 import ImageHandlerScreen1 from "@/pages/image_handler/screen1";
 import PromptTube from "@/pages/image_handler/prompt_tube1";
 import Domains1 from "@/pages/image_handler/domains1";
+import HostingCascade from "@/pages/image_handler/hosting_cascade";
 import CalendarPage from "@/pages/calendar/calendar1";
 import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 
@@ -91,6 +92,9 @@ function Router() {
       </Route>
       <Route path="/image_handler/domains1">
         {isAuthenticated ? <Domains1 /> : <SimpleLogin />}
+      </Route>
+      <Route path="/image_handler/hosting_cascade">
+        {isAuthenticated ? <HostingCascade /> : <SimpleLogin />}
       </Route>
       <Route path="/calendar/calendar1">
         {isAuthenticated ? <CalendarPage /> : <SimpleLogin />}
