@@ -15,7 +15,22 @@ export default function MainNavigationMenu() {
   const handleNavigate = (path: string) => {
     navigate(path);
   };
-  
+
+  // List of all pages and their paths
+  const pages = [
+    { name: "Home", path: "/" },
+    { name: "Prompt Tube", path: "/image_handler/prompt_tube1" },
+    { name: "Reddit Scraper - Screen 1", path: "/reddit_scraper/screen1" },
+    { name: "Affiliate Programs", path: "/reddit_scraper/affiliate_programs1" },
+    { name: "Calendar", path: "/calendar/calendar1" },
+    { name: "RankTracker", path: "/rank_tracker/screen1" },
+    { name: "Chat", path: "/chat/chatscreen1" },
+    { name: "Domains Main", path: "/image_handler/domains1" },
+    { name: "Hosting Cascade", path: "/image_handler/hosting_cascade" },
+    { name: "Image Handler - Screen 1", path: "/image_handler/screen1" },
+    { name: "Image Handler - Screen 2", path: "/image_handler/screen2" },
+  ];
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,65 +38,23 @@ export default function MainNavigationMenu() {
           Pages <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[200px]">
-        <DropdownMenuItem asChild>
-          <a 
-            href="/" 
-            className="w-full cursor-pointer"
-            onClick={(e) => {
-              // Only handle left-click without modifier keys
-              if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
-                e.preventDefault();
-                handleNavigate("/");
-              }
-              // Other clicks (middle, right, or with Ctrl/Cmd) will use default browser behavior
-            }}
-          >
-            Home
-          </a>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <a 
-            href="/image_handler/screen1" 
-            className="w-full cursor-pointer"
-            onClick={(e) => {
-              if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
-                e.preventDefault();
-                handleNavigate("/image_handler/screen1");
-              }
-            }}
-          >
-            Image Handler - Screen 1
-          </a>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <a 
-            href="/reddit_scraper/screen1" 
-            className="w-full cursor-pointer"
-            onClick={(e) => {
-              if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
-                e.preventDefault();
-                handleNavigate("/reddit_scraper/screen1");
-              }
-            }}
-          >
-            Reddit Scraper - Screen 1
-          </a>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <a 
-            href="/rank_tracker/screen1" 
-            className="w-full cursor-pointer"
-            onClick={(e) => {
-              if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
-                e.preventDefault();
-                handleNavigate("/rank_tracker/screen1");
-              }
-            }}
-          >
-            Rank Tracker - Screen 1
-          </a>
-        </DropdownMenuItem>
+      <DropdownMenuContent align="start" className="w-[250px]">
+        {pages.map((page) => (
+          <DropdownMenuItem asChild key={page.path}>
+            <a
+              href={page.path}
+              className="w-full cursor-pointer"
+              onClick={(e) => {
+                if (e.button === 0 && !e.ctrlKey && !e.metaKey) {
+                  e.preventDefault();
+                  handleNavigate(page.path);
+                }
+              }}
+            >
+              {page.name}
+            </a>
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
