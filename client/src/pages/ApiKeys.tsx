@@ -87,6 +87,17 @@ export default function ApiKeysPage() {
   const [wordpressPassword, setWordpressPassword] = useState('');
   const [wordpressEditMode, setWordpressEditMode] = useState(false);
   
+  // Web Scraping API credentials
+  const [scraperapiKey, setScraperapiKey] = useState('');
+  const [scraperapiEditMode, setScraperapiEditMode] = useState(false);
+  const [oxylabsUsername, setOxylabsUsername] = useState('');
+  const [oxylabsPassword, setOxylabsPassword] = useState('');
+  const [oxylabsEditMode, setOxylabsEditMode] = useState(false);
+  const [brightdataUsername, setBrightdataUsername] = useState('');
+  const [brightdataPassword, setBrightdataPassword] = useState('');
+  const [brightdataEndpoint, setBrightdataEndpoint] = useState('');
+  const [brightdataEditMode, setBrightdataEditMode] = useState(false);
+  
   // Load user data from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -144,6 +155,25 @@ export default function ApiKeysPage() {
           setWordpressPassword(userData.api_keys.wordpress.password || '');
           setWordpressEditMode(!(userData.api_keys.wordpress.url || userData.api_keys.wordpress.username));
         }
+        
+        // Load Web Scraping API credentials
+        if (userData.api_keys.webScraping) {
+          if (userData.api_keys.webScraping.scraperapi) {
+            setScraperapiKey(userData.api_keys.webScraping.scraperapi.apiKey || '');
+            setScraperapiEditMode(!userData.api_keys.webScraping.scraperapi.apiKey);
+          }
+          if (userData.api_keys.webScraping.oxylabs) {
+            setOxylabsUsername(userData.api_keys.webScraping.oxylabs.username || '');
+            setOxylabsPassword(userData.api_keys.webScraping.oxylabs.password || '');
+            setOxylabsEditMode(!(userData.api_keys.webScraping.oxylabs.username || userData.api_keys.webScraping.oxylabs.password));
+          }
+          if (userData.api_keys.webScraping.brightdata) {
+            setBrightdataUsername(userData.api_keys.webScraping.brightdata.username || '');
+            setBrightdataPassword(userData.api_keys.webScraping.brightdata.password || '');
+            setBrightdataEndpoint(userData.api_keys.webScraping.brightdata.endpoint || '');
+            setBrightdataEditMode(!(userData.api_keys.webScraping.brightdata.username || userData.api_keys.webScraping.brightdata.password));
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to parse user data:', error);
@@ -182,6 +212,20 @@ export default function ApiKeysPage() {
           url: wordpressUrl,
           username: wordpressUsername,
           password: wordpressPassword,
+        },
+        webScraping: {
+          scraperapi: {
+            apiKey: scraperapiKey,
+          },
+          oxylabs: {
+            username: oxylabsUsername,
+            password: oxylabsPassword,
+          },
+          brightdata: {
+            username: brightdataUsername,
+            password: brightdataPassword,
+            endpoint: brightdataEndpoint,
+          },
         }
       };
       
@@ -332,9 +376,10 @@ export default function ApiKeysPage() {
         </Alert>
         
         <Tabs defaultValue="ai-services">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="ai-services">AI Services</TabsTrigger>
             <TabsTrigger value="publishing">Publishing Services</TabsTrigger>
+            <TabsTrigger value="web-scraping">Web Scraping APIs</TabsTrigger>
           </TabsList>
           
           <TabsContent value="ai-services">
@@ -1011,6 +1056,347 @@ export default function ApiKeysPage() {
                       </a>
                     </AlertDescription>
                   </Alert>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="web-scraping">
+            <div className="grid grid-cols-1 gap-6">
+              {/* ScraperAPI.com */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>ScraperAPI.com</CardTitle>
+                  <CardDescription>
+                    Add your ScraperAPI credentials for web scraping services.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="scraperapi-key" className="text-base font-semibold">
+                        API Key
+                      </Label>
+                      <div className="flex space-x-2">
+                        {!scraperapiEditMode && scraperapiKey && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 px-2 text-xs"
+                            onClick={() => setScraperapiEditMode(true)}
+                          >
+                            <Edit className="h-3.5 w-3.5 mr-1" />
+                            Edit
+                          </Button>
+                        )}
+                        {scraperapiEditMode && (
+                          <Button 
+                            variant="default" 
+                            size="sm"
+                            className="h-8 px-2 text-xs"
+                            onClick={createSaveHandler(
+                              'webScraping', 
+                              {
+                                scraperapi: { apiKey: scraperapiKey },
+                                oxylabs: { username: oxylabsUsername, password: oxylabsPassword },
+                                brightdata: { username: brightdataUsername, password: brightdataPassword, endpoint: brightdataEndpoint }
+                              },
+                              setScraperapiEditMode,
+                              'ScraperAPI Credentials'
+                            )}
+                          >
+                            <Save className="h-3.5 w-3.5 mr-1" />
+                            Save
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {scraperapiEditMode ? (
+                      <Input
+                        id="scraperapi-key"
+                        type="password"
+                        placeholder="Your ScraperAPI key"
+                        value={scraperapiKey}
+                        onChange={(e) => setScraperapiKey(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {scraperapiKey ? (
+                          <div className="flex items-center text-muted-foreground">
+                            <Lock className="h-3.5 w-3.5 mr-2" />
+                            {scraperapiKey.substring(0, 3)}...{scraperapiKey.substring(scraperapiKey.length - 4)}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No API key set</span>
+                        )}
+                      </div>
+                    )}
+                    
+                    <p className="text-sm text-muted-foreground">
+                      Used for web scraping with proxy rotation and CAPTCHA handling.
+                      <a 
+                        href="https://www.scraperapi.com/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary ml-1 hover:underline"
+                      >
+                        Get your ScraperAPI key
+                      </a>
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Oxylabs Scraper API */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Oxylabs Scraper API</CardTitle>
+                  <CardDescription>
+                    Add your Oxylabs credentials for premium web scraping.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-base font-semibold">
+                      Oxylabs Credentials
+                    </Label>
+                    <div className="flex space-x-2">
+                      {!oxylabsEditMode && oxylabsUsername && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => setOxylabsEditMode(true)}
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {oxylabsEditMode && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={createSaveHandler(
+                            'webScraping', 
+                            {
+                              scraperapi: { apiKey: scraperapiKey },
+                              oxylabs: { username: oxylabsUsername, password: oxylabsPassword },
+                              brightdata: { username: brightdataUsername, password: brightdataPassword, endpoint: brightdataEndpoint }
+                            },
+                            setOxylabsEditMode,
+                            'Oxylabs Credentials'
+                          )}
+                        >
+                          <Save className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="oxylabs-username" className="text-base font-semibold">
+                        Username
+                      </Label>
+                      {oxylabsEditMode ? (
+                        <Input
+                          id="oxylabs-username"
+                          placeholder="Your Oxylabs username"
+                          value={oxylabsUsername}
+                          onChange={(e) => setOxylabsUsername(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {oxylabsUsername ? (
+                            <div className="flex items-center text-muted-foreground">
+                              {oxylabsUsername}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No username set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="oxylabs-password" className="text-base font-semibold">
+                        Password
+                      </Label>
+                      {oxylabsEditMode ? (
+                        <Input
+                          id="oxylabs-password"
+                          type="password"
+                          placeholder="Your Oxylabs password"
+                          value={oxylabsPassword}
+                          onChange={(e) => setOxylabsPassword(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {oxylabsPassword ? (
+                            <div className="flex items-center text-muted-foreground">
+                              <Lock className="h-3.5 w-3.5 mr-2" />
+                              {oxylabsPassword.substring(0, 3)}...{oxylabsPassword.substring(oxylabsPassword.length - 4)}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No password set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">
+                    Used for high-quality residential and datacenter proxies.
+                    <a 
+                      href="https://oxylabs.io/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary ml-1 hover:underline"
+                    >
+                      Get your Oxylabs credentials
+                    </a>
+                  </p>
+                </CardContent>
+              </Card>
+              
+              {/* Bright Data (formerly Luminati) API */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Bright Data API</CardTitle>
+                  <CardDescription>
+                    Add your Bright Data (formerly Luminati) credentials for enterprise web scraping.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-base font-semibold">
+                      Bright Data Credentials
+                    </Label>
+                    <div className="flex space-x-2">
+                      {!brightdataEditMode && brightdataUsername && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => setBrightdataEditMode(true)}
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {brightdataEditMode && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={createSaveHandler(
+                            'webScraping', 
+                            {
+                              scraperapi: { apiKey: scraperapiKey },
+                              oxylabs: { username: oxylabsUsername, password: oxylabsPassword },
+                              brightdata: { username: brightdataUsername, password: brightdataPassword, endpoint: brightdataEndpoint }
+                            },
+                            setBrightdataEditMode,
+                            'Bright Data Credentials'
+                          )}
+                        >
+                          <Save className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="brightdata-username" className="text-base font-semibold">
+                        Username
+                      </Label>
+                      {brightdataEditMode ? (
+                        <Input
+                          id="brightdata-username"
+                          placeholder="Your Bright Data username"
+                          value={brightdataUsername}
+                          onChange={(e) => setBrightdataUsername(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {brightdataUsername ? (
+                            <div className="flex items-center text-muted-foreground">
+                              {brightdataUsername}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No username set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="brightdata-password" className="text-base font-semibold">
+                        Password
+                      </Label>
+                      {brightdataEditMode ? (
+                        <Input
+                          id="brightdata-password"
+                          type="password"
+                          placeholder="Your Bright Data password"
+                          value={brightdataPassword}
+                          onChange={(e) => setBrightdataPassword(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {brightdataPassword ? (
+                            <div className="flex items-center text-muted-foreground">
+                              <Lock className="h-3.5 w-3.5 mr-2" />
+                              {brightdataPassword.substring(0, 3)}...{brightdataPassword.substring(brightdataPassword.length - 4)}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No password set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="brightdata-endpoint" className="text-base font-semibold">
+                      Proxy Endpoint
+                    </Label>
+                    {brightdataEditMode ? (
+                      <Input
+                        id="brightdata-endpoint"
+                        placeholder="zproxy.lum-superproxy.io:22225"
+                        value={brightdataEndpoint}
+                        onChange={(e) => setBrightdataEndpoint(e.target.value)}
+                      />
+                    ) : (
+                      <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                        {brightdataEndpoint ? (
+                          <div className="flex items-center text-muted-foreground">
+                            {brightdataEndpoint}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">No endpoint set</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground">
+                    Used for enterprise-grade web scraping with residential IPs.
+                    <a 
+                      href="https://brightdata.com/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary ml-1 hover:underline"
+                    >
+                      Get your Bright Data credentials
+                    </a>
+                  </p>
                 </CardContent>
               </Card>
             </div>

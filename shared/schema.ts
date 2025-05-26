@@ -279,3 +279,44 @@ export type Login = z.infer<typeof loginSchema>;
 export type Register = z.infer<typeof registerSchema>;
 export type UserSettings = z.infer<typeof userSettingsSchema>;
 export type SpreadsheetRow = z.infer<typeof spreadsheetRowSchema>;
+
+interface ApiKeysState {
+  openai: string;
+  dropbox: string;
+  midjourney: string;
+  gemini: string;
+  googledrive: {
+    clientId: string;
+    clientSecret: string;
+    refreshToken: string;
+  };
+  amazons3: {
+    accessKeyId: string;
+    secretAccessKey: string;
+    region: string;
+    bucketName: string;
+  };
+  dataforseo: {
+    login: string;
+    password: string;
+  };
+  wordpress: {
+    url: string;
+    username: string;
+    password: string;
+  };
+  webScraping: {
+    scraperapi: {
+      apiKey: string;
+    };
+    oxylabs: {
+      username: string;
+      password: string;
+    };
+    brightdata: {
+      username: string;
+      password: string;
+      endpoint: string;
+    };
+  };
+}
