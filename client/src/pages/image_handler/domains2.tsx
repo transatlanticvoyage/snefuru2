@@ -51,6 +51,12 @@ interface Domain {
   created_at: string | null;
 }
 
+interface DomainsResponse {
+  domains: Domain[];
+  total: number;
+  success: boolean;
+}
+
 type SortField = 'domain_base' | 'created_at' | 'id';
 type SortDirection = 'asc' | 'desc';
 
@@ -71,7 +77,7 @@ export default function DomainsManagementPage() {
     retry: false,
   });
 
-  const domains: Domain[] = domainsResponse?.domains || [];
+  const domains: Domain[] = (domainsResponse as DomainsResponse)?.domains || [];
 
   // Delete domains mutation
   const deleteDomainsMutation = useMutation({
