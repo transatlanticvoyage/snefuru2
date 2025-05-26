@@ -22,10 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register authentication routes
   app.use('/api/auth', authRoutes);
   
-  // Register calendar routes
-  app.use('/api/calendar', calendarRoutes);
-  
-  // Add a direct refresh route without authentication
+  // Add the refresh route FIRST without authentication
   app.post('/api/calendar/refresh-items', async (req, res) => {
     try {
       res.json({
@@ -41,6 +38,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+
+  // Register calendar routes
+  app.use('/api/calendar', calendarRoutes);
   
   // Register Reddit routes
   app.use('/api/reddit', redditRoutes);
