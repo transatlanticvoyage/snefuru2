@@ -13,7 +13,6 @@ import { uploadToCloudStorage } from "./services/cloudStorageService";
 import { publishToWordPress } from "./services/wordpressService";
 import OpenAI from "openai";
 import authRoutes from "./routes/auth";
-import calendarRoutes from "./routes/calendar";
 import redditRoutes from "./routes/reddit";
 import chatRoutes from "./routes/chat";
 import { optionalAuth, type AuthRequest } from "./middleware/auth";
@@ -21,9 +20,6 @@ import { optionalAuth, type AuthRequest } from "./middleware/auth";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register authentication routes
   app.use('/api/auth', authRoutes);
-  
-  // Register calendar routes
-  app.use('/api/calendar', calendarRoutes);
   
   // Register Reddit routes
   app.use('/api/reddit', redditRoutes);
