@@ -37,6 +37,25 @@ interface ApiKeysState {
     username: string;
     password: string;
   };
+  airtable: {
+    apiKey: string;
+    baseId: string;
+    tableId: string;
+  };
+  webScraping: {
+    scraperapi: {
+      apiKey: string;
+    };
+    oxylabs: {
+      username: string;
+      password: string;
+    };
+    brightdata: {
+      username: string;
+      password: string;
+      endpoint: string;
+    };
+  };
 }
 
 interface User {
@@ -88,6 +107,12 @@ export default function ApiKeysPage() {
   const [wordpressUsername, setWordpressUsername] = useState('');
   const [wordpressPassword, setWordpressPassword] = useState('');
   const [wordpressEditMode, setWordpressEditMode] = useState(false);
+
+  // Airtable credentials
+  const [airtableApiKey, setAirtableApiKey] = useState('');
+  const [airtableBaseId, setAirtableBaseId] = useState('');
+  const [airtableTableId, setAirtableTableId] = useState('');
+  const [airtableEditMode, setAirtableEditMode] = useState(false);
   
   // Web Scraping API credentials
   const [scraperapiKey, setScraperapiKey] = useState('');
@@ -378,9 +403,10 @@ export default function ApiKeysPage() {
         </Alert>
         
         <Tabs defaultValue="ai-services">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="ai-services">AI Services</TabsTrigger>
             <TabsTrigger value="publishing">Publishing Services</TabsTrigger>
+            <TabsTrigger value="task-management">Task Management</TabsTrigger>
             <TabsTrigger value="web-scraping">Web Scraping APIs</TabsTrigger>
           </TabsList>
           
@@ -1056,6 +1082,163 @@ export default function ApiKeysPage() {
                       >
                         Learn how to create one
                       </a>
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="task-management">
+            <div className="grid grid-cols-1 gap-6">
+              {/* Airtable API Credentials */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Airtable Integration</CardTitle>
+                  <CardDescription>
+                    Connect your Airtable base to sync tasks and data with your database.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="text-lg font-medium">Airtable Configuration</h4>
+                    <div className="flex gap-2">
+                      {!airtableEditMode && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => setAirtableEditMode(true)}
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {airtableEditMode && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={() => {
+                            // Save Airtable credentials
+                            if (user) {
+                              const updatedUser = {
+                                ...user,
+                                api_keys: {
+                                  ...user.api_keys,
+                                  airtable: {
+                                    apiKey: airtableApiKey,
+                                    baseId: airtableBaseId,
+                                    tableId: airtableTableId
+                                  }
+                                }
+                              };
+                              setUser(updatedUser);
+                              localStorage.setItem('user', JSON.stringify(updatedUser));
+                              toast({
+                                title: "Success",
+                                description: "Airtable credentials saved successfully",
+                              });
+                              setAirtableEditMode(false);
+                            }
+                          }}
+                        >
+                          <Save className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="airtable-api-key" className="text-base font-semibold">
+                        API Key
+                      </Label>
+                      {airtableEditMode ? (
+                        <Input
+                          id="airtable-api-key"
+                          type="password"
+                          placeholder="patXXXXXXXXXXXXXX.XXXXXXXXXXXXXXX"
+                          value={airtableApiKey}
+                          onChange={(e) => setAirtableApiKey(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {airtableApiKey ? (
+                            <div className="flex items-center text-muted-foreground">
+                              <Lock className="h-3.5 w-3.5 mr-2" />
+                              {airtableApiKey.substring(0, 6)}...{airtableApiKey.substring(airtableApiKey.length - 4)}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No API Key set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="airtable-base-id" className="text-base font-semibold">
+                        Base ID
+                      </Label>
+                      {airtableEditMode ? (
+                        <Input
+                          id="airtable-base-id"
+                          placeholder="appXXXXXXXXXXXXXX"
+                          value={airtableBaseId}
+                          onChange={(e) => setAirtableBaseId(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {airtableBaseId ? (
+                            <span className="text-muted-foreground">{airtableBaseId}</span>
+                          ) : (
+                            <span className="text-muted-foreground">No Base ID set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="airtable-table-id" className="text-base font-semibold">
+                        Table ID
+                      </Label>
+                      {airtableEditMode ? (
+                        <Input
+                          id="airtable-table-id"
+                          placeholder="tblXXXXXXXXXXXXXX"
+                          value={airtableTableId}
+                          onChange={(e) => setAirtableTableId(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {airtableTableId ? (
+                            <span className="text-muted-foreground">{airtableTableId}</span>
+                          ) : (
+                            <span className="text-muted-foreground">No Table ID set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>How to get your Airtable credentials</AlertTitle>
+                    <AlertDescription>
+                      1. Create a Personal Access Token at 
+                      <a 
+                        href="https://airtable.com/create/tokens" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary ml-1 hover:underline"
+                      >
+                        airtable.com/create/tokens
+                      </a>
+                      <br />
+                      2. Find your Base ID in the URL: airtable.com/[BASE_ID]/...
+                      <br />
+                      3. Get your Table ID from the API documentation for your base
                     </AlertDescription>
                   </Alert>
                 </CardContent>
