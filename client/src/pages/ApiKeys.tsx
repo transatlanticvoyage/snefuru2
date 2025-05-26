@@ -42,6 +42,10 @@ interface ApiKeysState {
     baseId: string;
     tableId: string;
   };
+  notion: {
+    integrationSecret: string;
+    pageUrl: string;
+  };
   webScraping: {
     scraperapi: {
       apiKey: string;
@@ -113,6 +117,11 @@ export default function ApiKeysPage() {
   const [airtableBaseId, setAirtableBaseId] = useState('');
   const [airtableTableId, setAirtableTableId] = useState('');
   const [airtableEditMode, setAirtableEditMode] = useState(false);
+
+  // Notion credentials
+  const [notionIntegrationSecret, setNotionIntegrationSecret] = useState('');
+  const [notionPageUrl, setNotionPageUrl] = useState('');
+  const [notionEditMode, setNotionEditMode] = useState(false);
   
   // Web Scraping API credentials
   const [scraperapiKey, setScraperapiKey] = useState('');
@@ -1239,6 +1248,151 @@ export default function ApiKeysPage() {
                       2. Find your Base ID in the URL: airtable.com/[BASE_ID]/...
                       <br />
                       3. Get your Table ID from the API documentation for your base
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+              
+              {/* Notion Integration */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    Notion Integration
+                  </CardTitle>
+                  <CardDescription>
+                    Connect your Notion workspace to sync and manage your notes.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">Notion API Credentials</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Required for syncing notes from your Notion workspace
+                      </p>
+                    </div>
+                    <div className="flex space-x-2">
+                      {!notionEditMode && notionIntegrationSecret && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="h-8 px-2 text-xs"
+                          onClick={() => setNotionEditMode(true)}
+                        >
+                          <Edit className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                      {notionEditMode && (
+                        <Button 
+                          variant="default" 
+                          size="sm"
+                          className="h-8 px-2 text-xs"
+                          onClick={async () => {
+                            if (notionIntegrationSecret && notionPageUrl) {
+                              await updateUser({
+                                ...user!,
+                                api_keys: {
+                                  ...user!.api_keys,
+                                  notion: {
+                                    integrationSecret: notionIntegrationSecret,
+                                    pageUrl: notionPageUrl
+                                  }
+                                }
+                              });
+                              
+                              toast({
+                                title: "Success",
+                                description: "Notion credentials saved successfully",
+                              });
+                              setNotionEditMode(false);
+                            }
+                          }}
+                        >
+                          <Save className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="notion-integration-secret" className="text-base font-semibold">
+                        Integration Secret
+                      </Label>
+                      {notionEditMode ? (
+                        <Input
+                          id="notion-integration-secret"
+                          type="password"
+                          placeholder="secret_..."
+                          value={notionIntegrationSecret}
+                          onChange={(e) => setNotionIntegrationSecret(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {notionIntegrationSecret ? (
+                            <div className="flex items-center text-muted-foreground">
+                              <Lock className="h-3.5 w-3.5 mr-2" />
+                              secret_...{notionIntegrationSecret.substring(notionIntegrationSecret.length - 8)}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No Integration Secret set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="notion-page-url" className="text-base font-semibold">
+                        Page URL
+                      </Label>
+                      {notionEditMode ? (
+                        <Input
+                          id="notion-page-url"
+                          type="url"
+                          placeholder="https://www.notion.so/your-page-id"
+                          value={notionPageUrl}
+                          onChange={(e) => setNotionPageUrl(e.target.value)}
+                        />
+                      ) : (
+                        <div className="flex items-center h-10 px-3 py-2 text-sm border rounded-md bg-muted">
+                          {notionPageUrl ? (
+                            <div className="flex items-center text-muted-foreground">
+                              <Link className="h-3.5 w-3.5 mr-2" />
+                              {notionPageUrl.length > 50 ? 
+                                `${notionPageUrl.substring(0, 47)}...` : 
+                                notionPageUrl
+                              }
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">No Page URL set</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <Alert>
+                    <InfoIcon className="h-4 w-4" />
+                    <AlertTitle>How to get your Notion credentials:</AlertTitle>
+                    <AlertDescription className="text-sm space-y-1">
+                      1. Go to{" "}
+                      <a 
+                        href="https://www.notion.so/my-integrations" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        notion.so/my-integrations
+                      </a>
+                      <br />
+                      2. Create a new integration and copy the Integration Secret
+                      <br />
+                      3. Share your Notion page with the integration
+                      <br />
+                      4. Copy the page URL from your browser
                     </AlertDescription>
                   </Alert>
                 </CardContent>
