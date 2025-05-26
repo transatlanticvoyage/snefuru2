@@ -286,7 +286,9 @@ const ImageHandlerScreen1: React.FC = () => {
                   <td className="p-2 border border-gray-700 align-middle">
                     {image.img_url5}
                   </td>
-                  <td className="p-2 border border-gray-700 align-middle">
+                  <td className="p-2 border border-gray-700 align-middle kz_td_img_thumbnail_1" style={{
+                    padding: '0px'
+                  }}>
                     <div className="w-24 h-full flex items-center justify-center">
                       <img
                         src={`https://picsum.photos/seed/${image.id}/100/100`}
