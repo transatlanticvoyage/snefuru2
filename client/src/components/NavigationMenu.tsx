@@ -23,6 +23,7 @@ export default function MainNavigationMenu() {
     { name: "Reddit Scraper - Screen 1", path: "/reddit_scraper/screen1" },
     { name: "Affiliate Programs", path: "/reddit_scraper/affiliate_programs1" },
     { name: "Calendar", path: "/calendar/calendar1" },
+    { name: "Airtable", path: "/calendar/airtable1" },
     { name: "RankTracker", path: "/rank_tracker/screen1" },
     { name: "Chat", path: "/chat/chatscreen1" },
     { name: "Domains Main", path: "/image_handler/domains1" },
