@@ -174,31 +174,40 @@ const ImageHandlerScreen1: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
               <tr>
-                <th className="p-2 w-10">
-                  <Checkbox />
-                </th>
-                <th className="p-2 w-10">ID</th>
-                <th className="p-2 w-16">Image</th>
-                <th className="p-2">Filename</th>
-                <th className="p-2">Filesize</th>
-                <th className="p-2">Path</th>
-                <th className="p-2">img_url1</th>
-                <th className="p-2">img_url2</th>
-                <th className="p-2">img_url3</th>
-                <th className="p-2">img_url4</th>
-                <th className="p-2">img_url5</th>
-                <th className="p-2">presented_1</th>
-                <th className="p-2">nice_name_actual</th>
-                <th className="p-2">Actions</th>
+                <th className="p-2 w-10 bg-gray-200">global_id</th>
+                <th className="p-2 bg-yellow-100">rel_images2_batch_id</th>
+                <th className="p-2 bg-yellow-100">batch date created</th>
+                <th className="p-2 bg-yellow-100">batch name</th>
+                <th className="p-2 bg-gray-200">batch total images (dynamic pull field qty)</th>
+                <th className="p-2 bg-gray-200">image preview</th>
+                <th className="p-2 bg-gray-200">img_url1</th>
+                <th className="p-2 bg-gray-200">image extension</th>
+                <th className="p-2 bg-gray-200">img_file_size</th>
+                <th className="p-2 bg-gray-200">width5</th>
+                <th className="p-2 bg-gray-200">height5</th>
+                <th className="p-2 bg-gray-200">folder</th>
+                <th className="p-2 bg-pink-200">img_zpf_code</th>
+                <th className="p-2 bg-pink-200">width1</th>
+                <th className="p-2 bg-pink-200">height1</th>
+                <th className="p-2 bg-pink-200">associated_text_content_on_page1</th>
+                <th className="p-2 bg-pink-200">file_name1</th>
+                <th className="p-2 bg-pink-200">more_instructions1</th>
+                <th className="p-2 bg-pink-200">prompt1</th>
+                <th className="p-2 bg-pink-200">ai_tool1</th>
+                <th className="bg-black w-[5px]" />
+                <th className="p-2 bg-blue-100">meta_data_wiped1</th>
+                <th className="p-2 bg-blue-100">screenshotted1</th>
+                <th className="bg-black w-[5px]" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {imageData.map((image) => (
                 <tr key={image.id} className="hover:bg-gray-50">
-                  <td className="p-2">
-                    <Checkbox />
-                  </td>
                   <td className="p-2">{image.id}</td>
+                  <td className="p-2">{image.img_url2}</td>
+                  <td className="p-2">{image.img_url3}</td>
+                  <td className="p-2">{image.img_url4}</td>
+                  <td className="p-2">{image.img_url5}</td>
                   <td className="p-2">
                     <div className="w-12 h-12 bg-gray-200 rounded overflow-hidden">
                       <img 
@@ -212,11 +221,7 @@ const ImageHandlerScreen1: React.FC = () => {
                   <td className="p-2">{image.filesize}</td>
                   <td className="p-2 max-w-xs truncate">{image.path}</td>
                   <td className="p-2">{image.img_url1}</td>
-                  <td className="p-2">{image.img_url2}</td>
-                  <td className="p-2">{image.img_url3}</td>
-                  <td className="p-2 max-w-xs truncate">{image.img_url4}</td>
-                  <td className="p-2">{image.img_url5}</td>
-                  <td className="p-2 max-w-xs truncate">{image.presented_1}</td>
+                  <td className="p-2">{image.presented_1}</td>
                   <td className="p-2 max-w-xs truncate">{image.nice_name_actual}</td>
                   <td className="p-2">
                     <Button variant="outline" size="sm" className="mr-1">Edit</Button>
