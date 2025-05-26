@@ -8,7 +8,9 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 // Define interfaces
 interface Domain {
   id: number;
-  domain_name: string;
+  domain_base: string | null;
+  rel_user_id: number | null;
+  created_at: string | null;
 }
 
 // Define the image data interface
@@ -45,11 +47,17 @@ const ImageHandlerScreen1: React.FC = () => {
   useEffect(() => {
     const fetchDomains = async () => {
       try {
-        const response = await fetch('/api/domains?user_id=current_user_id');
+        const response = await fetch('/api/domains');
         const data = await response.json();
-        setDomains(data);
+        // Fix: Extract domains array from the response
+        if (data && data.domains && Array.isArray(data.domains)) {
+          setDomains(data.domains);
+        } else {
+          setDomains([]);
+        }
       } catch (error) {
         console.error('Error fetching domains:', error);
+        setDomains([]);
       }
     };
     fetchDomains();
@@ -201,7 +209,7 @@ const ImageHandlerScreen1: React.FC = () => {
               <SelectContent>
                 {domains.map((domain) => (
                   <SelectItem key={domain.id} value={domain.id.toString()}>
-                    {domain.domain_name}
+                    {domain.domain_base || 'Unknown Domain'}
                   </SelectItem>
                 ))}
               </SelectContent>
