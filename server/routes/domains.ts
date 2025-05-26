@@ -60,9 +60,16 @@ router.post('/bulk-add', async (req: any, res) => {
     
     // Get existing domains for this user to check for duplicates
     const existingDomains = await storage.getUserDomains(userId);
-    const existingDomainSet = new Set(
-      existingDomains.map(domain => domain.domain_base?.toLowerCase()).filter(Boolean)
-    );
+    const existingDomainSet = new Set<string>();
+    
+    // Build set of existing domain names (normalized to lowercase)
+    for (const domain of existingDomains) {
+      if (domain.domain_base) {
+        existingDomainSet.add(domain.domain_base.toLowerCase().trim());
+      }
+    }
+    
+    console.log('Existing domains in database:', Array.from(existingDomainSet));
     
     // Remove duplicates from input list and check against existing domains
     const seenInInput = new Set<string>();
@@ -70,16 +77,27 @@ router.post('/bulk-add', async (req: any, res) => {
     const duplicatesInInput: string[] = [];
     const duplicatesInDb: string[] = [];
     
+    console.log('Input domains to check:', filteredDomains);
+    
     for (const domain of filteredDomains) {
-      if (seenInInput.has(domain)) {
+      const normalizedDomain = domain.toLowerCase().trim();
+      
+      if (seenInInput.has(normalizedDomain)) {
+        console.log(`Found duplicate in input: ${domain}`);
         duplicatesInInput.push(domain);
-      } else if (existingDomainSet.has(domain)) {
+      } else if (existingDomainSet.has(normalizedDomain)) {
+        console.log(`Found existing domain in DB: ${domain}`);
         duplicatesInDb.push(domain);
       } else {
-        seenInInput.add(domain);
+        console.log(`Adding new domain: ${domain}`);
+        seenInInput.add(normalizedDomain);
         newDomains.push(domain);
       }
     }
+    
+    console.log('New domains to add:', newDomains);
+    console.log('Duplicates in input:', duplicatesInInput);
+    console.log('Duplicates in DB:', duplicatesInDb);
     
     let insertedDomains: any[] = [];
     if (newDomains.length > 0) {
@@ -89,7 +107,13 @@ router.post('/bulk-add', async (req: any, res) => {
         rel_user_id: userId
       }));
       
-      insertedDomains = await storage.bulkCreateDomains(domainsToInsert);
+      try {
+        insertedDomains = await storage.bulkCreateDomains(domainsToInsert);
+      } catch (error) {
+        // Handle database constraint errors (if we add unique constraints later)
+        console.error('Error inserting domains:', error);
+        throw error;
+      }
     }
     
     // Create detailed response message
