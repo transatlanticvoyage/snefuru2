@@ -631,12 +631,12 @@ const ImageHandlerImh2: React.FC = () => {
                 <th className="p-2 border border-gray-700 bg-gray-200 align-middle">img_url1</th>
                 <th className="p-2 border border-gray-700 bg-gray-200 align-middle">image extension</th>
                 <th className="p-2 border border-gray-700 bg-gray-200 align-middle">img_file_size</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">width5</th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">height5</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">width</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">height</th>
                 <th className="p-2 border border-gray-700 bg-gray-200 align-middle">folder</th>
                 <th className="p-2 border border-gray-700 bg-pink-200 align-middle">img_zpf_code</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">width1</th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">height1</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">width_desired</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">height_desired</th>
                 <th className="p-2 border border-gray-700 bg-pink-200 align-middle">associated_text_content_on_page1</th>
                 <th className="p-2 border border-gray-700 bg-pink-200 align-middle">file_name1</th>
                 <th className="p-2 border border-gray-700 bg-pink-200 align-middle">more_instructions1</th>
