@@ -36,8 +36,8 @@ interface ImageData {
   detail: string;
 }
 
-const ImageHandlerImh2: React.FC = () => {
-  useDocumentTitle("Image Handler - IMH2 - Snefuru");
+const ImageHandlerImh3: React.FC = () => {
+  useDocumentTitle("Image Handler - IMH3 - Snefuru");
   // State for domains and selections
   const [domains, setDomains] = useState<Domain[]>([]);
   const [selectedDomain, setSelectedDomain] = useState<string>("");
@@ -724,4 +724,4 @@ const ImageHandlerImh2: React.FC = () => {
   );
 };
 
-export default ImageHandlerImh2; 
+export default ImageHandlerImh3; 
