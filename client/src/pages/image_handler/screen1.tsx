@@ -44,7 +44,7 @@ const ImageHandlerScreen1: React.FC = () => {
   const [selectedPageType, setSelectedPageType] = useState<string>("home");
 
   // Spreadsheet-like table state
-  const [sheetCells, setSheetCells] = useState<string[][]>(Array(6).fill(null).map(() => Array(15).fill("")));
+  const [sheetCells, setSheetCells] = useState<string[][]>(Array(11).fill(null).map(() => Array(15).fill("")));
   const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -311,9 +311,9 @@ const ImageHandlerScreen1: React.FC = () => {
 
       <div className="container mx-auto p-6">
         {/* SpreadsheetInput UI pasted from homepage */}
-        <section className="bg-white rounded-lg shadow-md p-6 max-w-full mb-6">
+        <section className="bg-white rounded-lg shadow-md p-6 w-full max-w-none mb-6">
           <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 1 - Paste Your Excel Information</h2>
-          <div className="overflow-auto max-w-full" style={{ maxHeight: "500px" }}>
+          <div className="overflow-auto w-full max-w-none" style={{ maxHeight: "500px" }}>
             <table
               id="spreadsheet"
               className="w-full border-collapse table-fixed"
