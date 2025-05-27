@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -42,6 +42,11 @@ const ImageHandlerScreen1: React.FC = () => {
   const [domains, setDomains] = useState<Domain[]>([]);
   const [selectedDomain, setSelectedDomain] = useState<string>("");
   const [selectedPageType, setSelectedPageType] = useState<string>("home");
+
+  // Spreadsheet-like table state
+  const [sheetCells, setSheetCells] = useState<string[][]>(Array(6).fill(null).map(() => Array(15).fill("")));
+  const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
+  const tableRef = useRef<HTMLTableElement>(null);
 
   // Fetch domains on component mount
   useEffect(() => {
@@ -191,6 +196,47 @@ const ImageHandlerScreen1: React.FC = () => {
     },
   ];
 
+  // Handle cell click to enable editing
+  const handleCellClick = (row: number, col: number) => {
+    setEditingCell({ row, col });
+  };
+
+  // Handle cell value change
+  const handleCellChange = (row: number, col: number, value: string) => {
+    setSheetCells(prev => {
+      const updated = prev.map(rowArr => [...rowArr]);
+      updated[row][col] = value;
+      return updated;
+    });
+  };
+
+  // Handle blur to exit editing
+  const handleCellBlur = () => {
+    setEditingCell(null);
+  };
+
+  // Handle paste event for multi-cell paste
+  const handleTablePaste = (e: React.ClipboardEvent<HTMLTableElement>) => {
+    if (!editingCell) return;
+    e.preventDefault();
+    const clipboardData = e.clipboardData.getData("text");
+    const rows = clipboardData.split(/\r?\n/).filter(Boolean);
+    const parsed = rows.map(row => row.split(/\t/));
+    setSheetCells(prev => {
+      const updated = prev.map(rowArr => [...rowArr]);
+      for (let i = 0; i < parsed.length; i++) {
+        for (let j = 0; j < parsed[i].length; j++) {
+          const r = editingCell.row + i;
+          const c = editingCell.col + j;
+          if (r < updated.length && c < updated[0].length) {
+            updated[r][c] = parsed[i][j];
+          }
+        }
+      }
+      return updated;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50">
       <Header pageTitle="Image Handler" />
@@ -268,52 +314,44 @@ const ImageHandlerScreen1: React.FC = () => {
         <section className="bg-white rounded-lg shadow-md p-6 max-w-full mb-6">
           <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 1 - Paste Your Excel Information</h2>
           <div className="overflow-auto max-w-full" style={{ maxHeight: "500px" }}>
-            <table 
-              id="spreadsheet" 
-              className="w-full border-collapse table-fixed" 
+            <table
+              id="spreadsheet"
+              className="w-full border-collapse table-fixed"
+              ref={tableRef}
+              onPaste={handleTablePaste}
             >
               <thead>
                 <tr>
                   <th className="border border-neutral-200 bg-neutral-100 p-2 text-center w-12">#</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>A</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>B</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>C</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>D</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>E</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>F</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>G</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>H</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>I</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>J</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>K</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>L</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>M</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>N</th>
-                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>O</th>
+                  {Array(15).fill(0).map((_, colIndex) => (
+                    <th key={colIndex} className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: colIndex < 3 ? "150px" : "300px", width: colIndex < 3 ? "150px" : "500px" }}>{String.fromCharCode(65 + colIndex)}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {Array(6).fill(0).map((_, rowIndex) => (
+                {sheetCells.map((rowArr, rowIndex) => (
                   <tr key={`row-${rowIndex}`} data-row-index={rowIndex}>
-                    <td className="border border-neutral-200 bg-neutral-50 p-2 text-center font-medium w-12">
-                      {rowIndex + 1}
-                    </td>
-                    {Array(15).fill(0).map((_, colIndex) => (
-                      <td 
+                    <td className="border border-neutral-200 bg-neutral-50 p-2 text-center font-medium w-12">{rowIndex + 1}</td>
+                    {rowArr.map((cell, colIndex) => (
+                      <td
                         key={`cell-${rowIndex}-${colIndex}`}
-                        className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors"
-                        data-editable="true"
-                        data-row-index={rowIndex}
-                        data-col-index={colIndex}
-                        style={{ 
-                          minWidth: colIndex < 3 ? "150px" : "300px",
-                          width: colIndex < 3 ? "150px" : "500px",
-                          whiteSpace: "normal",
-                          wordBreak: "break-word",
-                          overflow: "visible"
-                        }}
+                        className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors cursor-pointer"
+                        style={{ minWidth: colIndex < 3 ? "150px" : "300px", width: colIndex < 3 ? "150px" : "500px" }}
+                        onClick={() => handleCellClick(rowIndex, colIndex)}
                       >
-                        {/* Cell content would go here */}
+                        {editingCell && editingCell.row === rowIndex && editingCell.col === colIndex ? (
+                          <input
+                            type="text"
+                            className="w-full h-full bg-white border-none outline-none"
+                            value={cell}
+                            autoFocus
+                            onChange={e => handleCellChange(rowIndex, colIndex, e.target.value)}
+                            onBlur={handleCellBlur}
+                            onPaste={handleTablePaste}
+                          />
+                        ) : (
+                          cell
+                        )}
                       </td>
                     ))}
                   </tr>
@@ -323,11 +361,7 @@ const ImageHandlerScreen1: React.FC = () => {
           </div>
           <div className="mt-4 flex flex-col space-y-4">
             {/* Save Table Content Button */}
-            <button
-              className="bg-navy hover:bg-navy/90 text-white font-bold py-3 px-4 rounded transition-colors"
-            >
-              Save Table Content
-            </button>
+            <button className="bg-navy hover:bg-navy/90 text-white font-bold py-3 px-4 rounded transition-colors">Save Table Content</button>
             <div className="text-sm text-neutral-400">
               <p>Paste your Excel data directly into the table above. Make sure it includes the <span className="font-medium">actual_prompt_for_image_generating_ai_tool</span> and <span className="font-medium">file_name</span> columns.</p>
               <p className="mt-2">Click "Save Table Content" to ensure your data persists if you close your browser or shut down your computer.</p>
