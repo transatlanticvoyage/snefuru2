@@ -31,7 +31,7 @@ import DomainsAddNewPage from "@/pages/image_handler/domains_add_new";
 import DomainsManagementPage from "@/pages/image_handler/domains2";
 import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 import ChatScreen1 from "@/pages/chat/chatscreen1";
-import ImageHandlerImh5 from "@/pages/image_handler/imh5";
+import ImageHandlerImh2 from "@/pages/image_handler/imh2";
 
 // Protected route component that redirects to login if not authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, path: string }) {
@@ -101,8 +101,8 @@ function Router() {
       <Route path="/image_handler/screen2">
         {isAuthenticated ? <ImageHandlerScreen2 /> : <SimpleLogin />}
       </Route>
-      <Route path="/image_handler/imh5">
-        {isAuthenticated ? <ImageHandlerImh5 /> : <SimpleLogin />}
+      <Route path="/image_handler/imh2">
+        {isAuthenticated ? <ImageHandlerImh2 /> : <SimpleLogin />}
       </Route>
       <Route path="/image_handler/prompt_tube1">
         {isAuthenticated ? <PromptTube /> : <SimpleLogin />}
