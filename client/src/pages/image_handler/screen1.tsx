@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { Star } from 'lucide-react';
 
 // Define interfaces
 interface Domain {
@@ -47,6 +48,30 @@ const ImageHandlerScreen1: React.FC = () => {
   const [sheetCells, setSheetCells] = useState<string[][]>(Array(11).fill(null).map(() => Array(15).fill("")));
   const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
+
+  // Additional state for adding a new domain
+  const [showAddDomain, setShowAddDomain] = useState(false);
+  const [newDomainValue, setNewDomainValue] = useState("");
+  const [isSavingDomain, setIsSavingDomain] = useState(false);
+
+  // Add at the top of the component:
+  const [templates, setTemplates] = useState(() => {
+    // Try to load from localStorage
+    try {
+      const saved = localStorage.getItem('column_templates');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [];
+  });
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [templateName, setTemplateName] = useState("");
+  const [columns, setColumns] = useState<{ label: string; type: string }[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Save templates to localStorage
+  useEffect(() => {
+    localStorage.setItem('column_templates', JSON.stringify(templates));
+  }, [templates]);
 
   // Fetch domains on component mount
   useEffect(() => {
@@ -237,6 +262,77 @@ const ImageHandlerScreen1: React.FC = () => {
     });
   };
 
+  const handleAddDomain = async () => {
+    if (!newDomainValue.trim()) return;
+    setIsSavingDomain(true);
+    try {
+      const response = await fetch("/api/domains", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain_base: newDomainValue })
+      });
+      const data = await response.json();
+      if (data && data.domain) {
+        setDomains(prev => [...prev, data.domain]);
+        setSelectedDomain(data.domain.id.toString());
+        setShowAddDomain(false);
+        setNewDomainValue("");
+      }
+    } finally {
+      setIsSavingDomain(false);
+    }
+  };
+
+  const handleSelectTemplate = (id: string) => {
+    setSelectedTemplateId(id);
+    const t = templates.find((tpl: any) => tpl.id === id);
+    if (t) {
+      setTemplateName(t.name);
+      setColumns(t.columns);
+      setIsEditing(true);
+    }
+  };
+
+  const handleNewTemplate = () => {
+    setSelectedTemplateId(null);
+    setTemplateName("");
+    setColumns([]);
+    setIsEditing(true);
+  };
+
+  const handleSaveTemplate = () => {
+    if (!templateName.trim()) return;
+    if (selectedTemplateId) {
+      setTemplates((prev: any) => prev.map((tpl: any) => tpl.id === selectedTemplateId ? { ...tpl, name: templateName, columns } : tpl));
+    } else {
+      const id = Date.now().toString();
+      setTemplates((prev: any) => [...prev, { id, name: templateName, columns }]);
+      setSelectedTemplateId(id);
+    }
+    setIsEditing(false);
+  };
+
+  const handleDeleteTemplate = () => {
+    if (!selectedTemplateId) return;
+    setTemplates((prev: any) => prev.filter((tpl: any) => tpl.id !== selectedTemplateId));
+    setSelectedTemplateId(null);
+    setTemplateName("");
+    setColumns([]);
+    setIsEditing(false);
+  };
+
+  const handleAddColumn = () => {
+    setColumns(cols => [...cols, { label: "", type: "text" }]);
+  };
+
+  const handleColumnChange = (idx: number, field: string, value: string) => {
+    setColumns(cols => cols.map((col, i) => i === idx ? { ...col, [field]: value } : col));
+  };
+
+  const handleRemoveColumn = (idx: number) => {
+    setColumns(cols => cols.filter((_, i) => i !== idx));
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50">
       <Header pageTitle="Image Handler" />
@@ -255,7 +351,14 @@ const ImageHandlerScreen1: React.FC = () => {
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-white text-base">Select a Domain:</span>
-            <Select value={selectedDomain} onValueChange={setSelectedDomain}>
+            <Select value={selectedDomain} onValueChange={val => {
+              if (val === "__add_new__") {
+                setShowAddDomain(true);
+              } else {
+                setSelectedDomain(val);
+                setShowAddDomain(false);
+              }
+            }}>
               <SelectTrigger className={`w-[200px] h-[32px] ${selectedDomain ? 'bg-[#a5cbfa]' : 'bg-white'}`}>
                 <SelectValue placeholder="Select domain" />
               </SelectTrigger>
@@ -265,8 +368,27 @@ const ImageHandlerScreen1: React.FC = () => {
                     {domain.domain_base || 'Unknown Domain'}
                   </SelectItem>
                 ))}
+                <SelectItem value="__add_new__" className="text-blue-600 font-bold">+ Add New Domain</SelectItem>
               </SelectContent>
             </Select>
+            {showAddDomain && (
+              <div className="flex items-center space-x-2 ml-2">
+                <input
+                  type="text"
+                  className="border border-gray-300 rounded px-2 h-[32px]"
+                  placeholder="Enter new domain"
+                  value={newDomainValue}
+                  onChange={e => setNewDomainValue(e.target.value)}
+                  disabled={isSavingDomain}
+                />
+                <Button size="sm" className="h-[32px]" onClick={handleAddDomain} disabled={isSavingDomain || !newDomainValue.trim()}>
+                  {isSavingDomain ? "Saving..." : "Save"}
+                </Button>
+                <Button size="sm" className="h-[32px]" variant="outline" onClick={() => { setShowAddDomain(false); setNewDomainValue(""); }}>
+                  Cancel
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
@@ -313,6 +435,7 @@ const ImageHandlerScreen1: React.FC = () => {
         {/* SpreadsheetInput UI pasted from homepage */}
         <section className="bg-white rounded-lg shadow-md p-6 w-full max-w-none mb-6">
           <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 1 - Paste Your Excel Information</h2>
+          <div style={{ fontSize: '10px', marginBottom: '4px', color: '#888' }}>kzuitable1</div>
           <div className="overflow-auto w-full max-w-none" style={{ maxHeight: "500px" }}>
             <table
               id="spreadsheet"
@@ -361,7 +484,10 @@ const ImageHandlerScreen1: React.FC = () => {
           </div>
           <div className="mt-4 flex flex-col space-y-4">
             {/* Save Table Content Button */}
-            <button className="bg-navy hover:bg-navy/90 text-white font-bold py-3 px-4 rounded transition-colors">Save Table Content</button>
+            <button className="bg-navy hover:bg-navy/90 text-white font-bold py-3 px-4 rounded transition-colors flex items-center gap-2">
+              <Star size={18} color="#FFA500" fill="#FFA500" className="inline-block" />
+              Generate New Batch Of Images From These XLS Details
+            </button>
             <div className="text-sm text-neutral-400">
               <p>Paste your Excel data directly into the table above. Make sure it includes the <span className="font-medium">actual_prompt_for_image_generating_ai_tool</span> and <span className="font-medium">file_name</span> columns.</p>
               <p className="mt-2">Click "Save Table Content" to ensure your data persists if you close your browser or shut down your computer.</p>
@@ -369,17 +495,67 @@ const ImageHandlerScreen1: React.FC = () => {
           </div>
         </section>
 
-        {/* Welcome Card */}
+        {/* Column Template System */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <p className="text-gray-600 mb-4">
-            Welcome to the Image Handler page. This is where you can manage your
-            images.
-          </p>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-            Get Started
-          </Button>
+          <div className="flex items-center mb-4 gap-4">
+            <select
+              className="border rounded px-2 py-1"
+              value={selectedTemplateId || ""}
+              onChange={e => handleSelectTemplate(e.target.value)}
+            >
+              <option value="">Select a template...</option>
+              {templates.map((tpl: any) => (
+                <option key={tpl.id} value={tpl.id}>{tpl.name}</option>
+              ))}
+            </select>
+            <button className="bg-blue-500 text-white px-3 py-1 rounded" onClick={handleNewTemplate}>Create New Template</button>
+            {selectedTemplateId && (
+              <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={handleDeleteTemplate}>Delete Template</button>
+            )}
+          </div>
+          {isEditing && (
+            <div>
+              <div className="mb-2">
+                <label className="block text-sm font-medium mb-1">Template Name</label>
+                <input
+                  className="border rounded px-2 py-1 w-full"
+                  value={templateName}
+                  onChange={e => setTemplateName(e.target.value)}
+                />
+              </div>
+              <div className="mb-2">
+                <label className="block text-sm font-medium mb-1">Columns</label>
+                <div className="space-y-2">
+                  {columns.map((col, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <input
+                        className="border rounded px-2 py-1"
+                        placeholder="Column Label"
+                        value={col.label}
+                        onChange={e => handleColumnChange(idx, "label", e.target.value)}
+                      />
+                      <select
+                        className="border rounded px-2 py-1"
+                        value={col.type}
+                        onChange={e => handleColumnChange(idx, "type", e.target.value)}
+                      >
+                        <option value="text">Text</option>
+                        <option value="number">Number</option>
+                        <option value="date">Date</option>
+                      </select>
+                      <button className="text-red-500" onClick={() => handleRemoveColumn(idx)}>Remove</button>
+                    </div>
+                  ))}
+                </div>
+                <button className="mt-2 bg-green-500 text-white px-3 py-1 rounded" onClick={handleAddColumn}>Add Column</button>
+              </div>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleSaveTemplate}>Save Template</button>
+            </div>
+          )}
         </div>
 
+        {/* kzuitable2 label before the large UI images table */}
+        <div style={{ fontSize: '10px', marginBottom: '4px', color: '#888' }}>kzuitable2</div>
         {/* Image Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
