@@ -619,80 +619,34 @@ const ImageHandlerScreen1: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
               <tr>
-                <th className="p-2 border border-gray-700 w-10 bg-white align-middle">
+                <th className="p-2 border border-gray-700 w-10 bg-white align-middle sticky top-[40px] z-30">
                   <Checkbox />
                 </th>
-                <th className="p-2 border border-gray-700 bg-white align-middle">
-                  Actions
-                </th>
-                <th className="p-2 border border-gray-700 w-10 bg-gray-200 align-middle">
-                  global_id
-                </th>
-                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">
-                  rel_images2_batch_id
-                </th>
-                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">
-                  batch date created
-                </th>
-                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">
-                  batch name
-                </th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
-                  batch total images (dynamic pull field qty)
-                </th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
-                  image preview
-                </th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
-                  img_url1
-                </th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
-                  image extension
-                </th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
-                  img_file_size
-                </th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
-                  width5
-                </th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
-                  height5
-                </th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">
-                  folder
-                </th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
-                  img_zpf_code
-                </th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
-                  width1
-                </th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
-                  height1
-                </th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
-                  associated_text_content_on_page1
-                </th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
-                  file_name1
-                </th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
-                  more_instructions1
-                </th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
-                  prompt1
-                </th>
-                <th className="p-2 border border-gray-700 bg-pink-200 align-middle">
-                  ai_tool1
-                </th>
-                <th className="bg-black w-[5px] border border-gray-700 align-middle" />
-                <th className="p-2 border border-gray-700 bg-blue-100 align-middle">
-                  meta_data_wiped1
-                </th>
-                <th className="p-2 border border-gray-700 bg-blue-100 align-middle">
-                  screenshotted1
-                </th>
-                <th className="bg-black w-[5px] border border-gray-700 align-middle" />
+                <th className="p-2 border border-gray-700 bg-white align-middle sticky top-[40px] z-30">Actions</th>
+                <th className="p-2 border border-gray-700 w-10 bg-gray-200 align-middle sticky top-[40px] z-30">global_id</th>
+                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle sticky top-[40px] z-30">rel_images2_batch_id</th>
+                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle sticky top-[40px] z-30">batch date created</th>
+                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle sticky top-[40px] z-30">batch name</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle sticky top-[40px] z-30">batch total images (dynamic pull field qty)</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle sticky top-[40px] z-30">image preview</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle sticky top-[40px] z-30">img_url1</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle sticky top-[40px] z-30">image extension</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle sticky top-[40px] z-30">img_file_size</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle sticky top-[40px] z-30">width5</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle sticky top-[40px] z-30">height5</th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle sticky top-[40px] z-30">folder</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle sticky top-[40px] z-30">img_zpf_code</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle sticky top-[40px] z-30">width1</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle sticky top-[40px] z-30">height1</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle sticky top-[40px] z-30">associated_text_content_on_page1</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle sticky top-[40px] z-30">file_name1</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle sticky top-[40px] z-30">more_instructions1</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle sticky top-[40px] z-30">prompt1</th>
+                <th className="p-2 border border-gray-700 bg-pink-200 align-middle sticky top-[40px] z-30">ai_tool1</th>
+                <th className="bg-black w-[5px] border border-gray-700 align-middle sticky top-[40px] z-30" />
+                <th className="p-2 border border-gray-700 bg-blue-100 align-middle sticky top-[40px] z-30">meta_data_wiped1</th>
+                <th className="p-2 border border-gray-700 bg-blue-100 align-middle sticky top-[40px] z-30">screenshotted1</th>
+                <th className="bg-black w-[5px] border border-gray-700 align-middle sticky top-[40px] z-30" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
