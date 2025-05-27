@@ -196,12 +196,21 @@ const ImageHandlerScreen1: React.FC = () => {
       <Header pageTitle="Image Handler" />
 
       {/* Sticky Bar */}
-      <div className="sticky top-0 z-50 w-full h-[30px] bg-black m-0 p-0 flex items-center justify-center">
+      <div className="sticky top-0 z-50 w-full h-[40px] bg-black m-0 p-0 flex items-center justify-center">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <span className="text-white text-sm">Select a Domain:</span>
+            <span className="text-white text-base">rel_images_batch_id</span>
+            <input 
+              type="text" 
+              className="w-[150px] h-[32px] bg-gray-200 text-black px-2 rounded border border-gray-300"
+              readOnly
+              value=""
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-white text-base">Select a Domain:</span>
             <Select value={selectedDomain} onValueChange={setSelectedDomain}>
-              <SelectTrigger className={`w-[200px] h-[24px] ${selectedDomain ? 'bg-lime-500' : 'bg-white'}`}>
+              <SelectTrigger className={`w-[200px] h-[32px] ${selectedDomain ? 'bg-[#a5cbfa]' : 'bg-white'}`}>
                 <SelectValue placeholder="Select domain" />
               </SelectTrigger>
               <SelectContent>
@@ -215,12 +224,12 @@ const ImageHandlerScreen1: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className="text-white text-sm">Select a Page:</span>
+            <span className="text-white text-base">Select a Page:</span>
             <div className="flex space-x-1">
               <Button 
                 variant={selectedPageType === "home" ? "default" : "outline"}
                 size="sm"
-                className={`h-[24px] ${selectedPageType === "home" ? 'bg-lime-500 hover:bg-lime-600' : 'bg-white'} text-black hover:bg-gray-100`}
+                className={`h-[32px] ${selectedPageType === "home" ? 'bg-[#a5cbfa] hover:bg-[#8bb8f9]' : 'bg-white'} text-black hover:bg-gray-100`}
                 onClick={() => setSelectedPageType("home")}
               >
                 Home
@@ -228,7 +237,7 @@ const ImageHandlerScreen1: React.FC = () => {
               <Button 
                 variant={selectedPageType === "services_hub" ? "default" : "outline"}
                 size="sm"
-                className={`h-[24px] ${selectedPageType === "services_hub" ? 'bg-lime-500 hover:bg-lime-600' : 'bg-white'} text-black hover:bg-gray-100`}
+                className={`h-[32px] ${selectedPageType === "services_hub" ? 'bg-[#a5cbfa] hover:bg-[#8bb8f9]' : 'bg-white'} text-black hover:bg-gray-100`}
                 onClick={() => setSelectedPageType("services_hub")}
               >
                 Services Hub
@@ -236,7 +245,7 @@ const ImageHandlerScreen1: React.FC = () => {
               <Button 
                 variant={selectedPageType === "individual_service" ? "default" : "outline"}
                 size="sm"
-                className={`h-[24px] ${selectedPageType === "individual_service" ? 'bg-lime-500 hover:bg-lime-600' : 'bg-white'} text-black hover:bg-gray-100`}
+                className={`h-[32px] ${selectedPageType === "individual_service" ? 'bg-[#a5cbfa] hover:bg-[#8bb8f9]' : 'bg-white'} text-black hover:bg-gray-100`}
                 onClick={() => setSelectedPageType("individual_service")}
               >
                 Individual Service
@@ -244,7 +253,7 @@ const ImageHandlerScreen1: React.FC = () => {
               <Button 
                 variant={selectedPageType === "individual_location" ? "default" : "outline"}
                 size="sm"
-                className={`h-[24px] ${selectedPageType === "individual_location" ? 'bg-lime-500 hover:bg-lime-600' : 'bg-white'} text-black hover:bg-gray-100`}
+                className={`h-[32px] ${selectedPageType === "individual_location" ? 'bg-[#a5cbfa] hover:bg-[#8bb8f9]' : 'bg-white'} text-black hover:bg-gray-100`}
                 onClick={() => setSelectedPageType("individual_location")}
               >
                 Individual Location
