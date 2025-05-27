@@ -623,7 +623,7 @@ const ImageHandlerImh2: React.FC = () => {
                 </th>
                 <th className="p-2 border border-gray-700 bg-white align-middle">Actions</th>
                 <th className="p-2 border border-gray-700 w-10 bg-gray-200 align-middle">global_id</th>
-                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">rel_images2_batch_id</th>
+                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">rel_image_batches_id</th>
                 <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">batch date created</th>
                 <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">batch name</th>
                 <th className="p-2 border border-gray-700 bg-gray-200 align-middle">batch total images (dynamic pull field qty)</th>
