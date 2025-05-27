@@ -361,3 +361,21 @@ interface ApiKeysState {
     };
   };
 }
+
+export const things1 = pgTable("things1", {
+  id: serial("id").primaryKey(),
+  url_to_thing: text("url_to_thing"),
+  file_extension: varchar("file_extension", { length: 10 }),
+  size: varchar("size", { length: 20 }),
+  t4: integer("t4"),
+  t5: integer("t5"),
+  folder: varchar("folder", { length: 50 }),
+  zpfigmcode: varchar("zpfigmcode", { length: 50 }),
+  thingw: integer("thingw"),
+  thingh: integer("thingh"),
+  t6: text("t6"),
+  t7: text("t7"),
+  t8: text("t8"),
+  t79: text("t79"),
+  t10: varchar("t10", { length: 50 }),
+});
