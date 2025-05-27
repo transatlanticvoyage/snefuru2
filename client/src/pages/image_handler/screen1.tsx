@@ -497,6 +497,7 @@ const ImageHandlerScreen1: React.FC = () => {
 
         {/* Column Template System */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="font-bold text-black mb-4">kzuitable2 column template ui controls</div>
           <div className="flex items-center mb-4 gap-4">
             <select
               className="border rounded px-2 py-1"
@@ -552,6 +553,63 @@ const ImageHandlerScreen1: React.FC = () => {
               <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleSaveTemplate}>Save Template</button>
             </div>
           )}
+        </div>
+
+        {/* kzuitable2 main controls UI element */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="font-bold text-black mb-4">kzuitable2 main controls</div>
+          <div className="flex flex-wrap gap-4">
+            {/* Pagination Controls */}
+            <div className="flex items-center space-x-2">
+              <span>Page:</span>
+              <input type="number" min="1" className="border rounded px-2 py-1 w-16" />
+              <span>of 10</span>
+              <button className="bg-blue-500 text-white px-3 py-1 rounded">Next</button>
+              <button className="bg-blue-500 text-white px-3 py-1 rounded">Previous</button>
+            </div>
+            {/* Search Control */}
+            <div className="flex items-center space-x-2">
+              <span>Search:</span>
+              <input type="text" className="border rounded px-2 py-1" placeholder="Enter search term..." />
+              <button className="bg-green-500 text-white px-3 py-1 rounded">Search</button>
+            </div>
+            {/* Filter Control */}
+            <div className="flex items-center space-x-2">
+              <span>Filter:</span>
+              <select className="border rounded px-2 py-1">
+                <option value="">Select filter...</option>
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+              </select>
+              <button className="bg-yellow-500 text-white px-3 py-1 rounded">Apply Filter</button>
+            </div>
+            {/* Sort Control */}
+            <div className="flex items-center space-x-2">
+              <span>Sort:</span>
+              <select className="border rounded px-2 py-1">
+                <option value="">Select sort...</option>
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+              <button className="bg-purple-500 text-white px-3 py-1 rounded">Sort</button>
+            </div>
+            {/* Grouping Control */}
+            <div className="flex items-center space-x-2">
+              <span>Group:</span>
+              <select className="border rounded px-2 py-1">
+                <option value="">Select group...</option>
+                <option value="group1">Group 1</option>
+                <option value="group2">Group 2</option>
+              </select>
+              <button className="bg-red-500 text-white px-3 py-1 rounded">Group</button>
+            </div>
+            {/* Tagging Control */}
+            <div className="flex items-center space-x-2">
+              <span>Tag:</span>
+              <input type="text" className="border rounded px-2 py-1" placeholder="Enter tag..." />
+              <button className="bg-indigo-500 text-white px-3 py-1 rounded">Add Tag</button>
+            </div>
+          </div>
         </div>
 
         {/* kzuitable2 label before the large UI images table */}
