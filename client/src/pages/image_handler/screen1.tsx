@@ -264,6 +264,77 @@ const ImageHandlerScreen1: React.FC = () => {
       </div>
 
       <div className="container mx-auto p-6">
+        {/* SpreadsheetInput UI pasted from homepage */}
+        <section className="bg-white rounded-lg shadow-md p-6 max-w-full mb-6">
+          <h2 className="text-xl font-semibold text-neutral-600 mb-4">Step 1 - Paste Your Excel Information</h2>
+          <div className="overflow-auto max-w-full" style={{ maxHeight: "500px" }}>
+            <table 
+              id="spreadsheet" 
+              className="w-full border-collapse table-fixed" 
+            >
+              <thead>
+                <tr>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-center w-12">#</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>A</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>B</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "150px", width: "150px" }}>C</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>D</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>E</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>F</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>G</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>H</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>I</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>J</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>K</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>L</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>M</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>N</th>
+                  <th className="border border-neutral-200 bg-neutral-100 p-2 text-left" style={{ minWidth: "300px", width: "500px" }}>O</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array(6).fill(0).map((_, rowIndex) => (
+                  <tr key={`row-${rowIndex}`} data-row-index={rowIndex}>
+                    <td className="border border-neutral-200 bg-neutral-50 p-2 text-center font-medium w-12">
+                      {rowIndex + 1}
+                    </td>
+                    {Array(15).fill(0).map((_, colIndex) => (
+                      <td 
+                        key={`cell-${rowIndex}-${colIndex}`}
+                        className="border border-neutral-200 p-2 focus:bg-primary-50 transition-colors"
+                        data-editable="true"
+                        data-row-index={rowIndex}
+                        data-col-index={colIndex}
+                        style={{ 
+                          minWidth: colIndex < 3 ? "150px" : "300px",
+                          width: colIndex < 3 ? "150px" : "500px",
+                          whiteSpace: "normal",
+                          wordBreak: "break-word",
+                          overflow: "visible"
+                        }}
+                      >
+                        {/* Cell content would go here */}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 flex flex-col space-y-4">
+            {/* Save Table Content Button */}
+            <button
+              className="bg-navy hover:bg-navy/90 text-white font-bold py-3 px-4 rounded transition-colors"
+            >
+              Save Table Content
+            </button>
+            <div className="text-sm text-neutral-400">
+              <p>Paste your Excel data directly into the table above. Make sure it includes the <span className="font-medium">actual_prompt_for_image_generating_ai_tool</span> and <span className="font-medium">file_name</span> columns.</p>
+              <p className="mt-2">Click "Save Table Content" to ensure your data persists if you close your browser or shut down your computer.</p>
+            </div>
+          </div>
+        </section>
+
         {/* Welcome Card */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <p className="text-gray-600 mb-4">
