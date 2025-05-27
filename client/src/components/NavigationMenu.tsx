@@ -21,6 +21,7 @@ export default function MainNavigationMenu() {
     { name: "Image Handler - Screen 1", path: "/image_handler/screen1" },
     { name: "Image Handler - Screen 2", path: "/image_handler/screen2" },
     { name: "Image Handler - IMH2", path: "/image_handler/imh2" },
+    { name: "Image Handler - IMH3", path: "/image_handler/imh3" },
     { name: "Reddit Scraper - Screen 1", path: "/reddit_scraper/screen1" },
   ];
 
