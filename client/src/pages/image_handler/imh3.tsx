@@ -623,10 +623,10 @@ const ImageHandlerImh3: React.FC = () => {
                 </th>
                 <th className="p-2 border border-gray-700 bg-white align-middle">Actions</th>
                 <th className="p-2 border border-gray-700 w-10 bg-gray-200 align-middle"><span>image_ideas</span><br /><strong>id</strong></th>
-                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle"><span>image_ideas</span><br /><strong>rel_image_batches_id</strong></th>
+                <th className="p-2 border border-gray-700 bg-gray-200 align-middle"><span>image_ideas</span><br /><strong>rel_image_batches_id</strong></th>
                 <th className="p-2 border border-gray-700 bg-yellow-100 align-middle"><span>image_idea_batches</span><br /><strong>created_at</strong></th>
                 <th className="p-2 border border-gray-700 bg-yellow-100 align-middle"><span>image_idea_batches</span><br /><strong>note1</strong></th>
-                <th className="p-2 border border-gray-700 bg-gray-200 align-middle">dynamic count of qty of items in another db table</th>
+                <th className="p-2 border border-gray-700 bg-yellow-100 align-middle">dynamic count of qty of items in another db table</th>
                 <th className="p-2 border border-gray-700 bg-gray-200 align-middle">othermiscfunction</th>
                 <th className="p-2 border border-gray-700 bg-gray-200 align-middle"><span>image_ideas</span><br /><strong>img_file_url1</strong></th>
                 <th className="p-2 border border-gray-700 bg-gray-200 align-middle"><span>image_ideas</span><br /><strong>img_file_extension</strong></th>
