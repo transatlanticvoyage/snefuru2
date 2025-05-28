@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer, boolean, date, time, jsonb, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean, date, time, jsonb, varchar, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -213,6 +213,23 @@ export const insertDomainSchema = createInsertSchema(domains1).omit({
   created_at: true,
 });
 
+export const zz_test1 = pgTable("zz_test1", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 50 }).notNull().default('active'),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+  test_value: decimal("test_value", { precision: 10, scale: 2 }),
+  is_active: boolean("is_active").notNull().default(true),
+});
+
+export const insertZzTest1Schema = createInsertSchema(zz_test1).omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+});
+
 // Export types
 export type InsertImage = z.infer<typeof insertImageSchema>;
 export type InsertImageBatch = z.infer<typeof insertImageBatchSchema>;
@@ -223,6 +240,7 @@ export type InsertCalendarConnection = z.infer<typeof insertCalendarConnectionSc
 export type InsertCalendarEvent = z.infer<typeof insertCalendarEventSchema>;
 export type InsertNotionNote = z.infer<typeof insertNotionNoteSchema>;
 export type InsertDomain = z.infer<typeof insertDomainSchema>;
+export type InsertZzTest1 = z.infer<typeof insertZzTest1Schema>;
 
 export type Image = typeof images.$inferSelect;
 export type ImageBatch = typeof image_batches.$inferSelect;
@@ -232,6 +250,7 @@ export type CalendarConnection = typeof calendar_connections.$inferSelect;
 export type CalendarEvent = typeof calendar_events.$inferSelect;
 export type NotionNote = typeof notion_notes.$inferSelect;
 export type Domain = typeof domains1.$inferSelect;
+export type ZzTest1 = typeof zz_test1.$inferSelect;
 
 // Additional schema types for the application
 export type WpCredentials = {
