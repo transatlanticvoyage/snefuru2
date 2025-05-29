@@ -1,10 +1,10 @@
-import { pgTable, text, serial, timestamp, integer, boolean, date, time, jsonb, varchar, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, boolean, date, time, jsonb, varchar, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Images table
 export const images = pgTable("images", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   img_url1: text("img_url1").notNull(),
   rel_img_batch_id: integer("rel_img_batch_id").notNull(),
@@ -12,14 +12,14 @@ export const images = pgTable("images", {
 
 // Image batches table
 export const image_batches = pgTable("image_batches", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   note1: text("note1"),
 });
 
 // Reddit URLs table
 export const reddit_urls1 = pgTable("reddit_urls1", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   user_id: integer("user_id").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   url1: text("url1").notNull(),
@@ -28,7 +28,7 @@ export const reddit_urls1 = pgTable("reddit_urls1", {
 
 // Reddit Organic Positions table for comprehensive keyword tracking
 export const reddit_organic_positions = pgTable("reddit_organic_positions", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   user_id: integer("user_id").notNull(),
   keyword: varchar("keyword", { length: 500 }).notNull(),
   url: varchar("url", { length: 2048 }).notNull(),
@@ -69,7 +69,7 @@ export const reddit_organic_positions = pgTable("reddit_organic_positions", {
 
 // Domains table
 export const domains1 = pgTable("domains1", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   domain_base: text("domain_base"),
   rel_user_id: integer("rel_user_id"),
   created_at: timestamp("created_at").defaultNow()
@@ -77,7 +77,7 @@ export const domains1 = pgTable("domains1", {
 
 // Calendar integration tables
 export const calendar_connections = pgTable("calendar_connections", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   user_id: integer("user_id").notNull(),
   calendar_source: varchar("calendar_source", { length: 50 }).notNull(), // 'google', 'outlook', 'apple', 'busycal'
   access_token: text("access_token"),
@@ -92,7 +92,7 @@ export const calendar_connections = pgTable("calendar_connections", {
 });
 
 export const notion_notes = pgTable("notion_notes", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   user_id: integer("user_id").references(() => users.id),
   notion_id: varchar("notion_id", { length: 255 }).unique(),
   title: varchar("title", { length: 500 }),
@@ -109,7 +109,7 @@ export const notion_notes = pgTable("notion_notes", {
 });
 
 export const calendar_events = pgTable("calendar_events", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   user_id: integer("user_id").notNull(),
   connection_id: integer("connection_id").notNull(),
   external_event_id: varchar("external_event_id", { length: 255 }).notNull(),
@@ -147,7 +147,7 @@ export const calendar_events = pgTable("calendar_events", {
 
 // Users table - enhanced for full user account system
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   email: text("email").notNull().unique(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
@@ -214,7 +214,7 @@ export const insertDomainSchema = createInsertSchema(domains1).omit({
 });
 
 export const zz_test1 = pgTable("zz_test1", {
-  id: integer("id").primaryKey().notNull(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   status: varchar("status", { length: 50 }).notNull().default('active'),
@@ -382,7 +382,7 @@ interface ApiKeysState {
 }
 
 export const things1 = pgTable("things1", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull().autoIncrement(),
   url_to_thing: text("url_to_thing"),
   file_extension: varchar("file_extension", { length: 10 }),
   size: varchar("size", { length: 20 }),
@@ -401,14 +401,14 @@ export const things1 = pgTable("things1", {
 
 // Images3 Plans Batches table
 export const images3_plans_batches = pgTable("images3_plans_batches", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   note1: text("note1")
 });
 
 // Images3 Plans table
 export const images3_plans = pgTable("images3_plans", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull(),
   rel_images3_plans_batches_id: integer("rel_images3_plans_batches_id")
     .references(() => images3_plans_batches.id)
     .notNull(),
@@ -424,7 +424,7 @@ export const images3_plans = pgTable("images3_plans", {
 
 // Images3 table
 export const images3 = pgTable("images3", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   rel_images3_plans_id: integer("rel_images3_plans_id")
     .references(() => images3_plans.id)
