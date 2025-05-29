@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '../../components/Header';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../../lib/api';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { useAuth } from '../../hooks/useAuth';
+
+// Create API client
+const api = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 // Define the interface for images3 data
 interface Images3Data {
@@ -16,26 +25,178 @@ interface Images3Data {
   height: number | null;
 }
 
+interface ApiKeys {
+  dropbox2_api_key: string;
+  dropbox2_app_key: string;
+  dropbox2_app_secret: string;
+  openai2_api_key: string;
+}
+
 const PlainItems1: React.FC = () => {
   useDocumentTitle('Plain Items 1');
+  const { user } = useAuth();
+  const [prompt, setPrompt] = useState('');
+  const [apiKeys, setApiKeys] = useState<ApiKeys>({
+    dropbox2_api_key: '',
+    dropbox2_app_key: '',
+    dropbox2_app_secret: '',
+    openai2_api_key: ''
+  });
 
   // Fetch images3 data
-  const { data: images3Data, isLoading, error } = useQuery<Images3Data[]>({
+  const { data: images3Data, isLoading, error, refetch } = useQuery<Images3Data[]>({
     queryKey: ['images3'],
     queryFn: async () => {
-      const response = await api.get('/api/images3');
-      // Ensure we're returning an array
+      const response = await api.get('/images3');
       return Array.isArray(response.data) ? response.data : [];
     }
   });
 
-  // Debug log to check the data structure
-  console.log('Images3 Data:', images3Data);
+  // Fetch user's API keys
+  const { data: userData } = useQuery<ApiKeys>({
+    queryKey: ['userApiKeys'],
+    queryFn: async () => {
+      const response = await api.get('/user/keys');
+      return response.data;
+    }
+  });
+
+  // Update API keys when user data changes
+  React.useEffect(() => {
+    if (userData) {
+      setApiKeys({
+        dropbox2_api_key: userData.dropbox2_api_key || '',
+        dropbox2_app_key: userData.dropbox2_app_key || '',
+        dropbox2_app_secret: userData.dropbox2_app_secret || '',
+        openai2_api_key: userData.openai2_api_key || ''
+      });
+    }
+  }, [userData]);
+
+  // Save API keys mutation
+  const saveApiKeysMutation = useMutation({
+    mutationFn: async (keys: ApiKeys) => {
+      const response = await api.post('/user/keys', keys);
+      return response.data;
+    },
+    onSuccess: () => {
+      alert('API keys saved successfully!');
+    },
+    onError: (error: Error) => {
+      alert('Error saving API keys: ' + error.message);
+    }
+  });
+
+  // Generate image mutation
+  const generateImageMutation = useMutation({
+    mutationFn: async (prompt: string) => {
+      const response = await api.post('/generate-image', { prompt });
+      return response.data;
+    },
+    onSuccess: () => {
+      refetch(); // Refresh the images list
+      setPrompt(''); // Clear the prompt input
+    },
+    onError: (error: Error) => {
+      alert('Error generating image: ' + error.message);
+    }
+  });
+
+  const handleSaveApiKeys = (e: React.FormEvent) => {
+    e.preventDefault();
+    saveApiKeysMutation.mutate(apiKeys);
+  };
+
+  const handleGenerateImage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!prompt.trim()) {
+      alert('Please enter a prompt');
+      return;
+    }
+    generateImageMutation.mutate(prompt);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
       <div className="container mx-auto px-4 py-8">
+        {/* API Keys Form */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <h2 className="text-xl font-bold mb-4">API Keys</h2>
+          <form onSubmit={handleSaveApiKeys} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Dropbox API Key</label>
+                <input
+                  type="password"
+                  value={apiKeys.dropbox2_api_key}
+                  onChange={(e) => setApiKeys({ ...apiKeys, dropbox2_api_key: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Dropbox App Key</label>
+                <input
+                  type="password"
+                  value={apiKeys.dropbox2_app_key}
+                  onChange={(e) => setApiKeys({ ...apiKeys, dropbox2_app_key: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Dropbox App Secret</label>
+                <input
+                  type="password"
+                  value={apiKeys.dropbox2_app_secret}
+                  onChange={(e) => setApiKeys({ ...apiKeys, dropbox2_app_secret: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">OpenAI API Key</label>
+                <input
+                  type="password"
+                  value={apiKeys.openai2_api_key}
+                  onChange={(e) => setApiKeys({ ...apiKeys, openai2_api_key: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              disabled={saveApiKeysMutation.isLoading}
+            >
+              {saveApiKeysMutation.isLoading ? 'Saving...' : 'Save API Keys'}
+            </button>
+          </form>
+        </div>
+
+        {/* Image Generation Form */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <h2 className="text-xl font-bold mb-4">Generate Image</h2>
+          <form onSubmit={handleGenerateImage} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Prompt</label>
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                rows={3}
+                placeholder="Enter your image generation prompt..."
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              disabled={generateImageMutation.isLoading}
+            >
+              {generateImageMutation.isLoading ? 'Generating...' : 'Generate Image'}
+            </button>
+          </form>
+        </div>
+
+        {/* Images Table */}
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h1 className="text-2xl font-bold mb-6">Images3 Data</h1>
           

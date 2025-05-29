@@ -158,6 +158,10 @@ export const users = pgTable("users", {
   profile_image: text("profile_image"),
   is_active: integer("is_active").default(1),
   user_role: text("user_role").default("user"),
+  dropbox2_api_key: text("dropbox2_api_key"),
+  dropbox2_app_key: text("dropbox2_app_key"),
+  dropbox2_app_secret: text("dropbox2_app_secret"),
+  openai2_api_key: text("openai2_api_key")
 });
 
 export const zz_test1 = pgTable("zz_test1", {
