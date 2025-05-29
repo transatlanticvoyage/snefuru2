@@ -398,3 +398,64 @@ export const things1 = pgTable("things1", {
   t79: text("t79"),
   t10: varchar("t10", { length: 50 }),
 });
+
+// Images3 Plans Batches table
+export const images3_plans_batches = pgTable("images3_plans_batches", {
+  id: serial("id").primaryKey(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  note1: text("note1")
+});
+
+// Images3 Plans table
+export const images3_plans = pgTable("images3_plans", {
+  id: serial("id").primaryKey(),
+  rel_images3_plans_batches_id: integer("rel_images3_plans_batches_id")
+    .references(() => images3_plans_batches.id)
+    .notNull(),
+  e_zpf_img_code: varchar("e_zpf_img_code", { length: 50 }),
+  e_width: integer("e_width"),
+  e_height: integer("e_height"),
+  e_associated_content1: text("e_associated_content1"),
+  e_file_name1: varchar("e_file_name1", { length: 255 }),
+  e_more_instructions1: text("e_more_instructions1"),
+  e_prompt1: text("e_prompt1"),
+  e_ai_tool1: varchar("e_ai_tool1", { length: 50 })
+});
+
+// Images3 table
+export const images3 = pgTable("images3", {
+  id: serial("id").primaryKey(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  rel_images3_plans_id: integer("rel_images3_plans_id")
+    .references(() => images3_plans.id)
+    .notNull(),
+  img_file_url1: text("img_file_url1"),
+  img_file_extension: varchar("img_file_extension", { length: 10 }),
+  img_file_size: integer("img_file_size"),
+  width: integer("width"),
+  height: integer("height")
+});
+
+// Add insert schemas
+export const insertImages3PlansBatchesSchema = createInsertSchema(images3_plans_batches).omit({
+  id: true,
+  created_at: true,
+});
+
+export const insertImages3PlansSchema = createInsertSchema(images3_plans).omit({
+  id: true,
+});
+
+export const insertImages3Schema = createInsertSchema(images3).omit({
+  id: true,
+  created_at: true,
+});
+
+// Add types
+export type InsertImages3PlansBatches = z.infer<typeof insertImages3PlansBatchesSchema>;
+export type InsertImages3Plans = z.infer<typeof insertImages3PlansSchema>;
+export type InsertImages3 = z.infer<typeof insertImages3Schema>;
+
+export type Images3PlansBatches = typeof images3_plans_batches.$inferSelect;
+export type Images3Plans = typeof images3_plans.$inferSelect;
+export type Images3 = typeof images3.$inferSelect;
