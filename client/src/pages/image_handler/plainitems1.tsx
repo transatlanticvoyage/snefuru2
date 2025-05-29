@@ -74,7 +74,7 @@ const PlainItems1: React.FC = () => {
   }, [userData]);
 
   // Save API keys mutation
-  const saveApiKeysMutation = useMutation({
+  const saveApiKeysMutation = useMutation<void, Error, ApiKeys>({
     mutationFn: async (keys: ApiKeys) => {
       const response = await api.post('/user/keys', keys);
       return response.data;
@@ -88,7 +88,7 @@ const PlainItems1: React.FC = () => {
   });
 
   // Generate image mutation
-  const generateImageMutation = useMutation({
+  const generateImageMutation = useMutation<void, Error, string>({
     mutationFn: async (prompt: string) => {
       const response = await api.post('/generate-image', { prompt });
       return response.data;
@@ -165,9 +165,9 @@ const PlainItems1: React.FC = () => {
             <button
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              disabled={saveApiKeysMutation.isLoading}
+              disabled={saveApiKeysMutation.isPending}
             >
-              {saveApiKeysMutation.isLoading ? 'Saving...' : 'Save API Keys'}
+              {saveApiKeysMutation.isPending ? 'Saving...' : 'Save API Keys'}
             </button>
           </form>
         </div>
@@ -189,9 +189,9 @@ const PlainItems1: React.FC = () => {
             <button
               type="submit"
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              disabled={generateImageMutation.isLoading}
+              disabled={generateImageMutation.isPending}
             >
-              {generateImageMutation.isLoading ? 'Generating...' : 'Generate Image'}
+              {generateImageMutation.isPending ? 'Generating...' : 'Generate Image'}
             </button>
           </form>
         </div>

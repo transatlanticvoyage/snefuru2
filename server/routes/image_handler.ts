@@ -7,6 +7,8 @@ import { images3, users } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
 import OpenAI from 'openai';
 import { Dropbox } from 'dropbox';
+import type { DropboxResponse, files } from 'dropbox';
+import type { InsertImages3 } from '../../shared/schema';
 
 const router = Router();
 
@@ -165,33 +167,35 @@ router.post('/generate-image', requireAuth, async (req: AuthRequest, res: Respon
     const uploadResponse = await dropbox.filesUpload({
       path: `/${fileName}`,
       contents: imageBuffer
-    });
+    }) as DropboxResponse<files.FileMetadata>;
 
-    if (!uploadResponse.path_display) {
+    const uploadedPath = uploadResponse.result.path_display;
+    if (!uploadedPath) {
       throw new Error('Failed to upload file to Dropbox');
     }
 
     // Get the shared link
     const sharedLinkResponse = await dropbox.sharingCreateSharedLink({
-      path: uploadResponse.path_display
-    });
+      path: uploadedPath
+    }) as DropboxResponse<{ url: string }>;
 
-    if (!sharedLinkResponse.url) {
+    if (!sharedLinkResponse.result.url) {
       throw new Error('Failed to create shared link');
     }
 
-    // Save to database
-    const newImage = await db.insert(images3).values({
-      id: undefined, // Let the database auto-generate the ID
+    // Save to database using the InsertImages3 type
+    const newImageData: InsertImages3 = {
       rel_images3_plans_id: 1, // You might want to create a plan first
-      img_file_url1: sharedLinkResponse.url,
+      img_file_url1: sharedLinkResponse.result.url,
       img_file_extension: 'png',
       img_file_size: imageBuffer.byteLength,
       width: 1024,
       height: 1024
-    }).returning();
+    };
 
-    res.json(newImage[0]);
+    const [newImage] = await db.insert(images3).values([newImageData]).returning();
+
+    res.json(newImage);
   } catch (error) {
     console.error('Error generating image:', error);
     res.status(500).json({ error: 'Failed to generate image' });
