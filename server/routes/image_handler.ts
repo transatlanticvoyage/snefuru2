@@ -53,7 +53,7 @@ router.get('/batches/:batchId/images', requireAuth, async (req: AuthRequest, res
 router.get('/images3', requireAuth, async (req, res) => {
   try {
     const images3Data = await db.select().from(images3);
-    res.json(images3Data);
+    res.json(Array.isArray(images3Data) ? images3Data : []);
   } catch (error) {
     console.error('Error fetching images3 data:', error);
     res.status(500).json({ error: 'Failed to fetch images3 data' });

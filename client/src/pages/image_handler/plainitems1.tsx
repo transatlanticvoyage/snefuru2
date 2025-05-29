@@ -24,9 +24,13 @@ const PlainItems1: React.FC = () => {
     queryKey: ['images3'],
     queryFn: async () => {
       const response = await api.get('/api/images3');
-      return response.data;
+      // Ensure we're returning an array
+      return Array.isArray(response.data) ? response.data : [];
     }
   });
+
+  // Debug log to check the data structure
+  console.log('Images3 Data:', images3Data);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -42,6 +46,14 @@ const PlainItems1: React.FC = () => {
           ) : error ? (
             <div className="text-red-500 text-center p-4">
               Error loading data. Please try again later.
+            </div>
+          ) : !Array.isArray(images3Data) ? (
+            <div className="text-red-500 text-center p-4">
+              Invalid data format received from server.
+            </div>
+          ) : images3Data.length === 0 ? (
+            <div className="text-gray-500 text-center p-4">
+              No images found.
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -59,7 +71,7 @@ const PlainItems1: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {images3Data?.map((image) => (
+                  {images3Data.map((image) => (
                     <tr key={image.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{image.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
