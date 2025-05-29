@@ -57,7 +57,20 @@ router.get('/batches/:batchId/images', requireAuth, async (req: AuthRequest, res
 // Get all images3 data
 router.get('/images3', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const images3Data = await db.select().from(images3);
+    if (!req.user?.id) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    // Get user's API keys first to check if they're configured
+    const user = await db.select().from(users).where(eq(users.id, req.user.id)).limit(1);
+    if (!user.length) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get images3 data for this user
+    const images3Data = await db.select().from(images3)
+      .where(eq(images3.rel_images3_plans_id, user[0].id));
+
     res.json(Array.isArray(images3Data) ? images3Data : []);
   } catch (error) {
     console.error('Error fetching images3 data:', error);

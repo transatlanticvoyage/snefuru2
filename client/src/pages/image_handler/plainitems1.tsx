@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 // Create API client
 const api = axios.create({
@@ -33,8 +35,8 @@ interface ApiKeys {
 }
 
 const PlainItems1: React.FC = () => {
-  useDocumentTitle('Plain Items 1');
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [prompt, setPrompt] = useState('');
   const [apiKeys, setApiKeys] = useState<ApiKeys>({
     dropbox2_api_key: '',
@@ -43,26 +45,35 @@ const PlainItems1: React.FC = () => {
     openai2_api_key: ''
   });
 
+  // Protect the page
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
   // Fetch images3 data
-  const { data: images3Data, isLoading, error, refetch } = useQuery<Images3Data[]>({
+  const { data: images3Data, isLoading: imagesLoading, error, refetch } = useQuery<Images3Data[]>({
     queryKey: ['images3'],
     queryFn: async () => {
       const response = await api.get('/images3');
       return Array.isArray(response.data) ? response.data : [];
-    }
+    },
+    enabled: !!user
   });
 
   // Fetch user's API keys
-  const { data: userData } = useQuery<ApiKeys>({
+  const { data: userData, isLoading: userLoading } = useQuery<ApiKeys>({
     queryKey: ['userApiKeys'],
     queryFn: async () => {
       const response = await api.get('/user/keys');
       return response.data;
-    }
+    },
+    enabled: !!user
   });
 
   // Update API keys when user data changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (userData) {
       setApiKeys({
         dropbox2_api_key: userData.dropbox2_api_key || '',
@@ -80,10 +91,10 @@ const PlainItems1: React.FC = () => {
       return response.data;
     },
     onSuccess: () => {
-      alert('API keys saved successfully!');
+      toast.success('API keys saved successfully!');
     },
     onError: (error: Error) => {
-      alert('Error saving API keys: ' + error.message);
+      toast.error('Error saving API keys: ' + error.message);
     }
   });
 
@@ -98,7 +109,7 @@ const PlainItems1: React.FC = () => {
       setPrompt(''); // Clear the prompt input
     },
     onError: (error: Error) => {
-      alert('Error generating image: ' + error.message);
+      toast.error('Error generating image: ' + error.message);
     }
   });
 
@@ -110,7 +121,7 @@ const PlainItems1: React.FC = () => {
   const handleGenerateImage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!prompt.trim()) {
-      alert('Please enter a prompt');
+      toast.error('Please enter a prompt');
       return;
     }
     generateImageMutation.mutate(prompt);
@@ -120,87 +131,108 @@ const PlainItems1: React.FC = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
       <div className="container mx-auto px-4 py-8">
-        {/* API Keys Form */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-bold mb-4">API Keys</h2>
+        <h1 className="text-2xl font-bold mb-6">Image Generator</h1>
+        
+        {/* API Keys Section */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">API Keys</h2>
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-medium">OpenAI API Key:</span>
+              {userData?.openai2_api_key ? (
+                <span className="text-green-600">✓ Configured</span>
+              ) : (
+                <span className="text-yellow-600">⚠ Not configured</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Dropbox API Key:</span>
+              {userData?.dropbox2_api_key ? (
+                <span className="text-green-600">✓ Configured</span>
+              ) : (
+                <span className="text-yellow-600">⚠ Not configured</span>
+              )}
+            </div>
+          </div>
           <form onSubmit={handleSaveApiKeys} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Dropbox API Key</label>
-                <input
-                  type="password"
-                  value={apiKeys.dropbox2_api_key}
-                  onChange={(e) => setApiKeys({ ...apiKeys, dropbox2_api_key: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Dropbox App Key</label>
-                <input
-                  type="password"
-                  value={apiKeys.dropbox2_app_key}
-                  onChange={(e) => setApiKeys({ ...apiKeys, dropbox2_app_key: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Dropbox App Secret</label>
-                <input
-                  type="password"
-                  value={apiKeys.dropbox2_app_secret}
-                  onChange={(e) => setApiKeys({ ...apiKeys, dropbox2_app_secret: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">OpenAI API Key</label>
-                <input
-                  type="password"
-                  value={apiKeys.openai2_api_key}
-                  onChange={(e) => setApiKeys({ ...apiKeys, openai2_api_key: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">OpenAI API Key</label>
+              <input
+                type="password"
+                value={apiKeys.openai2_api_key}
+                onChange={(e) => setApiKeys(prev => ({ ...prev, openai2_api_key: e.target.value }))}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="Enter OpenAI API Key"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Dropbox API Key</label>
+              <input
+                type="password"
+                value={apiKeys.dropbox2_api_key}
+                onChange={(e) => setApiKeys(prev => ({ ...prev, dropbox2_api_key: e.target.value }))}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="Enter Dropbox API Key"
+              />
             </div>
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              disabled={saveApiKeysMutation.isPending}
+              disabled={saveApiKeysMutation.isLoading}
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {saveApiKeysMutation.isPending ? 'Saving...' : 'Save API Keys'}
+              {saveApiKeysMutation.isLoading ? 'Saving...' : 'Save API Keys'}
             </button>
           </form>
         </div>
 
-        {/* Image Generation Form */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-bold mb-4">Generate Image</h2>
+        {/* Image Generation Section */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold mb-4">Generate Image</h2>
           <form onSubmit={handleGenerateImage} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Prompt</label>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 rows={3}
-                placeholder="Enter your image generation prompt..."
+                placeholder="Enter your image generation prompt"
               />
             </div>
             <button
               type="submit"
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              disabled={generateImageMutation.isPending}
+              disabled={generateImageMutation.isLoading || !userData?.openai2_api_key || !userData?.dropbox2_api_key}
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {generateImageMutation.isPending ? 'Generating...' : 'Generate Image'}
+              {generateImageMutation.isLoading ? 'Generating...' : 'Generate Image'}
             </button>
           </form>
+
+          {/* Generated Image Display */}
+          {generatedImage && (
+            <div className="mt-6">
+              <h3 className="text-lg font-medium mb-2">Generated Image</h3>
+              <img
+                src={generatedImage}
+                alt="Generated"
+                className="max-w-full h-auto rounded-lg shadow-md"
+              />
+            </div>
+          )}
+
+          {/* Loading States */}
+          {(imagesLoading || userLoading) && (
+            <div className="mt-4 text-center text-gray-600">
+              Loading...
+            </div>
+          )}
         </div>
 
         {/* Images Table */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
           <h1 className="text-2xl font-bold mb-6">Images3 Data</h1>
           
-          {isLoading ? (
+          {imagesLoading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
             </div>
