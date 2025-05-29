@@ -214,7 +214,7 @@ export const insertDomainSchema = createInsertSchema(domains1).omit({
 });
 
 export const zz_test1 = pgTable("zz_test1", {
-  id: serial("id").primaryKey(),
+  id: integer("id").primaryKey().notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   status: varchar("status", { length: 50 }).notNull().default('active'),
