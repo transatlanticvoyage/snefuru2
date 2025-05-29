@@ -17,13 +17,15 @@ import calendarRoutes from "./routes/calendar";
 import redditRoutes from "./routes/reddit";
 import chatRoutes from "./routes/chat";
 import domainRoutes from "./routes/domains";
+import imageHandlerRoutes from "./routes/image_handler";
 import { optionalAuth, type AuthRequest } from "./middleware/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register authentication routes
   app.use('/api/auth', authRoutes);
   
-
+  // Register image handler routes
+  app.use('/api', imageHandlerRoutes);
 
   // Register calendar routes
   app.use('/api/calendar', calendarRoutes);
