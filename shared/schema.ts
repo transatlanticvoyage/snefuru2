@@ -19,7 +19,7 @@ export const image_batches = pgTable("image_batches", {
 
 // Reddit URLs table
 export const reddit_urls1 = pgTable("reddit_urls1", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
+  id: integer("id").primaryKey().notNull(),
   user_id: integer("user_id").notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
   url1: text("url1").notNull(),
@@ -28,7 +28,7 @@ export const reddit_urls1 = pgTable("reddit_urls1", {
 
 // Reddit Organic Positions table for comprehensive keyword tracking
 export const reddit_organic_positions = pgTable("reddit_organic_positions", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
+  id: integer("id").primaryKey().notNull(),
   user_id: integer("user_id").notNull(),
   keyword: varchar("keyword", { length: 500 }).notNull(),
   url: varchar("url", { length: 2048 }).notNull(),
@@ -69,7 +69,7 @@ export const reddit_organic_positions = pgTable("reddit_organic_positions", {
 
 // Domains table
 export const domains1 = pgTable("domains1", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
+  id: integer("id").primaryKey().notNull(),
   domain_base: text("domain_base"),
   rel_user_id: integer("rel_user_id"),
   created_at: timestamp("created_at").defaultNow()
@@ -77,7 +77,7 @@ export const domains1 = pgTable("domains1", {
 
 // Calendar integration tables
 export const calendar_connections = pgTable("calendar_connections", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
+  id: integer("id").primaryKey().notNull(),
   user_id: integer("user_id").notNull(),
   calendar_source: varchar("calendar_source", { length: 50 }).notNull(), // 'google', 'outlook', 'apple', 'busycal'
   access_token: text("access_token"),
@@ -92,7 +92,7 @@ export const calendar_connections = pgTable("calendar_connections", {
 });
 
 export const notion_notes = pgTable("notion_notes", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
+  id: integer("id").primaryKey().notNull(),
   user_id: integer("user_id").references(() => users.id),
   notion_id: varchar("notion_id", { length: 255 }).unique(),
   title: varchar("title", { length: 500 }),
@@ -109,7 +109,7 @@ export const notion_notes = pgTable("notion_notes", {
 });
 
 export const calendar_events = pgTable("calendar_events", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
+  id: integer("id").primaryKey().notNull(),
   user_id: integer("user_id").notNull(),
   connection_id: integer("connection_id").notNull(),
   external_event_id: varchar("external_event_id", { length: 255 }).notNull(),
@@ -147,7 +147,7 @@ export const calendar_events = pgTable("calendar_events", {
 
 // Users table - enhanced for full user account system
 export const users = pgTable("users", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
+  id: integer("id").primaryKey().notNull(),
   email: text("email").notNull().unique(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
@@ -158,6 +158,72 @@ export const users = pgTable("users", {
   profile_image: text("profile_image"),
   is_active: integer("is_active").default(1),
   user_role: text("user_role").default("user"),
+});
+
+export const zz_test1 = pgTable("zz_test1", {
+  id: integer("id").primaryKey().notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 50 }).notNull().default('active'),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
+  test_value: decimal("test_value", { precision: 10, scale: 2 }),
+  is_active: boolean("is_active").notNull().default(true),
+});
+
+export const things1 = pgTable("things1", {
+  id: integer("id").primaryKey().notNull(),
+  url_to_thing: text("url_to_thing"),
+  file_extension: varchar("file_extension", { length: 10 }),
+  size: varchar("size", { length: 20 }),
+  t4: integer("t4"),
+  t5: integer("t5"),
+  folder: varchar("folder", { length: 50 }),
+  zpfigmcode: varchar("zpfigmcode", { length: 50 }),
+  thingw: integer("thingw"),
+  thingh: integer("thingh"),
+  t6: text("t6"),
+  t7: text("t7"),
+  t8: text("t8"),
+  t79: text("t79"),
+  t10: varchar("t10", { length: 50 }),
+});
+
+// Images3 Plans Batches table
+export const images3_plans_batches = pgTable("images3_plans_batches", {
+  id: integer("id").primaryKey().notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  note1: text("note1")
+});
+
+// Images3 Plans table
+export const images3_plans = pgTable("images3_plans", {
+  id: integer("id").primaryKey().notNull(),
+  rel_images3_plans_batches_id: integer("rel_images3_plans_batches_id")
+    .references(() => images3_plans_batches.id)
+    .notNull(),
+  e_zpf_img_code: varchar("e_zpf_img_code", { length: 50 }),
+  e_width: integer("e_width"),
+  e_height: integer("e_height"),
+  e_associated_content1: text("e_associated_content1"),
+  e_file_name1: varchar("e_file_name1", { length: 255 }),
+  e_more_instructions1: text("e_more_instructions1"),
+  e_prompt1: text("e_prompt1"),
+  e_ai_tool1: varchar("e_ai_tool1", { length: 50 })
+});
+
+// Images3 table
+export const images3 = pgTable("images3", {
+  id: integer("id").primaryKey().notNull(),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+  rel_images3_plans_id: integer("rel_images3_plans_id")
+    .references(() => images3_plans.id)
+    .notNull(),
+  img_file_url1: text("img_file_url1"),
+  img_file_extension: varchar("img_file_extension", { length: 10 }),
+  img_file_size: integer("img_file_size"),
+  width: integer("width"),
+  height: integer("height")
 });
 
 // Create insert schemas
@@ -211,17 +277,6 @@ export const insertNotionNoteSchema = createInsertSchema(notion_notes).omit({
 export const insertDomainSchema = createInsertSchema(domains1).omit({
   id: true,
   created_at: true,
-});
-
-export const zz_test1 = pgTable("zz_test1", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
-  name: varchar("name", { length: 255 }).notNull(),
-  description: text("description"),
-  status: varchar("status", { length: 50 }).notNull().default('active'),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  updated_at: timestamp("updated_at").defaultNow().notNull(),
-  test_value: decimal("test_value", { precision: 10, scale: 2 }),
-  is_active: boolean("is_active").notNull().default(true),
 });
 
 export const insertZzTest1Schema = createInsertSchema(zz_test1).omit({
@@ -380,61 +435,6 @@ interface ApiKeysState {
     };
   };
 }
-
-export const things1 = pgTable("things1", {
-  id: integer("id").primaryKey().notNull().autoIncrement(),
-  url_to_thing: text("url_to_thing"),
-  file_extension: varchar("file_extension", { length: 10 }),
-  size: varchar("size", { length: 20 }),
-  t4: integer("t4"),
-  t5: integer("t5"),
-  folder: varchar("folder", { length: 50 }),
-  zpfigmcode: varchar("zpfigmcode", { length: 50 }),
-  thingw: integer("thingw"),
-  thingh: integer("thingh"),
-  t6: text("t6"),
-  t7: text("t7"),
-  t8: text("t8"),
-  t79: text("t79"),
-  t10: varchar("t10", { length: 50 }),
-});
-
-// Images3 Plans Batches table
-export const images3_plans_batches = pgTable("images3_plans_batches", {
-  id: integer("id").primaryKey().notNull(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  note1: text("note1")
-});
-
-// Images3 Plans table
-export const images3_plans = pgTable("images3_plans", {
-  id: integer("id").primaryKey().notNull(),
-  rel_images3_plans_batches_id: integer("rel_images3_plans_batches_id")
-    .references(() => images3_plans_batches.id)
-    .notNull(),
-  e_zpf_img_code: varchar("e_zpf_img_code", { length: 50 }),
-  e_width: integer("e_width"),
-  e_height: integer("e_height"),
-  e_associated_content1: text("e_associated_content1"),
-  e_file_name1: varchar("e_file_name1", { length: 255 }),
-  e_more_instructions1: text("e_more_instructions1"),
-  e_prompt1: text("e_prompt1"),
-  e_ai_tool1: varchar("e_ai_tool1", { length: 50 })
-});
-
-// Images3 table
-export const images3 = pgTable("images3", {
-  id: integer("id").primaryKey().notNull(),
-  created_at: timestamp("created_at").defaultNow().notNull(),
-  rel_images3_plans_id: integer("rel_images3_plans_id")
-    .references(() => images3_plans.id)
-    .notNull(),
-  img_file_url1: text("img_file_url1"),
-  img_file_extension: varchar("img_file_extension", { length: 10 }),
-  img_file_size: integer("img_file_size"),
-  width: integer("width"),
-  height: integer("height")
-});
 
 // Add insert schemas
 export const insertImages3PlansBatchesSchema = createInsertSchema(images3_plans_batches).omit({
