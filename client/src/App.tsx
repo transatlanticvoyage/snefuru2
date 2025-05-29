@@ -33,6 +33,7 @@ import RankTrackerScreen1 from "@/pages/rank_tracker/screen1";
 import ChatScreen1 from "@/pages/chat/chatscreen1";
 import ImageHandlerImh2 from "@/pages/image_handler/imh2";
 import ImageHandlerImh3 from "@/pages/image_handler/imh3";
+import PlainItems1 from '@/pages/image_handler/plainitems1';
 
 // Protected route component that redirects to login if not authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType<any>, path: string }) {
@@ -139,6 +140,7 @@ function Router() {
         {isAuthenticated ? <RankTrackerScreen1 /> : <SimpleLogin />}
       </Route>
       <Route path="/chat/chatscreen1" component={ChatScreen1} />
+      <Route path="/image_handler/plainitems1" component={PlainItems1} />
       
       {/* Fallback route */}
       <Route component={NotFound} />
